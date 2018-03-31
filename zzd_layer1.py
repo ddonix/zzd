@@ -3,10 +3,11 @@
 class zzdLayer1:
 	inSentenceClass = []		#输入语句类型
 	outSentenceClass = []		#输出语句类型
-	defineDict = {u'分母':}
+	defineDict = {u'pi':u'3.14159'}
     
-	def __init__(self):
+	def __init__(self, corelayer0):
 		self.sentence = []
+		self.corelayer0 = corelayer0
 		self.initfun()
 	
 	def _sorrysen(self, sen):
@@ -30,9 +31,11 @@ class zzdLayer1:
 		return outs
 	
 	def _definesen(self, sen):
-		outs = u'defi:分母是分数下面的数，分母不能为0'
-		return outs
-	
+		outs = u'defi:'
+		o = zzdLayer1.defineDict.get(sen[5:len(sen)])
+		if o == None:
+			return self._sorrysen(sen)
+		return outs+o
         
 	def inputs(self, sen):
 		outs = None
