@@ -33,7 +33,7 @@ def middle_to_after(s):
                     break
                 else:
                     expression.append(op)
-        elif item == u'':
+        elif item == u'' or item == u' ':
             continue
         else:
             expression.append(item)
