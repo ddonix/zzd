@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 
 import wave
+import os
 from pyaudio import PyAudio,paInt16
 from aip import AipSpeech
 
@@ -80,9 +81,10 @@ def voice2txt():
 	else:
 		return None
 
-def txt2voice():
+def txt2voice(txt):
 	global client
-	result = client.synthesis(u'1+1等于2', 'zh', 1, {'vol': 5,})
+	result = client.synthesis(txt, 'zh', 1, {'vol': 5,})
 	if not isinstance(result, dict):
-		with open('auido.mp3', 'wb') as f:
+		with open('out.mp3', 'wb') as f:
 			f.write(result)
+		os.system('mplayer out.mp3')

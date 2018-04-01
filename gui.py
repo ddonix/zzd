@@ -52,6 +52,11 @@ def voiceRelease(evt):
 	out = corelayer2.inputs(sen)
 	output_layer2.insert(0, out)
 
+def voicePlay(evt):
+	global output_layer2
+	sen = output_layer2.get()
+	voice.txt2voice(sen)
+
 def return_event(evt):
 	enterSen()
 	return
@@ -107,10 +112,16 @@ def main():
 	
 	tk.Button(master, text = "确定", command = enterSen).place(x=500,y=40, width=60, height=20)
 	
-	vbotton = tk.Button(master, text = "语音")
-	vbotton.place(x=560,y=40, width=60, height=20)
-	vbotton.bind("<ButtonPress>", voicePress)
-	vbotton.bind("<ButtonRelease>", voiceRelease)
+	vinputButton = tk.Button(master, text = "按住说话")
+	vinputButton.place(x=560,y=40, width=60, height=20)
+	vinputButton.bind("<ButtonPress>", voicePress)
+	vinputButton.bind("<ButtonRelease>", voiceRelease)
+	
+	voutButton = tk.Button(master, text = "播放")
+	voutButton.place(x=560,y=150, width=60, height=20)
+	voutButton.bind("<ButtonPress>", voicePlay)
+
+	
 	input_layer2.focus_set()
 	
 	master.mainloop()
