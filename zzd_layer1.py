@@ -13,12 +13,15 @@ class zzdLayer1:
 		self.init()
 	
 	def _solvesen(self, sen):
-		exp = zzd_expression.middle_to_after(sen[5:len(sen)])
-		if exp == None:
-			return self._solvesen(sen)
+		eq = sen[5:len(sen)]
+		eq1 = eq.replace("=","-(")+")"
+		try:
+			c = eval(eq1,{x:1j})
+			val = int(-c.real/c.imag)
+		except:
+			return self._sorrysen(sen)
 		
-		v = zzd_expression.expression_to_value(exp)
-		outs = u'solv:'+str(v)
+		outs = 'solv:x='+str(val)
 		return outs
 	
 	def _sorrysen(self, sen):
