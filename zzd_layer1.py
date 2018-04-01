@@ -1,14 +1,25 @@
 # coding: utf-8
+import zzd_expression 
 
 class zzdLayer1:
 	inSentenceClass = []		#输入语句类型
 	outSentenceClass = []		#输出语句类型
-	defineDict = {u'pi':u'3.14159'}
-    
+	itemDict = {}
+	defineDict = {}
+
 	def __init__(self, corelayer0):
 		self.sentence = []
 		self.corelayer0 = corelayer0
-		self.initfun()
+		self.init()
+	
+	def _solvesen(self, sen):
+		exp = zzd_expression.middle_to_after(sen[5:len(sen)])
+		if exp == None:
+			return self._solvesen(sen)
+		
+		v = zzd_expression.expression_to_value(exp)
+		outs = u'solv:'+str(v)
+		return outs
 	
 	def _sorrysen(self, sen):
 		outs = u'对不起，我不知道如何处理.'
@@ -26,9 +37,8 @@ class zzdLayer1:
 		outs = u'judg:True'
 		return outs
 	
-	def _solvesen(self, sen):
-		outs = u'solv:True'
-		return outs
+	def _definesen_init(self):
+		zzdLayer1.defineDict[u'爱'] = u'在一起'
 	
 	def _definesen(self, sen):
 		outs = u'defi:'
@@ -49,11 +59,15 @@ class zzdLayer1:
 		self.sentence.append([sen,outs])
 		return outs
 	
-	def initfun(self):
+	def init(self):
+		buf = open('item.txt','r').readlines()
+		for t in buf:
+			t = t.decode('utf8')
+			zzdLayer1.itemDict[t[0]] = t[2:len(t)-1]
+		zzdLayer1._definesen_init(self)
 		zzdLayer1.inSentenceClass.append([u'copy:', zzdLayer1._copysen])			#copy
 		zzdLayer1.inSentenceClass.append([u'debu:', zzdLayer1._debugsen])			#debug
 		zzdLayer1.inSentenceClass.append([u'sorr:', zzdLayer1._sorrysen])			#sorry
 		zzdLayer1.inSentenceClass.append([u'judg:', zzdLayer1._judgesen])			#judge
 		zzdLayer1.inSentenceClass.append([u'solv:', zzdLayer1._solvesen])			#solve
 		zzdLayer1.inSentenceClass.append([u'defi:', zzdLayer1._definesen])			#define
-		return

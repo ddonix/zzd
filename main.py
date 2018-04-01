@@ -14,5 +14,9 @@ def get_file_content(filePath):
 
 # 识别本地文件
 client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
-res = client.asr(get_file_content('16k.wav'), 'wav', 16000, {'dev_pid': '1536',})
+res = client.asr(get_file_content('output.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
 print res.get(u'result')[0]
+result = client.synthesis(u'1+1等于2', 'zh', 1, {'vol': 5,})
+if not isinstance(result, dict):
+	with open('auido.mp3', 'wb') as f:
+		f.write(result)
