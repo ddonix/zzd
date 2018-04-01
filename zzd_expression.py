@@ -10,7 +10,6 @@ ops_rule = {
 def middle_to_after(s):
     expression = []
     ops = []
-    s.replace(u' ',u'')
     ss = re.split(u'(\+|\-|\*|\+|\(|\))', s)
     for item in ss:
         if item in [u'+', u'-', u'*', u'/']:
@@ -34,6 +33,8 @@ def middle_to_after(s):
                     break
                 else:
                     expression.append(op)
+        elif item == u'':
+            continue
         else:
             expression.append(item)
 
