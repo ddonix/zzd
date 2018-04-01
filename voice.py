@@ -39,20 +39,7 @@ def stop_record():
 	global recordflag,stoped
 	recordflag = False
 	while not stoped:
-		save_wave_file('output.pcm',my_buf)
-
-chunk=2014
-def play():
-    wf=wave.open(r"01.wav",'rb')
-    p=PyAudio()
-    stream=p.open(format=p.get_format_from_width(wf.getsampwidth()),channels=
-    wf.getnchannels(),rate=wf.getframerate(),output=True)
-    while True:
-        data=wf.readframes(chunk)
-        if data=="":break
-        stream.write(data)
-    stream.close()
-    p.terminate()
+		save_wave_file('input2.pcm',my_buf)
 
 """ 你的 APPID AK SK """
 APP_ID = '11025174'
@@ -74,7 +61,7 @@ def get_file_content(filePath):
 # 识别本地文件
 def voice2txt():
 	global client
-	res = client.asr(get_file_content('output.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
+	res = client.asr(get_file_content('input2.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
 	txt = res.get(u'result')
 	if txt != None:
 		return txt[0]
@@ -85,6 +72,6 @@ def txt2voice(txt):
 	global client
 	result = client.synthesis(txt, 'zh', 1, {'vol': 5,})
 	if not isinstance(result, dict):
-		with open('out.mp3', 'wb') as f:
+		with open('output2.mp3', 'wb') as f:
 			f.write(result)
-		os.system('mplayer out.mp3')
+		os.system('mplayer output2.mp3')
