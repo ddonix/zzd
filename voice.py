@@ -6,7 +6,7 @@ from pyaudio import PyAudio,paInt16
 from aip import AipSpeech
 
 recordflag = False
-framerate=8000
+framerate=16000
 NUM_SAMPLES=2000
 channels=1
 sampwidth=2
@@ -31,7 +31,7 @@ def start_record():
 		string_audio_data = stream.read(NUM_SAMPLES)
 		my_buf.append(string_audio_data)
 		print('.')
-	save_wave_file('01.wav',my_buf)
+	save_wave_file('output.wav',my_buf)
 
 def stop_record():
 	global recordflag
@@ -69,10 +69,12 @@ def get_file_content(filePath):
 
 # 识别本地文件
 def voice2txt():
-	res = client.asr(get_file_content('output.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
-	print res.get(u'result')[0]
+	global client
+	res = client.asr(get_file_content('output.wav'), 'wav', 16000, {'dev_pid': '1536',})
+	return res.get(u'result')[0]
 
 def txt2voice():
+	global client
 	result = client.synthesis(u'1+1等于2', 'zh', 1, {'vol': 5,})
 	if not isinstance(result, dict):
 		with open('auido.mp3', 'wb') as f:

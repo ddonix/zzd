@@ -11,6 +11,7 @@ class zzdLayer1:
 		self.sentence = []
 		self.corelayer0 = corelayer0
 		self.init()
+		voice.voiceInit()
 	
 	def _solvesen(self, sen):
 		eq = sen[5:len(sen)]

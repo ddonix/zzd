@@ -36,13 +36,23 @@ def mouse_press_event_right(evt):
 	return
 	
 def voicePress(evt):
-	print('fff')
 	thread.start_new_thread(voice.start_record, ())
 	return
 
 def voiceRelease(evt):
-	print('ddd')
+	global input_layer2,output_layer2
 	voice.stop_record()
+	
+	input_layer2.delete(0,'end')
+	output_layer2.delete(0,'end')
+	sen = voice.voice2txt()
+	
+	input_layer2.insert(0, sen)
+	out = corelayer2.inputs(sen)
+	output_layer2.insert(0, out)
+
+def return_event(evt):
+	enterSen()
 	return
 
 def enterSen():
