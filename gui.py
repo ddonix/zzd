@@ -46,7 +46,8 @@ def voiceRelease(evt):
 	input_layer2.delete(0,'end')
 	output_layer2.delete(0,'end')
 	sen = voice.voice2txt()
-	
+	if sen == None:
+		sen = u''
 	input_layer2.insert(0, sen)
 	out = corelayer2.inputs(sen)
 	output_layer2.insert(0, out)

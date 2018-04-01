@@ -5,5 +5,8 @@ class zzdLayer2:
 		self.corelayer1 = corelayer1
 	
 	def inputs(self, sen):
-		outs = self.corelayer1.inputs(sen)
+		if sen == u'':
+			outs = u'sorr:'
+		else:
+			outs = self.corelayer1.inputs(sen)
 		return outs

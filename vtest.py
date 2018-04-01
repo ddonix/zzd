@@ -72,10 +72,7 @@ def voice2txt():
 	global client
 	res = client.asr(get_file_content('output.wav'), 'wav', 16000, {'dev_pid': '1536',})
 	txt = res.get(u'result')
-	if txt != None:
-		return txt[0]
-	else:
-		return None
+	return txt[0]
 
 def txt2voice():
 	global client
@@ -83,3 +80,6 @@ def txt2voice():
 	if not isinstance(result, dict):
 		with open('auido.mp3', 'wb') as f:
 			f.write(result)
+
+voiceInit()
+print voice2txt()
