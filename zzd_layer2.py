@@ -9,4 +9,4 @@ class zzdLayer2:
 			outs = u'sorr:'
 		else:
 			outs = self.corelayer1.inputs(sen)
-		return outs
+		return outs[5:len(outs)]
