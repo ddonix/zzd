@@ -70,7 +70,7 @@ def get_file_content(filePath):
 # 识别本地文件
 def voice2txt():
 	global client
-	res = client.asr(get_file_content('output.wav'), 'wav', 16000, {'dev_pid': '1536',})
+	res = client.asr(get_file_content('output.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
 	txt = res.get(u'result')
 	return txt[0]
 

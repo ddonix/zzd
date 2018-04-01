@@ -6,36 +6,39 @@ from pyaudio import PyAudio,paInt16
 from aip import AipSpeech
 
 recordflag = False
+stoped = False
+
 framerate=16000
 NUM_SAMPLES=2000
 channels=1
 sampwidth=2
 TIME=2
+my_buf = []
 
 #save the date to the wavfile
 def save_wave_file(filename,data):
-	wf=wave.open(filename,'wb')
-	wf.setnchannels(channels)
-	wf.setsampwidth(sampwidth)
-	wf.setframerate(framerate)
-	wf.writeframes(b"".join(data))
+	wf=open(filename,'wb')
+	wf.write(b"".join(data))
 	wf.close()
 
 def start_record():
-	global recordflag
+	global recordflag,stoped, my_buf
 	pa=PyAudio()
 	stream=pa.open(format = paInt16,channels=1, rate=framerate,input=True, frames_per_buffer=NUM_SAMPLES)
 	my_buf=[]
 	recordflag = True
+	stoped = False
 	while recordflag:
 		string_audio_data = stream.read(NUM_SAMPLES)
 		my_buf.append(string_audio_data)
 		print('.')
-	save_wave_file('output.wav',my_buf)
+	stoped = True
 
 def stop_record():
-	global recordflag
+	global recordflag,stoped
 	recordflag = False
+	while not stoped:
+		save_wave_file('output.pcm',my_buf)
 
 chunk=2014
 def play():
@@ -70,7 +73,7 @@ def get_file_content(filePath):
 # 识别本地文件
 def voice2txt():
 	global client
-	res = client.asr(get_file_content('output.wav'), 'wav', 16000, {'dev_pid': '1536',})
+	res = client.asr(get_file_content('output.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
 	txt = res.get(u'result')
 	if txt != None:
 		return txt[0]
