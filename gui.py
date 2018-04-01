@@ -6,6 +6,8 @@ from PIL import Image
 import zzd_layer0
 import zzd_layer1
 import zzd_layer2
+import voice
+import thread 
 
 corelayer0 = None
 corelayer1 = None
@@ -32,14 +34,26 @@ def mouse_movie_event(evt):
 
 def mouse_press_event_right(evt):
 	return
+	
+def voicePress(evt):
+	print('fff')
+	thread.start_new_thread(voice.start_record, ())
+	return
 
-def return_event(evt):
+def voiceRelease(evt):
+	print('ddd')
+	voice.stop_record()
+	return
+
+def enterSen():
 	global input_layer2,output_layer2
 	output_layer2.delete(0,'end')
 	sen = input_layer2.get()
-	
 	out = corelayer2.inputs(sen)
 	output_layer2.insert(0, out)
+
+def return_event(evt):
+	enterSen()
 
 def main():
 	global corelayer0,corelayer1,corelayer2
@@ -79,6 +93,14 @@ def main():
 	tk.Label(master,text = "output_layer0").place(x=5, y=110, width=90, height=20)
 	tk.Label(master,text = "output_layer1").place(x=5, y=130, width=90, height=20)
 	tk.Label(master,text = "output_layer2").place(x=5, y=150, width=90, height=20)
+	
+	tk.Button(master, text = "确定", command = enterSen).place(x=500,y=40, width=60, height=20)
+	
+	vbotton = tk.Button(master, text = "语音")
+	vbotton.place(x=560,y=40, width=60, height=20)
+	vbotton.bind("<ButtonPress>", voicePress)
+	vbotton.bind("<ButtonRelease>", voiceRelease)
+	input_layer2.focus_set()
 	
 	master.mainloop()
 

@@ -1,10 +1,10 @@
 # coding: utf-8
 import zzd_expression 
+import voice 
 
 class zzdLayer1:
 	inSentenceClass = []		#输入语句类型
 	outSentenceClass = []		#输出语句类型
-	itemDict = {}
 	defineDict = {}
 
 	def __init__(self, corelayer0):
@@ -14,15 +14,25 @@ class zzdLayer1:
 	
 	def _solvesen(self, sen):
 		eq = sen[5:len(sen)]
-		eq1 = eq.replace("=","-(")+")"
-		try:
-			c = eval(eq1,{x:1j})
-			val = int(-c.real/c.imag)
-		except:
-			return self._sorrysen(sen)
+		if eq.find(u'x') != -1:
+			eq1 = eq.replace("=","-(")+")"
+			try:
+				c = eval(eq1,{u'x':1j})
+				val = int(-c.real/c.imag)
+				val = u'x='+str(val)
+			except:
+				return self._sorrysen(sen)
+		else:
+			try:
+				val = eval(eq)
+				if val == True:
+					val = u'对'
+				else:
+					val = u'错'
+			except:
+				return self._sorrysen(sen)
 		
-		outs = 'solv:x='+str(val)
-		return outs
+		return 'solv:'+val
 	
 	def _sorrysen(self, sen):
 		outs = u'对不起，我不知道如何处理.'
@@ -34,10 +44,6 @@ class zzdLayer1:
 	
 	def _debugsen(self, sen):
 		outs = u'debug模式'
-		return outs
-	
-	def _judgesen(self, sen):
-		outs = u'judg:True'
 		return outs
 	
 	def _definesen_init(self):
@@ -63,14 +69,9 @@ class zzdLayer1:
 		return outs
 	
 	def init(self):
-		buf = open('item.txt','r').readlines()
-		for t in buf:
-			t = t.decode('utf8')
-			zzdLayer1.itemDict[t[0]] = t[2:len(t)-1]
 		zzdLayer1._definesen_init(self)
 		zzdLayer1.inSentenceClass.append([u'copy:', zzdLayer1._copysen])			#copy
 		zzdLayer1.inSentenceClass.append([u'debu:', zzdLayer1._debugsen])			#debug
 		zzdLayer1.inSentenceClass.append([u'sorr:', zzdLayer1._sorrysen])			#sorry
-		zzdLayer1.inSentenceClass.append([u'judg:', zzdLayer1._judgesen])			#judge
 		zzdLayer1.inSentenceClass.append([u'solv:', zzdLayer1._solvesen])			#solve
 		zzdLayer1.inSentenceClass.append([u'defi:', zzdLayer1._definesen])			#define
