@@ -31,7 +31,7 @@ class zzdLayer1:
 		return 'solv:'+val
 	
 	def _sorrysen(self, sen):
-		outs = u'sorr:对不起，我无法处理\"'+sen[5:len(sen)]+'\"'
+		outs = u'sorr:对不起，我无法处理\"'+sen+'\"'
 		return outs
 	
 	def _copysen(self, sen):
@@ -46,11 +46,10 @@ class zzdLayer1:
 		zzdLayer1.defineDict[u'爱'] = u'在一起'
 	
 	def _definesen(self, sen):
-		outs = u'defi:'
 		o = zzdLayer1.defineDict.get(sen[5:len(sen)])
 		if o == None:
 			return self._sorrysen(sen)
-		return outs+o
+		return sen+u'是'+o
         
 	def inputs(self, sen):
 		outs = None
@@ -59,7 +58,7 @@ class zzdLayer1:
 				outs = t[1](self, sen)
 				break
 		if outs == None:
-			outs = self._sorrysen(u'sorr:'+sen)
+			outs = self._sorrysen(sen)
 		
 		self.sentence.append([sen,outs])
 		return outs
