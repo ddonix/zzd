@@ -21,6 +21,7 @@ entry_human = None
 entry_zzd = None
 	
 autoplay = True
+voicetrain = False 
 
 def mouse_press_event(evt):
 	return
@@ -39,7 +40,7 @@ def voicePress(evt):
 	return
 
 def voiceRelease(evt):
-	global entry_human
+	global entry_human,voicetrain
 	
 	voice.stop_record()
 	waa = voice.voice2txt()
@@ -50,7 +51,10 @@ def voiceRelease(evt):
 	
 	entry_human.delete(0,'end')
 	entry_human.insert(0, waa)
-	xhh.act(zhd, waa)
+	if not voicetrain:
+		xhh.act(zhd, waa)
+	else:
+		voicetrain = True
 
 def zhdShow(waa):
 	global autoplay
@@ -76,6 +80,12 @@ def enterSen():
 
 def return_event(evt):
 	enterSen()
+
+def voiceTrain(evt):
+	voicetrain = not voicetrain
+
+def addTrain(evt):
+	voicetrain = not voicetrain
 
 def main():
 	global xhh,zhd
@@ -128,13 +138,18 @@ def main():
 	vinputButton.bind("<ButtonPress>", voicePress)
 	vinputButton.bind("<ButtonRelease>", voiceRelease)
 	
+	vinputButton = tk.Button(master, text = "加入训练")
+	vinputButton.place(x=500,y=80, width=80, height=20)
+	vinputButton.bind("<ButtonPress>", addTrain)
+	vinputButton = tk.Button(master, text = "设置/取消识别")
+	vinputButton.place(x=560,y=60, width=80, height=20)
+	vinputButton.bind("<ButtonPress>", voiceTrain)
+	
 	voutButton = tk.Button(master, text = "播放")
 	voutButton.place(x=560,y=150, width=60, height=20)
 	voutButton.bind("<ButtonPress>", voicePlay)
 
-	
 	entry_human.focus_set()
-	
 	master.mainloop()
 
 if __name__ == '__main__':
