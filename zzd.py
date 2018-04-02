@@ -1,8 +1,7 @@
 # -*- coding:utf-8 -*- 
 import unity
-import zzd_layer0
-import zzd_layer1
-
+import zzd_core0
+import zzd_core1
 
 #语音的层级
 #free:自由表达的语言，有各种风格，例如幽默、严肃、简练、罗嗦.例如：一加一是不是比二大呢？(这里的呢字在表义上是多余的)
@@ -14,8 +13,8 @@ class zzd(unity.unity):
 	def __init__(self, show):
 		unity.unity.__init__(self)
 		self.show = show
-		self.corelayer0 = zzd_layer0.zzdLayer0()
-		self.core = zzd_layer1.zzdLayer1(self.corelayer0)
+		self.core0 = zzd_core0.zzdcore0()
+		self.core = zzd_core1.zzdcore1(self.core0)
     
 	def echo(self, sour, waa_in):
 		waa = self._trans_free_2(waa_in)

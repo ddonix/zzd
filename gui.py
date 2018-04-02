@@ -84,7 +84,7 @@ def main():
 	global entry_human,entry_zzd
 	global autoplay
 
-	autoplay = False
+	autoplay = True
 	
 	xhh = human.human(core=None)
 	zhd = zzd.zzd(show=zhdShow)

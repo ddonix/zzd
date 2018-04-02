@@ -9,7 +9,7 @@ STATE = ('init', 'stand', 'wait', 'initiative')
 #0:工作模式；1:娱乐模式;2:训练模式;3:调试模式.
 MODE = ('work', 'train', 'debug')
 
-class zzdLayer1:
+class zzdcore1:
 	inSentenceClass = []		#输入语句类型
 	defineDict = {}
 
@@ -49,7 +49,7 @@ class zzdLayer1:
 	def inputs(self, sen):
 		outs = None
 		if self.mode == 'work':
-			for t in zzdLayer1.inSentenceClass:
+			for t in zzdcore1.inSentenceClass:
 				if t[0] == sen[0:5]:
 					outs = t[1](self, sen)
 					break
@@ -58,22 +58,21 @@ class zzdLayer1:
 		
 			self.sentence.append([sen,outs])
 			return outs
-		elif self.mo
 	
 	def init(self):
-		zzdLayer1._definesen_init(self)
-		zzdLayer1.inSentenceClass.append([u'copy:', zzdLayer1._copysen])			#copy
-		zzdLayer1.inSentenceClass.append([u'debu:', zzdLayer1._debugsen])			#debug
-		zzdLayer1.inSentenceClass.append([u'sorr:', zzdLayer1._sorrysen])			#sorry
-		zzdLayer1.inSentenceClass.append([u'solv:', zzdLayer1._solvesen])			#solve
-		zzdLayer1.inSentenceClass.append([u'defi:', zzdLayer1._definesen])			#define
+		zzdcore1._definesen_init(self)
+		zzdcore1.inSentenceClass.append([u'copy:', zzdcore1._copysen])			#copy
+		zzdcore1.inSentenceClass.append([u'debu:', zzdcore1._debugsen])			#debug
+		zzdcore1.inSentenceClass.append([u'sorr:', zzdcore1._sorrysen])			#sorry
+		zzdcore1.inSentenceClass.append([u'solv:', zzdcore1._solvesen])			#solve
+		zzdcore1.inSentenceClass.append([u'defi:', zzdcore1._definesen])			#define
 	
 	def _definesen_init(self):
-		zzdLayer1.defineDict[u'爱'] = u'在一起'
+		zzdcore1.defineDict[u'爱'] = u'在一起'
 	
 	def _definesen(self, sen):
 		define = sen[5:len(sen)]
-		o = zzdLayer1.defineDict.get(define)
+		o = zzdcore1.defineDict.get(define)
 		if o == None:
 			return self._sorrysen(u'copy:对不起，我没有\"'+define+u'\"的定义。'+u'请进入训练模式，添加定义。')
 		return sen+u'是'+o
