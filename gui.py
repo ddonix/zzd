@@ -37,18 +37,21 @@ def voicePress(evt):
 	return
 
 def voiceRelease(evt):
-	return None
-'''	global entry_human,entry_zzd
+	global entry_human,entry_zzd
 	voice.stop_record()
 	
+	waa = voice.voice2txt()
+	if waa == None:
+		voice.txt2voice(u'对不起，没有听清，请重复。')
+		return
+	
 	entry_human.delete(0,'end')
+	entry_human.insert(0, waa)
+	
+	xhh.act(zhd, waa)
+	waa = zhd.echo(xhh, waa)
 	entry_zzd.delete(0,'end')
-	sen = voice.voice2txt()
-	if sen == None:
-		sen = u''
-	entry_human.insert(0, sen)
-	out = corelayer2.inputs(sen)
-	entry_zzd.insert(0, out)'''
+	entry_zzd.insert(0, waa)
 
 def voicePlay(evt):
 	global entry_zzd
