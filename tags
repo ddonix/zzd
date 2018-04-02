@@ -21,15 +21,14 @@ __init__	unity.py	/^	def __init__(self):$/;"	m	class:unity
 __init__	zzd.py	/^	def __init__(self, show):$/;"	m	class:zzd
 __init__	zzd_core0.py	/^	def __init__(self):$/;"	m	class:zzdcore0
 __init__	zzd_core1.py	/^	def __init__(self, corelayer0):$/;"	m	class:zzdcore1
-_commandwaa	zzd_core1.py	/^	def _commandwaa(self, waa):$/;"	m	class:zzdcore1
+_commandsen	zzd_core1.py	/^	def _commandsen(self, sen):$/;"	m	class:zzdcore1
 _copysen	zzd_core1.py	/^	def _copysen(self, sen):$/;"	m	class:zzdcore1
 _debugsen	zzd_core1.py	/^	def _debugsen(self, sen):$/;"	m	class:zzdcore1
 _definesen	zzd_core1.py	/^	def _definesen(self, sen):$/;"	m	class:zzdcore1
 _definesen_init	zzd_core1.py	/^	def _definesen_init(self):$/;"	m	class:zzdcore1
-_identifywaa	zzd_core1.py	/^	def _identifywaa(self, waa):$/;"	m	class:zzdcore1
 _solvesen	zzd_core0.py	/^	def _solvesen(self, sen):$/;"	m	class:zzdcore0
 _solvesen	zzd_core1.py	/^	def _solvesen(self, sen):$/;"	m	class:zzdcore1
-_sorrysen	zzd_core1.py	/^	def _sorrysen(self, sen):$/;"	m	class:zzdcore1
+_sorry	zzd_core1.py	/^	def _sorry(self, waa):$/;"	m	class:zzdcore1
 _trans_1_2	zzd.py	/^	def _trans_1_2(self, waa):$/;"	m	class:zzd
 _trans_2_1	zzd.py	/^	def _trans_2_1(self, waa):$/;"	m	class:zzd
 _trans_2_free	zzd.py	/^	def _trans_2_free(self, waa):$/;"	m	class:zzd
@@ -62,7 +61,7 @@ inSentenceClass	zzd_core1.py	/^	inSentenceClass = []		#输入语句类型$/;"	v	
 init	zzd_core1.py	/^	def init(self):$/;"	m	class:zzdcore1
 input_layer0	gui.py	/^input_layer0 = None$/;"	v
 input_layer1	gui.py	/^input_layer1 = None$/;"	v
-inputs	zzd_core1.py	/^	def inputs(self, waa):$/;"	m	class:zzdcore1
+inputs	zzd_core1.py	/^	def inputs(self, friend, waa):$/;"	m	class:zzdcore1
 main	gui.py	/^def main():$/;"	f
 mouse_movie_event	gui.py	/^def mouse_movie_event(evt):$/;"	f
 mouse_press_event	gui.py	/^def mouse_press_event(evt):$/;"	f

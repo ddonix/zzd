@@ -19,9 +19,9 @@ class zzd(unity.unity):
 	def echo(self, sour, waa_in):
 		waa = self._trans_free_2(waa_in)
 		waa = self._trans_2_1(waa)
-		out = self.core.inputs(waa)
 		
-		waa_out = self._trans_1_2((waa_in[0],out))
+		waa_out = self.core.inputs(sour, waa)
+		waa_out = self._trans_1_2(waa_out)
 		waa_out = self._trans_2_free(waa_out)
 		self.show(waa_out)
 		return waa_out
@@ -44,4 +44,4 @@ class zzd(unity.unity):
 		return (head, sen)
 	
 	def _trans_1_2(self, waa):
-		return waa[1]
+		return waa

@@ -18,7 +18,7 @@ class zzdcore1:
 		self.corelayer0 = corelayer0
 		self.state = 'init'
 		self.mode = 'work'
-		self.other = None
+		self.friend = None
 		self.init()
 
 	def _solvesen(self, sen):
@@ -46,29 +46,34 @@ class zzdcore1:
 		outs = u'调试模式'
 		return outs
 	
-	def inputs(self, waa):
+	def inputs(self, friend, waa):
 		if self.state == 'init':
-			if waa[0] == u'comm' and waa[1] == u'identify':
-				return _commandwaa(self, waa[1])
+			if waa[0] == u'comm' and waa[1][0:2] == u'认证':
+				res = self._commandsen(waa[1])
+				if res[0]:
+					self.state = 'stand'
+					self.friend = friend
+				return res[1]
 			else:
-				return self._sorry((u'copy', u'对不起，您需要先进行身份验证!'))
+				return self._sorry((u'copy', u'对不起，您需要先进行身份认证!'))
 		if self.mode == 'work':
 			for t in zzdcore1.inSentenceClass:
 				if t[0] == waa[0]:
 					outs = t[1](self, waa[1])
 					self.sentence.append([waa,outs])
-					return (waa[0],outs)
+					return outs
 			outs = self._sorry(waa)
 			self.sentence.append([waa,outs])
 			return outs
 	
 	def init(self):
 		zzdcore1._definesen_init(self)
-		zzdcore1.inSentenceClass.append([u'copy', zzdcore1._copysen])			#copy
-		zzdcore1.inSentenceClass.append([u'debu', zzdcore1._debugsen])			#debug
 		zzdcore1.inSentenceClass.append([u'solv', zzdcore1._solvesen])			#solve
 		zzdcore1.inSentenceClass.append([u'defi', zzdcore1._definesen])			#define
 		zzdcore1.inSentenceClass.append([u'comm', zzdcore1._commandsen])		#identify
+		
+		zzdcore1.inSentenceClass.append([u'copy', zzdcore1._copysen])			#copy
+		zzdcore1.inSentenceClass.append([u'debu', zzdcore1._debugsen])			#debug
 	
 	def _definesen_init(self):
 		zzdcore1.defineDict[u'爱'] = u'在一起'
@@ -84,7 +89,15 @@ class zzdcore1:
 		return outs
 	
 	def _commandsen(self, sen):
-		return sen
+		if sen[0:2] == u'认证':
+			if self.state != 'init':
+				return (True, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
+			elif len(sen) == 10 and sen[2:10] == u'12345678':
+				return (True, u'您的身份认证通过。谢谢您回来，您有什么想对我说的吗？')
+			else:
+				return (False, u'认证失败。请重新认证。')
+		else:
+			return self._sorry((u'comm', sen))
 	
 	def _sorry(self, waa):
 		if waa[0] == u'copy':
@@ -93,5 +106,7 @@ class zzdcore1:
 			return u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。'
 		elif waa[0] == u'solv':
 			return u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。'
+		elif waa[0] == u'comm':
+			return u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。'
 		else:
 			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
