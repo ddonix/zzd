@@ -36,10 +36,7 @@ class zzdLayer1:
 		return 'solv:'+val
 	
 	def _sorrysen(self, sen):
-		if sen[5:len(sen)] == u'':
-			outs = u'sorr:对不起，我没有听清'
-		else:
-			outs = u'sorr:对不起，我无法处理\"'+sen+'\"'
+		outs = u'sorr:对不起，我无法处理\"'+sen+'\"'
 		return outs
 	
 	def _copysen(self, sen):

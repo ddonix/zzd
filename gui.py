@@ -69,7 +69,7 @@ def enterSen():
 	global xhh,zhd
 	
 	waa = entry_human.get()
-	if waa == None:
+	if waa == u'':
 		return
 	xhh.act(zhd, waa)
 
