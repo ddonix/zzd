@@ -18,10 +18,11 @@ class zzdcore1:
 		self.corelayer0 = corelayer0
 		self.state = 'init'
 		self.mode = 'work'
+		self.other = None
 		self.init()
-	
+
 	def _solvesen(self, sen):
-		eq = sen[5:len(sen)]
+		eq = sen
 		if eq.find(u'x') != -1:
 			eq1 = eq.replace("=","-(")+")"
 			try:
@@ -29,61 +30,68 @@ class zzdcore1:
 				val = int(-c.real/c.imag)
 				val = u'x='+str(val)
 			except:
-				return self._sorrysen(sen)
+				return self._sorry((u'solv', sen))
 		else:
 			try:
 				val = eval(eq)
-				if val == True:
+				if val:
 					val = u'对'
 				else:
 					val = u'错'
 			except:
-				return self._sorrysen(sen)
-		
-		return 'solv:'+val
+				return self._sorry((u'solv', sen))
+		return val
 	
 	def _debugsen(self, sen):
-		outs = u'debu:调试模式'
+		outs = u'调试模式'
 		return outs
 	
-	def inputs(self, sen):
-		outs = None
-		if self.mode == 'work':
+	def inputs(self, waa):
+		if self.mode == 'init':
+			if waa[0] == u'comm' and waa[1] == u'identify':
+				return _commandwaa(self, waa[1])
+			else:
+				return _sorry((u'copy', u'对不起，您需要先进行身份验证!'))
+		elif self.mode == 'work':
 			for t in zzdcore1.inSentenceClass:
-				if t[0] == sen[0:5]:
-					outs = t[1](self, sen)
-					break
-			if outs == None:
-				outs = self._sorrysen(sen)
-		
-			self.sentence.append([sen,outs])
+				if t[0] == waa[0]:
+					outs = t[1](self, waa[1])
+					self.sentence.append([waa,outs])
+					return (waa[0],outs)
+			outs = self._sorry(waa)
+			self.sentence.append([waa,outs])
 			return outs
 	
 	def init(self):
 		zzdcore1._definesen_init(self)
-		zzdcore1.inSentenceClass.append([u'copy:', zzdcore1._copysen])			#copy
-		zzdcore1.inSentenceClass.append([u'debu:', zzdcore1._debugsen])			#debug
-		zzdcore1.inSentenceClass.append([u'sorr:', zzdcore1._sorrysen])			#sorry
-		zzdcore1.inSentenceClass.append([u'solv:', zzdcore1._solvesen])			#solve
-		zzdcore1.inSentenceClass.append([u'defi:', zzdcore1._definesen])			#define
+		zzdcore1.inSentenceClass.append([u'copy', zzdcore1._copysen])			#copy
+		zzdcore1.inSentenceClass.append([u'debu', zzdcore1._debugsen])			#debug
+		zzdcore1.inSentenceClass.append([u'solv', zzdcore1._solvesen])			#solve
+		zzdcore1.inSentenceClass.append([u'defi', zzdcore1._definesen])			#define
+		zzdcore1.inSentenceClass.append([u'comm', zzdcore1._commandsen])		#identify
 	
 	def _definesen_init(self):
 		zzdcore1.defineDict[u'爱'] = u'在一起'
 	
 	def _definesen(self, sen):
-		define = sen[5:len(sen)]
-		o = zzdcore1.defineDict.get(define)
+		o = zzdcore1.defineDict.get(sen)
 		if o == None:
-			return self._sorrysen(u'copy:对不起，我没有\"'+define+u'\"的定义。'+u'请进入训练模式，添加定义。')
+			return self._sorry((u'defi',sen))
 		return sen+u'是'+o
 	
 	def _copysen(self, sen):
 		outs = sen
 		return outs
 	
-	def _sorrysen(self, sen):
-		if sen[0:5] == u'copy:':
-			return sen
+	def _commandsen(self, sen):
+		return sen
+	
+	def _sorry(self, waa):
+		if waa[0] == u'copy':
+			return waa[1]
+		elif waa[0] == u'defi':
+			return u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。'
+		elif waa[0] == u'solv':
+			return u'对不起，我无法计算\"'+waa[1]+'\"。请检查表达式。'
 		else:
-			outs = u'sorr:对不起，我无法处理\"'+sen+'\"'
-			return outs
+			return u'对不起，我无法处理\"'+waa[1]+'\"。'

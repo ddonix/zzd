@@ -38,7 +38,9 @@ class zzd(unity.unity):
 		return waa
 	
 	def _trans_2_1(self, waa):
-		return waa
+		head = waa[0:4]
+		sen = waa[5:len(waa)]
+		return (head,sen)
 	
 	def _trans_1_2(self, waa):
-		return waa[5:len(waa)]
+		return waa[1]

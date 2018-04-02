@@ -1,0 +1,102 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.9~svn20110310	//
+API_KEY	voice.py	/^API_KEY = 'AVn9EvSNIMvLzF7Uaf309nkM'$/;"	v
+API_KEY	vtest.py	/^API_KEY = 'AVn9EvSNIMvLzF7Uaf309nkM'$/;"	v
+APP_ID	voice.py	/^APP_ID = '11025174'$/;"	v
+APP_ID	vtest.py	/^APP_ID = '11025174'$/;"	v
+MODE	zzd_core1.py	/^MODE = ('work', 'train', 'debug')$/;"	v
+NUM_SAMPLES	voice.py	/^NUM_SAMPLES=2000$/;"	v
+NUM_SAMPLES	vtest.py	/^NUM_SAMPLES=2000$/;"	v
+SECRET_KEY	voice.py	/^SECRET_KEY = 'GVbbscDlDlGREoWTib5Om1q6WPFlEGpm'$/;"	v
+SECRET_KEY	vtest.py	/^SECRET_KEY = 'GVbbscDlDlGREoWTib5Om1q6WPFlEGpm'$/;"	v
+STATE	zzd_core1.py	/^STATE = ('init', 'stand', 'wait', 'initiative')$/;"	v
+TIME	voice.py	/^TIME=2$/;"	v
+TIME	vtest.py	/^TIME=2$/;"	v
+__init__	human.py	/^	def __init__(self, core):$/;"	m	class:human
+__init__	unity.py	/^	def __init__(self):$/;"	m	class:unity
+__init__	zzd.py	/^	def __init__(self, show):$/;"	m	class:zzd
+__init__	zzd_core0.py	/^	def __init__(self):$/;"	m	class:zzdcore0
+__init__	zzd_core1.py	/^	def __init__(self, corelayer0):$/;"	m	class:zzdcore1
+_commandwaa	zzd_core1.py	/^	def _commandwaa(self, waa):$/;"	m	class:zzdcore1
+_copysen	zzd_core1.py	/^	def _copysen(self, sen):$/;"	m	class:zzdcore1
+_debugsen	zzd_core1.py	/^	def _debugsen(self, sen):$/;"	m	class:zzdcore1
+_definesen	zzd_core1.py	/^	def _definesen(self, sen):$/;"	m	class:zzdcore1
+_definesen_init	zzd_core1.py	/^	def _definesen_init(self):$/;"	m	class:zzdcore1
+_identifywaa	zzd_core1.py	/^	def _identifywaa(self, waa):$/;"	m	class:zzdcore1
+_solvesen	zzd_core0.py	/^	def _solvesen(self, sen):$/;"	m	class:zzdcore0
+_solvesen	zzd_core1.py	/^	def _solvesen(self, sen):$/;"	m	class:zzdcore1
+_sorrysen	zzd_core1.py	/^	def _sorrysen(self, sen):$/;"	m	class:zzdcore1
+_trans_1_2	zzd.py	/^	def _trans_1_2(self, waa):$/;"	m	class:zzd
+_trans_2_1	zzd.py	/^	def _trans_2_1(self, waa):$/;"	m	class:zzd
+_trans_2_free	zzd.py	/^	def _trans_2_free(self, waa):$/;"	m	class:zzd
+_trans_free_2	zzd.py	/^	def _trans_free_2(self, waa):$/;"	m	class:zzd
+act	human.py	/^	def act(self, dest, waa_out):$/;"	m	class:human
+act	unity.py	/^	def act(self, dest, waa_out):$/;"	m	class:unity
+act	zzd.py	/^	def act(self, dest, waa_out):$/;"	m	class:zzd
+autoplay	gui.py	/^autoplay = True$/;"	v
+channels	voice.py	/^channels=1$/;"	v
+channels	vtest.py	/^channels=1$/;"	v
+chunk	vtest.py	/^chunk=2014$/;"	v
+client	voice.py	/^client = None$/;"	v
+client	vtest.py	/^client = None$/;"	v
+defineDict	zzd_core1.py	/^	defineDict = {}$/;"	v	class:zzdcore1
+echo	human.py	/^	def echo(self, sour, waa_in):$/;"	m	class:human
+echo	unity.py	/^	def echo(self, sour, waa_in):$/;"	m	class:unity
+echo	zzd.py	/^	def echo(self, sour, waa_in):$/;"	m	class:zzd
+enterSen	gui.py	/^def enterSen():$/;"	f
+entry_human	gui.py	/^entry_human = None$/;"	v
+entry_zzd	gui.py	/^entry_zzd = None$/;"	v
+forword	human.py	/^	def forword(self, dest, waa_out):$/;"	m	class:human
+forword	unity.py	/^	def forword(self, dest, waa_out):$/;"	m	class:unity
+forword	zzd.py	/^	def forword(self, dest, waa_out):$/;"	m	class:zzd
+framerate	voice.py	/^framerate=16000$/;"	v
+framerate	vtest.py	/^framerate=16000$/;"	v
+get_file_content	voice.py	/^def get_file_content(filePath):$/;"	f
+get_file_content	vtest.py	/^def get_file_content(filePath):$/;"	f
+human	human.py	/^class human(unity.unity):$/;"	c
+inSentenceClass	zzd_core1.py	/^	inSentenceClass = []		#输入语句类型$/;"	v	class:zzdcore1
+init	zzd_core1.py	/^	def init(self):$/;"	m	class:zzdcore1
+input_layer0	gui.py	/^input_layer0 = None$/;"	v
+input_layer1	gui.py	/^input_layer1 = None$/;"	v
+inputs	zzd_core1.py	/^	def inputs(self, waa):$/;"	m	class:zzdcore1
+main	gui.py	/^def main():$/;"	f
+mouse_movie_event	gui.py	/^def mouse_movie_event(evt):$/;"	f
+mouse_press_event	gui.py	/^def mouse_press_event(evt):$/;"	f
+mouse_press_event_right	gui.py	/^def mouse_press_event_right(evt):$/;"	f
+mouse_release_event	gui.py	/^def mouse_release_event(evt):$/;"	f
+my_buf	voice.py	/^my_buf = []$/;"	v
+output_layer0	gui.py	/^output_layer0 = None$/;"	v
+output_layer1	gui.py	/^output_layer1 = None$/;"	v
+play	vtest.py	/^def play():$/;"	f
+recordflag	voice.py	/^recordflag = False$/;"	v
+recordflag	vtest.py	/^recordflag = False$/;"	v
+return_event	gui.py	/^def return_event(evt):$/;"	f
+sampwidth	voice.py	/^sampwidth=2$/;"	v
+sampwidth	vtest.py	/^sampwidth=2$/;"	v
+save_wave_file	voice.py	/^def save_wave_file(filename,data):$/;"	f
+save_wave_file	vtest.py	/^def save_wave_file(filename,data):$/;"	f
+start_record	voice.py	/^def start_record():$/;"	f
+start_record	vtest.py	/^def start_record():$/;"	f
+stop_record	voice.py	/^def stop_record():$/;"	f
+stop_record	vtest.py	/^def stop_record():$/;"	f
+stoped	voice.py	/^stoped = False$/;"	v
+txt2voice	voice.py	/^def txt2voice(txt):$/;"	f
+txt2voice	vtest.py	/^def txt2voice():$/;"	f
+unity	unity.py	/^class unity:$/;"	c
+voice2txt	voice.py	/^def voice2txt():$/;"	f
+voice2txt	vtest.py	/^def voice2txt():$/;"	f
+voiceInit	voice.py	/^def voiceInit():$/;"	f
+voiceInit	vtest.py	/^def voiceInit():$/;"	f
+voicePlay	gui.py	/^def voicePlay(evt):$/;"	f
+voicePress	gui.py	/^def voicePress(evt):$/;"	f
+voiceRelease	gui.py	/^def voiceRelease(evt):$/;"	f
+xhh	gui.py	/^xhh = None$/;"	v
+zhd	gui.py	/^zhd = None$/;"	v
+zhdShow	gui.py	/^def zhdShow(waa):$/;"	f
+zzd	zzd.py	/^class zzd(unity.unity):$/;"	c
+zzdcore0	zzd_core0.py	/^class zzdcore0:$/;"	c
+zzdcore1	zzd_core1.py	/^class zzdcore1:$/;"	c
