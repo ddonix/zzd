@@ -37,22 +37,23 @@ def voicePress(evt):
 	return
 
 def voiceRelease(evt):
-	global entry_human,entry_zzd
-	voice.stop_record()
+	global entry_human
 	
+	voice.stop_record()
 	waa = voice.voice2txt()
 	if waa == None:
+		#这里的处置是情况外的，不进行学习.
 		voice.txt2voice(u'对不起，没有听清，请重复。')
 		return
 	
 	entry_human.delete(0,'end')
 	entry_human.insert(0, waa)
-	
 	xhh.act(zhd, waa)
-	waa = zhd.echo(xhh, waa)
+
+def zhdShow(waa):
 	entry_zzd.delete(0,'end')
 	entry_zzd.insert(0, waa)
-
+	
 def voicePlay(evt):
 	global entry_zzd
 	sen = entry_zzd.get()
@@ -65,11 +66,7 @@ def enterSen():
 	waa = entry_human.get()
 	if waa == None:
 		return
-	
 	xhh.act(zhd, waa)
-	waa = zhd.echo(xhh, waa)
-	entry_zzd.delete(0,'end')
-	entry_zzd.insert(0, waa)
 
 def return_event(evt):
 	enterSen()
@@ -82,8 +79,8 @@ def main():
 	global entry_human,entry_zzd
 	
 
-	xhh = human.human(None)
-	zhd = zzd.zzd(None)
+	xhh = human.human(core=None)
+	zhd = zzd.zzd(core=None, show=zhdShow)
 	
 	master = tk.Tk()
 	master.geometry('640x480+20+20')

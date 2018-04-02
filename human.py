@@ -8,7 +8,8 @@ class human(unity.unity):
 		self.core = core
     
 	def act(self, dest, waa_out):
-		return waa_out
+		dest.echo(self, waa_out)
+		return None
 	
 	def echo(self, sour, waa_in):
 		return waa_in
