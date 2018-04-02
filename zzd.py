@@ -17,8 +17,8 @@ class zzd(unity.unity):
 		return waa_out
     
 	def echo(self, sour, waa_in):
-		waa_out = waa_in
-		self.show(waa_out)
+		waa_out = self.corelayer1.inputs(waa_in) 
+		self.show(waa_out[5:len(waa_out)])
 		return waa_out
     
 	def forword(self, dest, waa_out):
