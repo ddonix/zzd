@@ -1,15 +1,17 @@
+#!/usr/bin/python 
 # -*- coding:utf-8 -*- 
-import unity 
+import unity
 
-class human(unity):
-    def __init__(self):
-        self.kernel = None
-        
-    def act(self, dest, waa_out):
-		return None
+class human(unity.unity):
+	def __init__(self, core):
+		unity.unity.__init__(self)
+		self.core = core
     
+	def act(self, dest, waa_out):
+		return waa_out
+	
 	def echo(self, sour, waa_in):
-		return None 
+		return waa_in
     
 	def forword(self, dest, waa_out):
-		return None
+		return waa_out

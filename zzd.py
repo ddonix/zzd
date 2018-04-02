@@ -1,15 +1,16 @@
 # -*- coding:utf-8 -*- 
-import unity 
+import unity
 
-class zzd(unity):
-    def __init__(self):
-        self.kernel = None
-        
+class zzd(unity.unity):
+    def __init__(self, core):
+        unity.unity.__init__(self)
+        self.core = core
+    
     def act(self, dest, waa_out):
-		return None
+        return waa_out
     
-	def echo(self, sour, waa_in):
-		return None 
+    def echo(self, sour, waa_in):
+        return waa_in
     
-	def forword(self, dest, waa_out):
-		return None
+    def forword(self, dest, waa_out):
+        return waa_out
