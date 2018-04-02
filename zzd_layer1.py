@@ -1,7 +1,6 @@
 # coding: utf-8
 class zzdLayer1:
 	inSentenceClass = []		#输入语句类型
-	outSentenceClass = []		#输出语句类型
 	defineDict = {}
 
 	def __init__(self, corelayer0):
@@ -32,7 +31,7 @@ class zzdLayer1:
 		return 'solv:'+val
 	
 	def _sorrysen(self, sen):
-		outs = u'sorr:对不起，我无法处理\"'+sen+'\"'
+		outs = u'sorr:对不起，我无法处理\"'+sen[5:len(sen)]+'\"'
 		return outs
 	
 	def _copysen(self, sen):
@@ -40,7 +39,7 @@ class zzdLayer1:
 		return outs
 	
 	def _debugsen(self, sen):
-		outs = u'debug模式'
+		outs = u'debu:调试模式'
 		return outs
 	
 	def _definesen_init(self):
@@ -60,7 +59,7 @@ class zzdLayer1:
 				outs = t[1](self, sen)
 				break
 		if outs == None:
-			outs = self._sorrysen(sen)
+			outs = self._sorrysen(u'sorr:'+sen)
 		
 		self.sentence.append([sen,outs])
 		return outs
