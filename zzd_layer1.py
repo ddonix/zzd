@@ -4,7 +4,7 @@
 #stand：完成一次交互，等待下一次交互。没有预期。
 #wait:期待human的回应。有预期。
 #initiative:主动状态，主动发起对话。
-STATE = ('init', 'stand', 'wait')
+STATE = ('init', 'stand', 'wait', 'initiative')
 
 #0:工作模式；1:娱乐模式;2:训练模式;3:调试模式.
 MODE = ('work', 'train', 'debug')
@@ -16,7 +16,7 @@ class zzdLayer1:
 	def __init__(self, corelayer0):
 		self.sentence = []
 		self.corelayer0 = corelayer0
-		self.state = 'init'		
+		self.state = 'init'
 		self.mode = 'work'
 		self.init()
 	
@@ -42,32 +42,23 @@ class zzdLayer1:
 		
 		return 'solv:'+val
 	
-	def _sorrysen(self, sen):
-		if sen[0:5] == u'copy:':
-			return sen
-		else:
-			outs = u'sorr:对不起，我无法处理\"'+sen+'\"'
-			return outs
-	
-	def _copysen(self, sen):
-		outs = sen
-		return outs
-	
 	def _debugsen(self, sen):
 		outs = u'debu:调试模式'
 		return outs
 	
 	def inputs(self, sen):
 		outs = None
-		for t in zzdLayer1.inSentenceClass:
-			if t[0] == sen[0:5]:
-				outs = t[1](self, sen)
-				break
-		if outs == None:
-			outs = self._sorrysen(sen)
+		if self.mode == 'work':
+			for t in zzdLayer1.inSentenceClass:
+				if t[0] == sen[0:5]:
+					outs = t[1](self, sen)
+					break
+			if outs == None:
+				outs = self._sorrysen(sen)
 		
-		self.sentence.append([sen,outs])
-		return outs
+			self.sentence.append([sen,outs])
+			return outs
+		elif self.mo
 	
 	def init(self):
 		zzdLayer1._definesen_init(self)
@@ -86,4 +77,14 @@ class zzdLayer1:
 		if o == None:
 			return self._sorrysen(u'copy:对不起，我没有\"'+define+u'\"的定义。'+u'请进入训练模式，添加定义。')
 		return sen+u'是'+o
-        
+	
+	def _copysen(self, sen):
+		outs = sen
+		return outs
+	
+	def _sorrysen(self, sen):
+		if sen[0:5] == u'copy:':
+			return sen
+		else:
+			outs = u'sorr:对不起，我无法处理\"'+sen+'\"'
+			return outs
