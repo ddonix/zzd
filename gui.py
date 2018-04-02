@@ -84,11 +84,12 @@ def main():
 	global entry_human,entry_zzd
 	global autoplay
 
-	autoplay = True
+	autoplay = False
 	
-
 	xhh = human.human(core=None)
-	zhd = zzd.zzd(core=None, show=zhdShow)
+	zhd = zzd.zzd(show=zhdShow)
+	
+	voice.voiceInit()
 	
 	master = tk.Tk()
 	master.geometry('640x480+20+20')
@@ -98,7 +99,6 @@ def main():
 	master.bind("<Motion>",mouse_movie_event)
 	master.bind("<ButtonPress-3>",mouse_press_event_right)
 	master.bind("<Return>",return_event)
-	
 	
 	entry_human = tk.Entry(master)
 	entry_human.place(x=95, y=40, width=400, height=20)
