@@ -19,6 +19,8 @@ output_layer1 = None
 
 entry_human = None
 entry_zzd = None
+	
+autoplay = True
 
 def mouse_press_event(evt):
 	return
@@ -51,13 +53,16 @@ def voiceRelease(evt):
 	xhh.act(zhd, waa)
 
 def zhdShow(waa):
+	global autoplay
 	entry_zzd.delete(0,'end')
 	entry_zzd.insert(0, waa)
+	if autoplay:
+		voice.txt2voice(waa)
 	
 def voicePlay(evt):
 	global entry_zzd
-	sen = entry_zzd.get()
-	voice.txt2voice(sen)
+	waa = entry_zzd.get()
+	voice.txt2voice(waa)
 
 def enterSen():
 	global entry_human, entry_zzd
@@ -77,6 +82,9 @@ def main():
 	
 	global input_layer1,output_layer1
 	global entry_human,entry_zzd
+	global autoplay
+
+	autoplay = True
 	
 
 	xhh = human.human(core=None)
