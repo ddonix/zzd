@@ -47,12 +47,12 @@ class zzdcore1:
 		return outs
 	
 	def inputs(self, waa):
-		if self.mode == 'init':
+		if self.state == 'init':
 			if waa[0] == u'comm' and waa[1] == u'identify':
 				return _commandwaa(self, waa[1])
 			else:
-				return _sorry((u'copy', u'对不起，您需要先进行身份验证!'))
-		elif self.mode == 'work':
+				return self._sorry((u'copy', u'对不起，您需要先进行身份验证!'))
+		if self.mode == 'work':
 			for t in zzdcore1.inSentenceClass:
 				if t[0] == waa[0]:
 					outs = t[1](self, waa[1])
@@ -92,6 +92,6 @@ class zzdcore1:
 		elif waa[0] == u'defi':
 			return u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。'
 		elif waa[0] == u'solv':
-			return u'对不起，我无法计算\"'+waa[1]+'\"。请检查表达式。'
+			return u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。'
 		else:
-			return u'对不起，我无法处理\"'+waa[1]+'\"。'
+			return u'对不起，我无法处理\"'+waa[1]+u'\"。'

@@ -56,6 +56,7 @@ def zhdShow(waa):
 	global autoplay
 	entry_zzd.delete(0,'end')
 	entry_zzd.insert(0, waa)
+	entry_zzd.update()
 	if autoplay:
 		voice.txt2voice(waa)
 	
