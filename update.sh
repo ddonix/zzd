@@ -1,1 +1,3 @@
-echo "`date`"
+git add .
+git commit -m echo "`date`"
+
