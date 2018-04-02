@@ -3,17 +3,10 @@
 
 import Tkinter as tk           # 导入 Tkinter 库
 from PIL import Image
-import zzd_layer0
-import zzd_layer1
-import zzd_layer2
 import voice
 import thread 
 import human
 import zzd
-
-corelayer0 = None
-corelayer1 = None
-corelayer2 = None
 
 xhh = None
 zhd = None
@@ -44,7 +37,8 @@ def voicePress(evt):
 	return
 
 def voiceRelease(evt):
-	global entry_human,entry_zzd
+	return None
+'''	global entry_human,entry_zzd
 	voice.stop_record()
 	
 	entry_human.delete(0,'end')
@@ -54,7 +48,7 @@ def voiceRelease(evt):
 		sen = u''
 	entry_human.insert(0, sen)
 	out = corelayer2.inputs(sen)
-	entry_zzd.insert(0, out)
+	entry_zzd.insert(0, out)'''
 
 def voicePlay(evt):
 	global entry_zzd
@@ -65,12 +59,14 @@ def enterSen():
 	global entry_human, entry_zzd
 	global xhh,zhd
 	
-	entry_zzd.delete(0,'end')
-	sen = entry_human.get()
+	waa = entry_human.get()
+	if waa == None:
+		return
 	
-	xhh.act(zhd, sen)
-	out = zhd.echo(xhh, sen)
-	entry_zzd.insert(0, out)
+	xhh.act(zhd, waa)
+	waa = zhd.echo(xhh, waa)
+	entry_zzd.delete(0,'end')
+	entry_zzd.insert(0, waa)
 
 def return_event(evt):
 	enterSen()
@@ -79,13 +75,9 @@ def main():
 	global xhh,zhd
 	global entry_human, entry_zzd
 	
-	global corelayer0,corelayer1,corelayer2
 	global input_layer1,output_layer1
 	global entry_human,entry_zzd
 	
-	corelayer0 = zzd_layer0.zzdLayer0()
-	corelayer1 = zzd_layer1.zzdLayer1(corelayer0)
-	corelayer2 = zzd_layer2.zzdLayer2(corelayer1)
 
 	xhh = human.human(None)
 	zhd = zzd.zzd(None)
