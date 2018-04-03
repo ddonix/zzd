@@ -20,7 +20,7 @@ class zzdcore1:
 		self.mode = 'work'
 		self.friend = None
 
-	def _mathesen(self, sen):
+	def _math(self, sen):
 		eq = sen
 		if eq.find(u'x') != -1:
 			eq1 = eq.replace("=","-(")+")"
@@ -41,7 +41,7 @@ class zzdcore1:
 				return self._sorry((u'math', sen))
 		return val
 	
-	def _debugsen(self, sen):
+	def _debug(self, sen):
 		outs = u'调试模式'
 		return outs
 	
@@ -54,7 +54,7 @@ class zzdcore1:
 		
 		if self.state == 'init':
 			if head == u'comm' and sen[0:2] == u'认证':
-				res = self._commandsen(sen)
+				res = self._command(sen)
 				if res[0]:
 					self.state = 'stand'
 					self.friend = friend
@@ -81,28 +81,28 @@ class zzdcore1:
 	def init(cls):
 		zzd_core0.zzdcore0.init()
 		
-		zzdcore1._definesen_init()
-		zzdcore1.inWaaClass.append([u'math', zzdcore1._mathesen])		#math
-		zzdcore1.inWaaClass.append([u'defi', zzdcore1._definesen])	#define
-		zzdcore1.inWaaClass.append([u'comm', zzdcore1._commandsen])			#command
-		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copysen])			#copy
-		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debugsen])			#debug
+		zzdcore1._define_init()
+		zzdcore1.inWaaClass.append([u'math', zzdcore1._math])		#math
+		zzdcore1.inWaaClass.append([u'defi', zzdcore1._define])	#define
+		zzdcore1.inWaaClass.append([u'comm', zzdcore1._command])			#command
+		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copy])			#copy
+		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debug])			#debug
 		
 	@classmethod
-	def _definesen_init(cls):
+	def _define_init(cls):
 		zzdcore1.defineDict[u'爱'] = u'在一起'
 	
-	def _definesen(self, sen):
+	def _define(self, sen):
 		o = zzdcore1.defineDict.get(sen)
 		if o == None:
 			return self._sorry((u'defi',sen))
 		return sen+u'是'+o
 	
-	def _copysen(self, sen):
+	def _copy(self, sen):
 		outs = sen
 		return outs
 	
-	def _commandsen(self, sen):
+	def _command(self, sen):
 		if sen[0:2] == u'认证':
 			if self.state != 'init':
 				return (True, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
