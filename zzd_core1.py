@@ -134,9 +134,15 @@ class zzdcore1:
 		return waa
 	
 	def _trans_2_1(self, friend, waa):
-		head = waa[0:4]
-		sen = waa[5:len(waa)]
+		head = self._solve_head(friend, waa)
+		sen = self._solve_sen(friend, head, waa)
 		return head, sen
 	
 	def _trans_1_2(self, waa):
 		return waa
+	
+	def _solve_head(self, friend, waa):
+		return waa[0:4]
+	
+	def _solve_sen(self, friend, head, waa):
+		return waa[5:len(waa)]
