@@ -10,7 +10,7 @@ STATE = ('init', 'stand', 'wait', 'initiative')
 MODE = ('work', 'train', 'debug')
 
 class zzdcore1:
-	inSentenceClass = []		#输入语句类型
+	inWaaClass = []		#输入语句类型
 	defineDict = {}
 
 	def __init__(self, corelayer0):
@@ -65,7 +65,7 @@ class zzdcore1:
 				self.sentence.append([waa,(head,sen),outs])
 				return self._sorry((u'copy', outs))
 		elif self.mode == 'work':
-			for t in zzdcore1.inSentenceClass:
+			for t in zzdcore1.inWaaClass:
 				if t[0] == head:
 					outs = t[1](self, sen)
 					self.sentence.append([waa,(head,sen),outs])
@@ -82,11 +82,11 @@ class zzdcore1:
 		zzd_core0.zzdcore0.init()
 		
 		zzdcore1._definesen_init()
-		zzdcore1.inSentenceClass.append([u'math', zzdcore1._mathesen])			#mathe
-		zzdcore1.inSentenceClass.append([u'defi', zzdcore1._definesen])			#define
-		zzdcore1.inSentenceClass.append([u'comm', zzdcore1._commandsen])		#identify
-		zzdcore1.inSentenceClass.append([u'copy', zzdcore1._copysen])			#copy
-		zzdcore1.inSentenceClass.append([u'debu', zzdcore1._debugsen])			#debug
+		zzdcore1.inWaaClass.append([u'math', zzdcore1._mathesen])		#math
+		zzdcore1.inWaaClass.append([u'defi', zzdcore1._definesen])	#define
+		zzdcore1.inWaaClass.append([u'comm', zzdcore1._commandsen])			#command
+		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copysen])			#copy
+		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debugsen])			#debug
 		
 	@classmethod
 	def _definesen_init(cls):
@@ -124,6 +124,14 @@ class zzdcore1:
 			return u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。'
 		else:
 			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
+	
+	def _trans_2_1(self, friend, waa):
+		head = waa[0:4]
+		sen = waa[5:len(waa)]
+		return head, sen
+	
+	def _trans_1_2(self, waa):
+		return waa
 	
 	def _trans_2_1(self, friend, waa):
 		head = waa[0:4]
