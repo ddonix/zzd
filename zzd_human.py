@@ -10,11 +10,16 @@ class human(unity.unity):
     
 	@classmethod
 	def init(cls):
-		f=open('human_symbols.txt', 'r')
-		human.symboltabel = f.read()
+		f=open('./txt/human_symbols.txt', 'r')
+		tmp = f.read()
 		f.close()
-		human.symboltabel = human.symboltabel.replace('\n', '')
-		human.symboltabel = human.symboltabel.decode('utf8')
+		
+		tmp = tmp.replace('\n', '')
+		tmp = tmp.decode('utf8')
+		tmp = set(tmp)
+		human.symboltabel = u''
+		for item in tmp:
+			human.symboltabel += item
     
 	def act(self, dest, waa_out):
 		res = dest.echo(self, waa_out)

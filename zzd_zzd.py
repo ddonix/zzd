@@ -22,13 +22,13 @@ class zzd(unity.unity):
 	def init(cls):
 		zzd_core1.zzdcore1.init()
 		
-		f=open('zzd_symbols.txt', 'r')
+		f=open('./txt/zzd_symbols.txt', 'r')
 		zzd.symboltabel = f.read()
 		f.close()
 		zzd.symboltabel = zzd.symboltabel.replace('\n', '')
 		zzd.symboltabel = zzd.symboltabel.decode('utf8')
 		
-		f=open('free_2.txt', 'r')
+		f=open('./txt/free_2.txt', 'r')
 		tmp = f.readlines()
 		f.close()
 		zzd.free_2_table = {}

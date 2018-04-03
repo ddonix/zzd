@@ -85,13 +85,22 @@ class zzdcore1:
 		zzdcore1.inWaaClass.append([u'math', zzdcore1._math, zzdcore1._solve_math])			#math
 		zzdcore1.inWaaClass.append([u'defi', zzdcore1._define, zzdcore1._solve_define])		#define
 		zzdcore1.inWaaClass.append([u'comm', zzdcore1._command, zzdcore1._solve_command])	#command
+		zzdcore1.inWaaClass.append([u'echo', zzdcore1._echo, zzdcore1._solve_echo])			#echo
+	
 		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copy, zzdcore1._solve_copy])			#copy
 		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debug, zzdcore1._solve_debug])		#debug
-		zzdcore1.inWaaClass.append([u'none', zzdcore1._none, zzdcore1._solve_none])		#debug
+		zzdcore1.inWaaClass.append([u'none', zzdcore1._none, zzdcore1._solve_none])			#none
 		
 	@classmethod
 	def _define_init(cls):
-		zzdcore1.defineDict[u'爱'] = u'在一起'
+		f=open('txt/define.txt','r')
+		tmp=f.readlines()
+		f.close
+		for i in tmp:
+			i = i.decode('utf8')
+			i = i.split('\t')
+			zzdcore1.defineDict[i[0]] = i[1]
+		print(zzdcore1.defineDict)
 	
 	def _define(self, sen):
 		o = zzdcore1.defineDict.get(sen)
@@ -100,8 +109,10 @@ class zzdcore1:
 		return sen+u'是'+o
 	
 	def _copy(self, sen):
-		outs = sen
-		return outs
+		return sen
+	
+	def _echo(self, sen):
+		return sen
 	
 	def _command(self, sen):
 		if sen[0:2] == u'认证':
@@ -164,6 +175,9 @@ class zzdcore1:
 		return waa[5:len(waa)]
 	
 	def _solve_debug(self, friend, head, waa):
+		return waa[5:len(waa)]
+	
+	def _solve_echo(self, friend, head, waa):
 		return waa[5:len(waa)]
 	
 	def _solve_none(self, friend, head, waa):

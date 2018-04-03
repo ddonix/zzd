@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python -B
 # -*- coding: UTF-8 -*-
 
 import Tkinter as tk           # 导入 Tkinter 库
