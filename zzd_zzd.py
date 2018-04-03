@@ -37,7 +37,6 @@ class zzd(unity.unity):
 			item = item.decode('utf8')
 			item = item.split('\t')
 			zzd.free_2_table[item[0]]=item[1]
-		print(zzd.free_2_table)
     
 	def echo(self, sour, waa_in):
 		waa = self._trans_free_2(waa_in)
