@@ -4,6 +4,7 @@
 import wave
 from pyaudio import PyAudio,paInt16
 from aip import AipSpeech
+from aip import AipNlp
 
 recordflag = False
 framerate=16000
@@ -55,13 +56,13 @@ APP_ID = '11025174'
 API_KEY = 'AVn9EvSNIMvLzF7Uaf309nkM'
 SECRET_KEY = 'GVbbscDlDlGREoWTib5Om1q6WPFlEGpm'
 	
-client = None
+voiceclient = None
 
-# 读取文件
+# 语音识别
 
 def voiceInit():
 	global client
-	client = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
+	voiceclient = AipSpeech(APP_ID, API_KEY, SECRET_KEY)
 	
 def get_file_content(filePath):
 	with open(filePath, 'rb') as fp:
@@ -70,7 +71,7 @@ def get_file_content(filePath):
 # 识别本地文件
 def voice2txt():
 	global client
-	res = client.asr(get_file_content('output.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
+	res = voiceclient.asr(get_file_content('input2.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
 	txt = res.get(u'result')
 	return txt[0]
 
@@ -81,5 +82,14 @@ def txt2voice():
 		with open('auido.mp3', 'wb') as f:
 			f.write(result)
 
-voiceInit()
-print voice2txt()
+# 词性分析
+nlpclient=None
+
+def nlpInit():
+	nlpclient = AipNlp(APP_ID, API_KEY, SECRET_KEY)
+	
+def lexer(txt):
+	print nlpclient.lexer(txt)
+
+nlpInit()
+print lexer(u'我爱苗苗')
