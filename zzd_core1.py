@@ -1,5 +1,5 @@
 # coding: utf-8
-
+import zzd_core0
 #init:初始化。
 #stand：完成一次交互，等待下一次交互。没有预期。
 #wait:期待human的回应。有预期。
@@ -19,7 +19,6 @@ class zzdcore1:
 		self.state = 'init'
 		self.mode = 'work'
 		self.friend = None
-		self.init()
 
 	def _solvesen(self, sen):
 		eq = sen
@@ -66,16 +65,19 @@ class zzdcore1:
 			self.sentence.append([waa,outs])
 			return outs
 	
-	def init(self):
-		zzdcore1._definesen_init(self)
+	@classmethod
+	def init(cls):
+		zzd_core0.zzdcore0.init()
+		
+		zzdcore1._definesen_init()
 		zzdcore1.inSentenceClass.append([u'solv', zzdcore1._solvesen])			#solve
 		zzdcore1.inSentenceClass.append([u'defi', zzdcore1._definesen])			#define
 		zzdcore1.inSentenceClass.append([u'comm', zzdcore1._commandsen])		#identify
-		
 		zzdcore1.inSentenceClass.append([u'copy', zzdcore1._copysen])			#copy
 		zzdcore1.inSentenceClass.append([u'debu', zzdcore1._debugsen])			#debug
-	
-	def _definesen_init(self):
+		
+	@classmethod
+	def _definesen_init(cls):
 		zzdcore1.defineDict[u'爱'] = u'在一起'
 	
 	def _definesen(self, sen):

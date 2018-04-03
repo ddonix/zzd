@@ -5,8 +5,8 @@ import Tkinter as tk           # 导入 Tkinter 库
 from PIL import Image
 import voice
 import thread 
-import human
-import zzd
+import zzd_human
+import zzd_zzd
 
 xhh = None
 zhd = None
@@ -20,7 +20,7 @@ output_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = True
+autoplay = False
 voicetrain = False 
 
 def mouse_press_event(evt):
@@ -46,13 +46,13 @@ def voiceRelease(evt):
 	waa = voice.voice2txt()
 	if waa == None:
 		#这里的处置是情况外的，不进行学习.
-		voice.txt2voice(u'对不起，没有听清，请重复。')
+		zhdShow(u'对不起，没有听清，请重复。')
 		return
-	
 	entry_human.delete(0,'end')
 	entry_human.insert(0, waa)
+	
 	if not voicetrain:
-		xhh.act(zhd, waa)
+		enterSen(waa)
 	else:
 		voicetrain = True
 
@@ -69,17 +69,19 @@ def voicePlay(evt):
 	waa = entry_zzd.get()
 	voice.txt2voice(waa)
 
-def enterSen():
-	global entry_human, entry_zzd
-	global xhh,zhd
-	
-	waa = entry_human.get()
-	if waa == u'':
-		return
+def enterSen(waa):
+	for item in waa:
+		if -1 == zzd_human.human.symboltabel.find(item):
+			zhdShow(u'对不起，我不认识\"%s\"这个字符。'%item)
+			return
 	xhh.act(zhd, waa)
 
 def return_event(evt):
-	enterSen()
+	global entry_human
+	waa = entry_human.get()
+	if waa == u'':
+		return
+	enterSen(waa)
 
 def voiceTrain(evt):
 	voicetrain = not voicetrain
@@ -95,10 +97,12 @@ def main():
 	global entry_human,entry_zzd
 	global autoplay
 
-	autoplay = True
+	autoplay = False
+	zzd_human.human.init()
+	zzd_zzd.zzd.init()
 	
-	xhh = human.human(core=None)
-	zhd = zzd.zzd(show=zhdShow)
+	xhh = zzd_human.human()
+	zhd = zzd_zzd.zzd(show=zhdShow)
 	
 	voice.voiceInit()
 	

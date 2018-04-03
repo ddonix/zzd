@@ -1,5 +1,5 @@
 m=`date +%Y-%m-%d_%H:%M:%S`
 m1=$1\|$m
-git add .
+git add *txt *py *sh
 git commit -m $m1
 git push origin master
