@@ -19,31 +19,26 @@ class zzdcore1:
 		self.state = 'init'
 		self.mode = 'work'
 		self.friend = None
-
-	def _math(self, sen):
-		eq = sen
-		if eq.find(u'x') != -1:
-			eq1 = eq.replace("=","-(")+")"
-			try:
-				c = eval(eq1,{u'x':1j})
-				val = int(-c.real/c.imag)
-				val = u'x='+str(val)
-			except:
-				return self._sorry((u'math', sen))
-		else:
-			try:
-				val = eval(eq)
-				if val:
-					val = u'对'
-				else:
-					val = u'错'
-			except:
-				return self._sorry((u'math', sen))
-		return val
 	
-	def _debug(self, sen):
-		outs = u'调试模式'
-		return outs
+	@classmethod
+	def init(cls):
+		zzd_core0.zzdcore0.init()
+		
+		with open('txt/define.txt','r') as f:
+			tmp=f.readlines()
+		for i in tmp:
+			i = i.decode('utf8')
+			i = i.split('\t')
+			zzdcore1.defineDict[i[0]] = i[1]
+		
+		zzdcore1.inWaaClass.append([u'math', zzdcore1._math, zzdcore1._solve_math])			#math
+		zzdcore1.inWaaClass.append([u'defi', zzdcore1._define, zzdcore1._solve_define])		#define
+		zzdcore1.inWaaClass.append([u'comm', zzdcore1._command, zzdcore1._solve_command])	#command
+		zzdcore1.inWaaClass.append([u'echo', zzdcore1._echo, zzdcore1._solve_echo])			#echo
+	
+		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copy, zzdcore1._solve_copy])			#copy
+		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debug, zzdcore1._solve_debug])		#debug
+		zzdcore1.inWaaClass.append([u'none', zzdcore1._none, zzdcore1._solve_none])			#none
 	
 	def inputs(self, friend, waa):
 		(head,sen)= self._trans_2_1(friend, waa)
@@ -53,7 +48,7 @@ class zzdcore1:
 			return self._sorry((u'copy',outs))
 		
 		if self.state == 'init':
-			if head == u'comm' and sen[0:2] == u'认证':
+			if head == u'comm' and sen[0:2] == u'id':
 				res = self._command(sen)
 				if res[0]:
 					self.state = 'stand'
@@ -76,31 +71,27 @@ class zzdcore1:
 		else:
 			outs = u'对不起，我懵了!'
 			return self._sorry((u'copy', outs))
-	
-	@classmethod
-	def init(cls):
-		zzd_core0.zzdcore0.init()
 		
-		zzdcore1._define_init()
-		zzdcore1.inWaaClass.append([u'math', zzdcore1._math, zzdcore1._solve_math])			#math
-		zzdcore1.inWaaClass.append([u'defi', zzdcore1._define, zzdcore1._solve_define])		#define
-		zzdcore1.inWaaClass.append([u'comm', zzdcore1._command, zzdcore1._solve_command])	#command
-		zzdcore1.inWaaClass.append([u'echo', zzdcore1._echo, zzdcore1._solve_echo])			#echo
-	
-		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copy, zzdcore1._solve_copy])			#copy
-		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debug, zzdcore1._solve_debug])		#debug
-		zzdcore1.inWaaClass.append([u'none', zzdcore1._none, zzdcore1._solve_none])			#none
-		
-	@classmethod
-	def _define_init(cls):
-		f=open('txt/define.txt','r')
-		tmp=f.readlines()
-		f.close
-		for i in tmp:
-			i = i.decode('utf8')
-			i = i.split('\t')
-			zzdcore1.defineDict[i[0]] = i[1]
-		print(zzdcore1.defineDict)
+	def _math(self, sen):
+		eq = sen
+		if eq.find(u'x') != -1:
+			eq1 = eq.replace("=","-(")+")"
+			try:
+				c = eval(eq1,{u'x':1j})
+				val = int(-c.real/c.imag)
+				val = u'x='+str(val)
+			except:
+				return self._sorry((u'math', sen))
+		else:
+			try:
+				val = eval(eq)
+				if val:
+					val = u'对'
+				else:
+					val = u'错'
+			except:
+				return self._sorry((u'math', sen))
+		return val
 	
 	def _define(self, sen):
 		o = zzdcore1.defineDict.get(sen)
@@ -108,14 +99,8 @@ class zzdcore1:
 			return self._sorry((u'defi',sen))
 		return sen+u'是'+o
 	
-	def _copy(self, sen):
-		return sen
-	
-	def _echo(self, sen):
-		return sen
-	
 	def _command(self, sen):
-		if sen[0:2] == u'认证':
+		if sen[0:2] == u'id':
 			if self.state != 'init':
 				return (True, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
 			elif len(sen) == 10 and sen[2:10] == u'12345678':
@@ -125,36 +110,23 @@ class zzdcore1:
 		else:
 			return self._sorry((u'comm', sen))
 	
+	def _echo(self, sen):
+		return sen
+	
+	def _debug(self, sen):
+		outs = u'调试模式'
+		return outs
+	
+	def _copy(self, sen):
+		return sen
+	
 	def _none(self, sen):
 		return self._sorry((u'copy', sen))
-	
-	def _sorry(self, waa):
-		if waa[0] == u'copy':
-			return waa[1]
-		elif waa[0] == u'defi':
-			return u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。'
-		elif waa[0] == u'math':
-			return u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。'
-		elif waa[0] == u'comm':
-			return u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。'
-		else:
-			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
 	
 	def _trans_2_1(self, friend, waa):
 		head = waa[0:4]
 		sen = waa[5:len(waa)]
 		return head, sen
-	
-	def _trans_1_2(self, waa):
-		return waa
-	
-	def _trans_2_1(self, friend, waa):
-		head = self._solve_head(friend, waa)
-		sen = self._solve_sen(friend, head, waa)
-		return head, sen
-	
-	def _trans_1_2(self, waa):
-		return waa
 	
 	def _solve_head(self, friend, waa):
 		return waa[0:4]
@@ -182,3 +154,16 @@ class zzdcore1:
 	
 	def _solve_none(self, friend, head, waa):
 		return waa[5:len(waa)]
+	
+	def _sorry(self, waa):
+		if waa[0] == u'copy':
+			return waa[1]
+		elif waa[0] == u'defi':
+			return u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。'
+		elif waa[0] == u'math':
+			return u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。'
+		elif waa[0] == u'comm':
+			return u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。'
+		else:
+			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
+	
