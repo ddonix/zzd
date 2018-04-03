@@ -82,11 +82,12 @@ class zzdcore1:
 		zzd_core0.zzdcore0.init()
 		
 		zzdcore1._define_init()
-		zzdcore1.inWaaClass.append([u'math', zzdcore1._math])		#math
-		zzdcore1.inWaaClass.append([u'defi', zzdcore1._define])	#define
-		zzdcore1.inWaaClass.append([u'comm', zzdcore1._command])			#command
-		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copy])			#copy
-		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debug])			#debug
+		zzdcore1.inWaaClass.append([u'math', zzdcore1._math, zzdcore1._solve_math])			#math
+		zzdcore1.inWaaClass.append([u'defi', zzdcore1._define, zzdcore1._solve_define])		#define
+		zzdcore1.inWaaClass.append([u'comm', zzdcore1._command, zzdcore1._solve_command])	#command
+		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copy, zzdcore1._solve_copy])			#copy
+		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debug, zzdcore1._solve_debug])		#debug
+		zzdcore1.inWaaClass.append([u'none', zzdcore1._none, zzdcore1._solve_none])		#debug
 		
 	@classmethod
 	def _define_init(cls):
@@ -112,6 +113,9 @@ class zzdcore1:
 				return (False, u'认证失败。请重新认证。')
 		else:
 			return self._sorry((u'comm', sen))
+	
+	def _none(self, sen):
+		return self._sorry((u'copy', sen))
 	
 	def _sorry(self, waa):
 		if waa[0] == u'copy':
@@ -145,4 +149,22 @@ class zzdcore1:
 		return waa[0:4]
 	
 	def _solve_sen(self, friend, head, waa):
+		return waa[5:len(waa)]
+	
+	def _solve_math(self, friend, head, waa):
+		return waa[5:len(waa)]
+	
+	def _solve_define(self, friend, head, waa):
+		return waa[5:len(waa)]
+	
+	def _solve_command(self, friend, head, waa):
+		return waa[5:len(waa)]
+	
+	def _solve_copy(self, friend, head, waa):
+		return waa[5:len(waa)]
+	
+	def _solve_debug(self, friend, head, waa):
+		return waa[5:len(waa)]
+	
+	def _solve_none(self, friend, head, waa):
 		return waa[5:len(waa)]
