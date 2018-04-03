@@ -20,7 +20,7 @@ class zzdcore1:
 		self.mode = 'work'
 		self.friend = None
 
-	def _solvesen(self, sen):
+	def _mathesen(self, sen):
 		eq = sen
 		if eq.find(u'x') != -1:
 			eq1 = eq.replace("=","-(")+")"
@@ -29,7 +29,7 @@ class zzdcore1:
 				val = int(-c.real/c.imag)
 				val = u'x='+str(val)
 			except:
-				return self._sorry((u'solv', sen))
+				return self._sorry((u'math', sen))
 		else:
 			try:
 				val = eval(eq)
@@ -38,7 +38,7 @@ class zzdcore1:
 				else:
 					val = u'错'
 			except:
-				return self._sorry((u'solv', sen))
+				return self._sorry((u'math', sen))
 		return val
 	
 	def _debugsen(self, sen):
@@ -70,7 +70,7 @@ class zzdcore1:
 		zzd_core0.zzdcore0.init()
 		
 		zzdcore1._definesen_init()
-		zzdcore1.inSentenceClass.append([u'solv', zzdcore1._solvesen])			#solve
+		zzdcore1.inSentenceClass.append([u'math', zzdcore1._mathesen])			#mathe
 		zzdcore1.inSentenceClass.append([u'defi', zzdcore1._definesen])			#define
 		zzdcore1.inSentenceClass.append([u'comm', zzdcore1._commandsen])		#identify
 		zzdcore1.inSentenceClass.append([u'copy', zzdcore1._copysen])			#copy
@@ -106,7 +106,7 @@ class zzdcore1:
 			return waa[1]
 		elif waa[0] == u'defi':
 			return u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。'
-		elif waa[0] == u'solv':
+		elif waa[0] == u'math':
 			return u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。'
 		elif waa[0] == u'comm':
 			return u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。'
