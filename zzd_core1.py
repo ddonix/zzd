@@ -27,6 +27,7 @@ class zzdcore1:
 		with open('txt/define.txt','r') as f:
 			tmp=f.readlines()
 		for i in tmp:
+			i = i.replace('\n', '')
 			i = i.decode('utf8')
 			i = i.split('\t')
 			zzdcore1.defineDict[i[0]] = i[1]
