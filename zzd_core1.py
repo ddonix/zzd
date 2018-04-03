@@ -46,24 +46,36 @@ class zzdcore1:
 		return outs
 	
 	def inputs(self, friend, waa):
+		(head,sen)= self._trans_2_1(friend, waa)
+		if head == u'none':
+			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
+			self.sentence.append([waa,(head,sen),outs])
+			return self._sorry((u'copy',outs))
+		
 		if self.state == 'init':
-			if waa[0] == u'comm' and waa[1][0:2] == u'认证':
-				res = self._commandsen(waa[1])
+			if head == u'comm' and sen[0:2] == u'认证':
+				res = self._commandsen(sen)
 				if res[0]:
 					self.state = 'stand'
 					self.friend = friend
+				self.sentence.append([waa,(head,sen),res[1]])
 				return res[1]
 			else:
-				return self._sorry((u'copy', u'对不起，您需要先进行身份认证!'))
-		if self.mode == 'work':
+				outs = u'对不起，您需要先进行身份认证!'
+				self.sentence.append([waa,(head,sen),outs])
+				return self._sorry((u'copy', outs))
+		elif self.mode == 'work':
 			for t in zzdcore1.inSentenceClass:
-				if t[0] == waa[0]:
-					outs = t[1](self, waa[1])
-					self.sentence.append([waa,outs])
+				if t[0] == head:
+					outs = t[1](self, sen)
+					self.sentence.append([waa,(head,sen),outs])
 					return outs
 			outs = self._sorry(waa)
-			self.sentence.append([waa,outs])
+			self.sentence.append([waa,(head,sen),outs])
 			return outs
+		else:
+			outs = u'对不起，我懵了!'
+			return self._sorry((u'copy', outs))
 	
 	@classmethod
 	def init(cls):
@@ -112,3 +124,11 @@ class zzdcore1:
 			return u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。'
 		else:
 			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
+	
+	def _trans_2_1(self, friend, waa):
+		head = waa[0:4]
+		sen = waa[5:len(waa)]
+		return head, sen
+	
+	def _trans_1_2(self, waa):
+		return waa

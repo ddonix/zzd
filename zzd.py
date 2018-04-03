@@ -18,10 +18,8 @@ class zzd(unity.unity):
     
 	def echo(self, sour, waa_in):
 		waa = self._trans_free_2(waa_in)
-		waa = self._trans_2_1(waa)
-		
+		print("IIIIIII%s"%waa)
 		waa_out = self.core.inputs(sour, waa)
-		waa_out = self._trans_1_2(waa_out)
 		waa_out = self._trans_2_free(waa_out)
 		self.show(waa_out)
 		return waa_out
@@ -36,12 +34,4 @@ class zzd(unity.unity):
 		return waa
 	
 	def _trans_2_free(self, waa):
-		return waa
-	
-	def _trans_2_1(self, waa):
-		head = waa[0:4]
-		sen = waa[5:len(waa)]
-		return (head, sen)
-	
-	def _trans_1_2(self, waa):
 		return waa
