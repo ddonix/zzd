@@ -10,8 +10,6 @@ import zzd_core1
 #0:核心语言：暂时没有定义，留待以后扩展
 
 class zzd(unity.unity):
-	symboltabel = None
-	free_2_table = None
 	def __init__(self, show):
 		unity.unity.__init__(self)
 		self.show = show
@@ -22,22 +20,6 @@ class zzd(unity.unity):
 	def init(cls):
 		zzd_core1.zzdcore1.init()
 		
-		f=open('./txt/zzd_symbols.txt', 'r')
-		zzd.symboltabel = f.read()
-		f.close()
-		zzd.symboltabel = zzd.symboltabel.replace('\n', '')
-		zzd.symboltabel = zzd.symboltabel.decode('utf8')
-		
-		f=open('./txt/free_2.txt', 'r')
-		tmp = f.readlines()
-		f.close()
-		zzd.free_2_table = {}
-		for item in tmp:
-			item = item.replace('\n', '')
-			item = item.decode('utf8')
-			item = item.split('\t')
-			zzd.free_2_table[item[0]]=item[1]
-    
 	def echo(self, sour, waa_in):
 		waa = self._trans_free_2(waa_in)
 		waa_out = self.core.inputs(sour, waa)
@@ -52,13 +34,7 @@ class zzd(unity.unity):
 		return None
 	
 	def _trans_free_2(self, waa):
-		out = u''
-		for item in waa:
-			if item in zzd.free_2_table:
-				out += zzd.free_2_table[item]
-			else:
-				out += item
-		return out
+		return waa
 	
 	def _trans_2_free(self, waa):
 		return waa

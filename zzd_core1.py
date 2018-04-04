@@ -1,4 +1,4 @@
-# coding: utf-8
+# coding: utf-8 import zzd_core0
 import zzd_core0
 import xlrd 
 
@@ -35,14 +35,6 @@ class zzdcore1:
 	def init(cls):
 		zzd_core0.zzdcore0.init()
 		
-		with open('txt/define.txt','r') as f:
-			tmp=f.readlines()
-		for i in tmp:
-			i = i.replace('\n', '')
-			i = i.decode('utf8')
-			i = i.split('\t')
-			zzdcore1.defineDict[i[0]] = i[1]
-		
 		zzdcore1.inWaaClass.append([u'math', zzdcore1._math, zzdcore1._solve_math])			#math
 		zzdcore1.inWaaClass.append([u'defi', zzdcore1._define, zzdcore1._solve_define])		#define
 		zzdcore1.inWaaClass.append([u'comm', zzdcore1._command, zzdcore1._solve_command])	#command
@@ -52,7 +44,7 @@ class zzdcore1:
 		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debug, zzdcore1._solve_debug])		#debug
 		zzdcore1.inWaaClass.append([u'none', zzdcore1._none, zzdcore1._solve_none])			#none
 		
-		xlsfile = r"txt/grammar.xls"		# 打开指定路径中的xls文件
+		xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
 		book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
 		# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
 		sheet = book.sheet_by_name('grammar_vocable')
@@ -84,6 +76,12 @@ class zzdcore1:
 		nrows = sheet.nrows
 		for i in range(nrows):
 			zzdcore1.table_sentence.append(sheet.row_values(i))
+		
+		sheet = book.sheet_by_name('define')
+		nrows = sheet.nrows
+		for i in range(nrows):
+			defi = sheet.row_values(i)
+			zzdcore1.defineDict[defi[0]] = defi[1]
 		
 		book.release_resources()
 

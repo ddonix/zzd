@@ -1,0 +1,14 @@
+一加一等于几?				math	1+1=x
+一加几等于十?				math	1+x=10
+一加几等于一百?				math	1+x=100
+123加上322等于几?			math	123+322=x
+1>2吗？						math	1>2
+开始认证!124				comm	id124
+爱是什么？					defi	爱
+什么是爱？					defi	爱
+播放歌曲一瞬间				comm	mplayer	一瞬间.mp3
+播放歌曲滴答				comm	mplayer	滴答.mp3
+正方形的定义是什么？		defi	正方形
+进入调试模式!				debu	enter
+开启调试模式!				debu	enter
+退出调试模式!				debu	leave
