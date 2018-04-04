@@ -224,15 +224,15 @@ def main():
 	phrase1 = zzdcore1.table_phrase[u'播放']
 	phrase2 = zzdcore1.table_phrase[u'歌曲']
 	
-	attr_zhu = (u'china', u'zhu')
-	attr_wei = (u'china', u'wei')
-	attr_bin = (u'china', u'bin')
-	attr_normal = (u'sentence', u'normal')
+	attr_zhu = (u'sentence', u'zhu')
+	attr_wei = (u'sentence', u'wei')
+	attr_bin = (u'sentence', u'bin')
+	attr_nor = (u'sentence', u'normal')
 	
 	gram_zhu = zzdcore1.grammar_sentence[attr_zhu][0]
 	gram_wei = zzdcore1.grammar_sentence[attr_wei][0]
 	gram_bin = zzdcore1.grammar_sentence[attr_bin][0]
-	gram_normal = zzdcore1.grammar_sentence[attr_normal][0]
+	gram_nor = zzdcore1.grammar_sentence[attr_nor][0]
 	
 	sen0 = grammar.sentence([phrase0])
 	sen0.satisfygrammar(attr_zhu, gram_zhu, True)
@@ -244,7 +244,7 @@ def main():
 	sen2.satisfygrammar(attr_bin, gram_bin, True)
 	
 	sen = grammar.sentence([sen0, sen1, sen2])
-	sen.satisfygrammar(attr_normal, gram_normal, True)
+	sen.satisfygrammar(attr_nor, gram_nor, True)
 	print phrase0
 	print phrase1
 	print phrase2
