@@ -1,12 +1,12 @@
 #!/usr/bin/python 
 # -*- coding:utf-8 -*- 
-import unity
+import zzd_unity
 import xlrd
 
-class human(unity.unity):
+class human(zzd_unity.unity):
 	table_vocable = None
 	def __init__(self):
-		unity.unity.__init__(self)
+		zzd_unity.unity.__init__(self)
 		self.waalist = []
     
 	@classmethod

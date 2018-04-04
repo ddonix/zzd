@@ -1,5 +1,7 @@
-# coding: utf-8 import zzd_core0
+#!/usr/bin/python -B
+# -*- coding: UTF-8 -*-
 import zzd_core0
+import grammar 
 import xlrd 
 
 #init:初始化。
@@ -17,12 +19,11 @@ MODE = ('work', 'train', 'debug')
 class zzdcore1:
 	inWaaClass = []		#输入语句类型
 	defineDict = {}
-	grammar_vocable = []
-	grammar_phrase = []
-	grammar_sentence = []
-	table_vocable = []
-	table_phrase = []
-	table_sentence = []
+	grammar_vocable = {}
+	grammar_phrase = {}
+	grammar_sentence = {}
+	table_vocable = {}
+	table_phrase = {}
 
 	def __init__(self, corelayer0):
 		self.sentence = []
@@ -50,32 +51,34 @@ class zzdcore1:
 		sheet = book.sheet_by_name('grammar_vocable')
 		nrows = sheet.nrows
 		for i in range(nrows):
-			zzdcore1.grammar_vocable.append(sheet.row_values(i))
+			v = sheet.row_values(i)
+			zzdcore1.grammar_vocable[(v[0], v[1])]=v[2:]
 		
 		sheet = book.sheet_by_name('grammar_phrase')
 		nrows = sheet.nrows
 		for i in range(nrows):
-			zzdcore1.grammar_phrase.append(sheet.row_values(i))
+			v = sheet.row_values(i)
+			zzdcore1.grammar_phrase[(v[0], v[1])]=v[2:]
 		
 		sheet = book.sheet_by_name('grammar_sentence')
 		nrows = sheet.nrows
 		for i in range(nrows):
-			zzdcore1.grammar_sentence.append(sheet.row_values(i))
+			v = sheet.row_values(i)
+			zzdcore1.grammar_sentence[(v[0], v[1])]=v[2:]
 		
 		sheet = book.sheet_by_name('table_vocable')
 		nrows = sheet.nrows
 		for i in range(nrows):
-			zzdcore1.table_vocable.append(sheet.row_values(i))
+			v = sheet.row_values(i)
+			vo = grammar.vocable(v)
+			zzdcore1.table_vocable[v[0]]=vo
 		
 		sheet = book.sheet_by_name('table_phrase')
 		nrows = sheet.nrows
 		for i in range(nrows):
-			zzdcore1.table_phrase.append(sheet.row_values(i))
-		
-		sheet = book.sheet_by_name('table_sentence')
-		nrows = sheet.nrows
-		for i in range(nrows):
-			zzdcore1.table_sentence.append(sheet.row_values(i))
+			v = sheet.row_values(i)
+			ph = grammar.phrase(v)
+			zzdcore1.table_phrase[v[0]] = ph
 		
 		sheet = book.sheet_by_name('define')
 		nrows = sheet.nrows
@@ -212,3 +215,52 @@ class zzdcore1:
 		else:
 			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
 	
+def main():
+	print('hello')
+	core0 = zzd_core0.zzdcore0()
+	core1 = zzdcore1(core0)
+	zzdcore1.init()
+	phrase0 = zzdcore1.table_phrase[u'小白']
+	phrase1 = zzdcore1.table_phrase[u'播放']
+	phrase2 = zzdcore1.table_phrase[u'歌曲']
+	
+	attr_zhu = (u'china', u'zhu')
+	attr_wei = (u'china', u'wei')
+	attr_bin = (u'china', u'bin')
+	attr_normal = (u'sentence', u'normal')
+	
+	gram_zhu = zzdcore1.grammar_sentence[attr_zhu][0]
+	gram_wei = zzdcore1.grammar_sentence[attr_wei][0]
+	gram_bin = zzdcore1.grammar_sentence[attr_bin][0]
+	gram_normal = zzdcore1.grammar_sentence[attr_normal][0]
+	
+	sen0 = grammar.sentence([phrase0])
+	sen0.satisfygrammar(attr_zhu, gram_zhu, True)
+	
+	sen1 = grammar.sentence([phrase1])
+	sen1.satisfygrammar(attr_wei, gram_wei, True)
+	
+	sen2 = grammar.sentence([phrase2])
+	sen2.satisfygrammar(attr_bin, gram_bin, True)
+	
+	sen = grammar.sentence([sen0, sen1, sen2])
+	sen.satisfygrammar(attr_normal, gram_normal, True)
+	print phrase0
+	print phrase1
+	print phrase2
+	print sen0.v
+	print sen0.len
+	print sen0.a
+	print sen1.v
+	print sen1.len
+	print sen1.a
+	print sen2.v
+	print sen2.len
+	print sen2.a
+	
+	print sen.v
+	print sen.len
+	print sen.a
+
+if __name__ == '__main__':
+	main()

@@ -1,5 +1,5 @@
 # -*- coding:utf-8 -*- 
-import unity
+import zzd_unity
 import zzd_core0
 import zzd_core1
 
@@ -9,9 +9,9 @@ import zzd_core1
 #1:格式化语言，由zzd进行处理。例如：solv:1+1>2
 #0:核心语言：暂时没有定义，留待以后扩展
 
-class zzd(unity.unity):
+class zzd(zzd_unity.unity):
 	def __init__(self, show):
-		unity.unity.__init__(self)
+		zzd_unity.unity.__init__(self)
 		self.show = show
 		self.core0 = zzd_core0.zzdcore0()
 		self.core = zzd_core1.zzdcore1(self.core0)
