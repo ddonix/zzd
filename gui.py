@@ -71,7 +71,7 @@ def voicePlay(evt):
 
 def enterSen(waa):
 	for item in waa:
-		if -1 == zzd_human.human.symboltabel.find(item):
+		if -1 == zzd_human.human.table_vocable.find(item):
 			zhdShow(u'对不起，我不认识\"%s\"这个字符。'%item)
 			return
 	xhh.act(zhd, waa)

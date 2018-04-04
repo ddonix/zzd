@@ -1,17 +1,28 @@
 # coding: utf-8
 import zzd_core0
+import xlrd 
+
 #init:初始化。
 #stand：完成一次交互，等待下一次交互。没有预期。
 #wait:期待human的回应。有预期。
 #initiative:主动状态，主动发起对话。
 STATE = ('init', 'stand', 'wait', 'initiative')
 
-#0:工作模式；1:娱乐模式;2:训练模式;3:调试模式.
+#work:工作模式
+#game:娱乐模式
+#train:训练模式
+#debug:调试模式
 MODE = ('work', 'train', 'debug')
 
 class zzdcore1:
 	inWaaClass = []		#输入语句类型
 	defineDict = {}
+	grammar_vocable = []
+	grammar_phrase = []
+	grammar_sentence = []
+	table_vocable = []
+	table_phrase = []
+	table_sentence = []
 
 	def __init__(self, corelayer0):
 		self.sentence = []
@@ -40,7 +51,27 @@ class zzdcore1:
 		zzdcore1.inWaaClass.append([u'copy', zzdcore1._copy, zzdcore1._solve_copy])			#copy
 		zzdcore1.inWaaClass.append([u'debu', zzdcore1._debug, zzdcore1._solve_debug])		#debug
 		zzdcore1.inWaaClass.append([u'none', zzdcore1._none, zzdcore1._solve_none])			#none
-	
+		
+		xlsfile = r"txt/grammar.xls"		# 打开指定路径中的xls文件
+		book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
+		# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
+		sheet = book.sheet_by_name('grammar_vocable')
+		nrows = sheet.nrows
+		for i in range(nrows):
+			zzdcore1.grammar_vocable.append(sheet.row_values(i))
+		
+		sheet = book.sheet_by_name('grammar_phrase')
+		nrows = sheet.nrows
+		for i in range(nrows):
+			zzdcore1.grammar_phrase.append(sheet.row_values(i))
+		
+		sheet = book.sheet_by_name('grammar_sentence')
+		nrows = sheet.nrows
+		for i in range(nrows):
+			zzdcore1.grammar_sentence.append(sheet.row_values(i))
+		
+		book.release_resources()
+
 	def inputs(self, friend, waa):
 		(head,sen)= self._trans_2_1(friend, waa)
 		if head == u'none':
