@@ -70,6 +70,21 @@ class zzdcore1:
 		for i in range(nrows):
 			zzdcore1.grammar_sentence.append(sheet.row_values(i))
 		
+		sheet = book.sheet_by_name('table_vocable')
+		nrows = sheet.nrows
+		for i in range(nrows):
+			zzdcore1.table_vocable.append(sheet.row_values(i))
+		
+		sheet = book.sheet_by_name('table_phrase')
+		nrows = sheet.nrows
+		for i in range(nrows):
+			zzdcore1.table_phrase.append(sheet.row_values(i))
+		
+		sheet = book.sheet_by_name('table_sentence')
+		nrows = sheet.nrows
+		for i in range(nrows):
+			zzdcore1.table_sentence.append(sheet.row_values(i))
+		
 		book.release_resources()
 
 	def inputs(self, friend, waa):
