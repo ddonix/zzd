@@ -204,9 +204,15 @@ class zzdcore1:
 				continue
 			if sps == []:
 				continue
+			if len(sps) != len(g[1]):
+				continue
 			if len(sps) == 1:
 				return sps[0]
 			else:
+				print g[0]
+				print g[1]
+				for s in sps:
+					print s.s
 				return grammar.sentencephrase(sps,grammar.grammar_all[senclass])
 		return None
 	
@@ -291,9 +297,12 @@ def main():
 	print fc
 	fc = core1._zj(None, u'S命令语句甲', u'小白，播放歌曲!')
 	print fc
+	fc = core1._zj(None, u'S命令语句甲', u'小白，播放“一瞬间”!')
+	print fc
+	fc = core1._zj(None, u'S命令语句甲', u'小白，播放歌曲“一瞬间”!')
+	print fc
 	fc = core1._zj(None, u'测试语句', u'“一瞬间”')
 	print fc
-	print zzdcore1.grammar_zzd
 '''
 '''
 
