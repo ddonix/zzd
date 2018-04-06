@@ -184,11 +184,7 @@ class zzdcore1:
 		return phrases
 
 	def _fensp(self, friend, senclass, phrases):
-		print('KIKKK^^^^^^%s^^^^^^'%senclass)
-		for t in grammar.grammar_all.keys():
-			print t
 		ag = grammar.grammar_all[senclass].ag
-		print('^^^^^^%s^^^^^^'%senclass)
 		for g in ag:
 			sps = []
 			phrs = []
