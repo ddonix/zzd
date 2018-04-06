@@ -207,7 +207,7 @@ class zzdcore1:
 			if len(sps) == 1:
 				return sps[0]
 			else:
-				return grammar.sentencephrase(sps)
+				return grammar.sentencephrase(sps,grammar.grammar_all[senclass])
 		return None
 	
 	def _fensp_turn(self, friend, phrs, attr):

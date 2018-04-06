@@ -111,13 +111,13 @@ class gset:
 	
 class sentencephrase:
 	global grammar_all
-	def __init__(self, arg):
+	def __init__(self, arg, g=None):
 		if type(arg[0]) == str or type(arg[0]) == unicode:
 			describe = arg
 			self.s = describe[0]	#string
 			self.c = [self]			#child
 			self.t = describe[0]	#tree
-			self.len = 1			
+			self.len = 1
 			
 			self.attr = []			#attribute
 			for a in describe[1:]:
@@ -142,6 +142,9 @@ class sentencephrase:
 			for sp in senphr:
 				self.s += sp.s
 				self.t.append(sp.t)
+		if g != None:
+			self.attr.append(g.name)
+			g.addsp(self)
 
 	@classmethod
 	def init(cls):
