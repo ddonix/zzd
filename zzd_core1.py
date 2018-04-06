@@ -178,7 +178,7 @@ class zzdcore1:
 		sen = waa[5:len(waa)]
 		return head, sen
 	
-	def _fenci(self, friend, waa):
+	def _fenci(self, friend, senclass, waa):
 		phrases = []
 		con = True
 		while con:
@@ -191,41 +191,52 @@ class zzdcore1:
 			con = not con
 		return phrases
 
-	def _fensp(self, friend, phrases):
-		sps = []
-		attr0 = u'谓语'
-		attr1 = u'宾语'
-		attr2 = u'感叹号'
-		
-		for attr in [attr0, attr1, attr2]:
-			r = self._fensp_turn(friend, phrases, attr)
-			if r[0] != None:
-				sps.append(r[0])
-				phrases = r[1]
-		return sps
+	def _fensp(self, friend, senclass, phrases):
+		ag = zzdcore1.grammar_all[senclass].ag
+		for g in ag:
+			sps = []
+			phrs = []
+			for p in phrases:
+				phrs.append(p)
+			for attr in g[1]:
+				r = self._fensp_turn(friend, phrs, attr)
+				if r[0] == None:
+					break
+				else:
+					sps.append(r[0])
+					phrs = r[1]
+			if phrs != []:
+				continue
+			if len(sps) == 1:
+				return sps[0]
+			else:
+				return grammar.sentencephrase(sps)
+		return None
 	
-	def _fensp_turn(self, friend, phrases, attr):
-		if phrases[0].be(attr):
-			return (phrases[0], phrases[1:])
-		sp = grammar.sentencephrase([phrases[0]])
-		phrases = phrases[1:]
-		for i, p in enumerate(phrases):
-			sp.append(p)
+	def _fensp_turn(self, friend, phrs, attr):
+		if phrs == []:
+			return (None, None)
+		
+		sp = phrs.pop(0)
+		if sp.be(attr):
+			return (sp, phrs)
+		sp = grammar.sentencephrase([sp])
+		while phrs != []:
+			sp.append(phrs.pop(0))
 			if sp.be(attr):
-				phrases = phrases[i+1:]
-				return (sp, phrases)
+				return (sp, phrs)
 		return (None, None)
 	
-	def _zj(self, friend, waa):
-		phrases = self._fenci(friend, waa)
+	def _zj(self, friend, senclass, waa):
+		phrases = self._fenci(friend, senclass, waa)
 		if phrases == []:
 			return False
-		sps = self._fensp(friend, phrases)
-		if sps == []:
+		sps = self._fensp(friend, senclass, phrases)
+		if sps == None:
 			return False
 		
-		self.cursen = grammar.sentencephrase(sps)
-		attr_nor = u'命令语句'
+		self.cursen = sps
+		attr_nor = senclass
 		if self.cursen.be(attr_nor):
 			return True
 		else:
@@ -277,7 +288,11 @@ def main():
 	core0 = zzd_core0.zzdcore0()
 	core1 = zzdcore1(core0)
 	zzdcore1.init()
-	fc = core1._zj(None, u'播放歌曲!')
+	fc = core1._zj(None, u'命令语句甲', u'播放歌曲!')
+	print fc
+	fc = core1._zj(None, u'命令语句甲', u'播放歌曲')
+	print fc
+	fc = core1._zj(None, u'测试语句', u'“一瞬间”')
 	print fc
 '''
 '''
