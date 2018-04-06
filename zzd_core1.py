@@ -19,11 +19,6 @@ MODE = ('work', 'train', 'debug')
 class zzdcore1:
 	inWaaClass = []		#输入语句类型
 	defineDict = {}
-	grammar_phrase = {}
-	grammar_sentence = {}
-	grammar_all = {}
-	table_vocable = {}
-	table_phrase = {}
 
 	def __init__(self, corelayer0):
 		self.sentence = []
@@ -35,7 +30,7 @@ class zzdcore1:
 	
 	@classmethod
 	def init(cls):
-		grammar.sentencephrase.init(zzdcore1.grammar_all)
+		grammar.sentencephrase.init()
 		zzd_core0.zzdcore0.init()
 		
 		zzdcore1.inWaaClass.append([u'math', zzdcore1._math, zzdcore1._solve_math])			#math
@@ -55,37 +50,34 @@ class zzdcore1:
 		for i in range(nrows):
 			v = sheet.row_values(i)
 			g = grammar.gset(v[0], v[1:])
-			zzdcore1.grammar_phrase[v[0]] = g
-			zzdcore1.grammar_all[v[0]] = g
+			grammar.grammar_all[v[0]] = g
 		
 		sheet = book.sheet_by_name('grammar_sentence')
 		nrows = sheet.nrows
 		for i in range(nrows):
 			v = sheet.row_values(i)
 			g = grammar.gset(v[0], v[1:])
-			zzdcore1.grammar_sentence[v[0]] = g
-			zzdcore1.grammar_all[v[0]] = g
+			grammar.grammar_all[v[0]] = g
 		
 		sheet = book.sheet_by_name('table_vocable')
 		nrows = sheet.nrows
 		for i in range(nrows):
 			v = sheet.row_values(i)
-			vo = grammar.sentencephrase(v)
-			zzdcore1.table_vocable[v[0]]=vo
+			sp = grammar.sentencephrase(v)
+			grammar.sp_all[v[0]]=sp
 		
 		sheet = book.sheet_by_name('table_phrase')
 		nrows = sheet.nrows
 		for i in range(nrows):
 			v = sheet.row_values(i)
-			ph = grammar.sentencephrase(v)
-			zzdcore1.table_phrase[v[0]] = ph
+			sp = grammar.sentencephrase(v)
+			grammar.sp_all[v[0]]=sp
 		
 		sheet = book.sheet_by_name('define')
 		nrows = sheet.nrows
 		for i in range(nrows):
 			defi = sheet.row_values(i)
 			zzdcore1.defineDict[defi[0]] = defi[1]
-		
 		book.release_resources()
 
 	def inputs(self, friend, waa):
@@ -182,9 +174,9 @@ class zzdcore1:
 		phrases = []
 		con = True
 		while con:
-			for p in zzdcore1.table_phrase.keys():
+			for p in grammar.sp_all.keys():
 				if waa.find(p) == 0:
-					phrases.append(zzdcore1.table_phrase[p])
+					phrases.append(grammar.sp_all[p])
 					waa = waa[len(p):]
 					con = False
 					break
@@ -192,7 +184,11 @@ class zzdcore1:
 		return phrases
 
 	def _fensp(self, friend, senclass, phrases):
-		ag = zzdcore1.grammar_all[senclass].ag
+		print('KIKKK^^^^^^%s^^^^^^'%senclass)
+		for t in grammar.grammar_all.keys():
+			print t
+		ag = grammar.grammar_all[senclass].ag
+		print('^^^^^^%s^^^^^^'%senclass)
 		for g in ag:
 			sps = []
 			phrs = []
@@ -288,9 +284,9 @@ def main():
 	core0 = zzd_core0.zzdcore0()
 	core1 = zzdcore1(core0)
 	zzdcore1.init()
-	fc = core1._zj(None, u'命令语句甲', u'播放歌曲!')
+	fc = core1._zj(None, u'S命令语句甲', u'播放歌曲!')
 	print fc
-	fc = core1._zj(None, u'命令语句甲', u'播放歌曲')
+	fc = core1._zj(None, u'S命令语句甲', u'播放歌曲')
 	print fc
 	fc = core1._zj(None, u'测试语句', u'“一瞬间”')
 	print fc

@@ -2,6 +2,10 @@
 # -*- coding: UTF-8 -*-
 
 import re
+
+grammar_all = {}
+sp_all = {}
+
 def prevgrammar(name, nl):
 	gram = u''
 	attrs = []
@@ -106,7 +110,7 @@ class gset:
 			return False
 	
 class sentencephrase:
-	grammar_all = None
+	global grammar_all
 	def __init__(self, arg):
 		if type(arg[0]) == str or type(arg[0]) == unicode:
 			describe = arg
@@ -121,8 +125,10 @@ class sentencephrase:
 					break
 				self.attr.append(a)
 				try:
-					gram = sentencephrase.grammar_all[a]
+					gram = grammar_all[a]
 				except:
+					print('^^^^^^^^%s^^^^^^^'%a)
+					print grammar_all
 					raise TypeError
 				gram.addsp(self)
 		else:
@@ -138,8 +144,8 @@ class sentencephrase:
 				self.t.append(sp.t)
 
 	@classmethod
-	def init(cls, grammar_all):
-		cls.grammar_all = grammar_all
+	def init(cls):
+		pass
 	
 	def be(self, gram):
 		gram = unicode(gram)
@@ -147,7 +153,7 @@ class sentencephrase:
 			if gram == a:
 				return True
 		#print('$$%s'%gram)
-		g = sentencephrase.grammar_all[gram]
+		g = grammar_all[gram]
 		if g.contain(self):
 			self.attr.append(gram)
 			return True
