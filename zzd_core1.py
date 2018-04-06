@@ -19,9 +19,9 @@ MODE = ('work', 'train', 'debug')
 class zzdcore1:
 	inWaaClass = []		#输入语句类型
 	defineDict = {}
-	grammar_vocable = {}
 	grammar_phrase = {}
 	grammar_sentence = {}
+	grammar_all = {}
 	table_vocable = {}
 	table_phrase = {}
 
@@ -31,9 +31,11 @@ class zzdcore1:
 		self.state = 'init'
 		self.mode = 'work'
 		self.friend = None
+		self.cursen = None
 	
 	@classmethod
 	def init(cls):
+		grammar.sentencephrase.init(zzdcore1.grammar_all)
 		zzd_core0.zzdcore0.init()
 		
 		zzdcore1.inWaaClass.append([u'math', zzdcore1._math, zzdcore1._solve_math])			#math
@@ -48,36 +50,34 @@ class zzdcore1:
 		xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
 		book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
 		# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
-		sheet = book.sheet_by_name('grammar_vocable')
-		nrows = sheet.nrows
-		for i in range(nrows):
-			v = sheet.row_values(i)
-			zzdcore1.grammar_vocable[(v[0], v[1])]=v[2:]
-		
 		sheet = book.sheet_by_name('grammar_phrase')
 		nrows = sheet.nrows
 		for i in range(nrows):
 			v = sheet.row_values(i)
-			zzdcore1.grammar_phrase[(v[0], v[1])]=v[2:]
+			g = grammar.gset(v[0], v[1:])
+			zzdcore1.grammar_phrase[v[0]] = g
+			zzdcore1.grammar_all[v[0]] = g
 		
 		sheet = book.sheet_by_name('grammar_sentence')
 		nrows = sheet.nrows
 		for i in range(nrows):
 			v = sheet.row_values(i)
-			zzdcore1.grammar_sentence[(v[0], v[1])]=v[2:]
+			g = grammar.gset(v[0], v[1:])
+			zzdcore1.grammar_sentence[v[0]] = g
+			zzdcore1.grammar_all[v[0]] = g
 		
 		sheet = book.sheet_by_name('table_vocable')
 		nrows = sheet.nrows
 		for i in range(nrows):
 			v = sheet.row_values(i)
-			vo = grammar.vocable(v)
+			vo = grammar.sentencephrase(v)
 			zzdcore1.table_vocable[v[0]]=vo
 		
 		sheet = book.sheet_by_name('table_phrase')
 		nrows = sheet.nrows
 		for i in range(nrows):
 			v = sheet.row_values(i)
-			ph = grammar.phrase(v)
+			ph = grammar.sentencephrase(v)
 			zzdcore1.table_phrase[v[0]] = ph
 		
 		sheet = book.sheet_by_name('define')
@@ -172,9 +172,65 @@ class zzdcore1:
 		return self._sorry((u'copy', sen))
 	
 	def _trans_2_1(self, friend, waa):
+		if not self._zj(friend, waa):
+			return (None, waa)
 		head = waa[0:4]
 		sen = waa[5:len(waa)]
 		return head, sen
+	
+	def _fenci(self, friend, waa):
+		phrases = []
+		con = True
+		while con:
+			for p in zzdcore1.table_phrase.keys():
+				if waa.find(p) == 0:
+					phrases.append(zzdcore1.table_phrase[p])
+					waa = waa[len(p):]
+					con = False
+					break
+			con = not con
+		return phrases
+
+	def _fensp(self, friend, phrases):
+		sps = []
+		attr0 = u'谓语'
+		attr1 = u'宾语'
+		attr2 = u'感叹号'
+		
+		for attr in [attr0, attr1, attr2]:
+			r = self._fensp_turn(friend, phrases, attr)
+			if r[0] != None:
+				sps.append(r[0])
+				phrases = r[1]
+		return sps
+	
+	def _fensp_turn(self, friend, phrases, attr):
+		if phrases[0].be(attr):
+			return (phrases[0], phrases[1:])
+		sp = grammar.sentencephrase([phrases[0]])
+		phrases = phrases[1:]
+		for i, p in enumerate(phrases):
+			sp.append(p)
+			if sp.be(attr):
+				phrases = phrases[i+1:]
+				return (sp, phrases)
+		return (None, None)
+	
+	def _zj(self, friend, waa):
+		phrases = self._fenci(friend, waa)
+		if phrases == []:
+			return False
+		sps = self._fensp(friend, phrases)
+		if sps == []:
+			return False
+		
+		self.cursen = grammar.sentencephrase(sps)
+		attr_nor = u'命令语句'
+		if self.cursen.be(attr_nor):
+			return True
+		else:
+			self.cursen = None
+			return False
 	
 	def _solve_head(self, friend, waa):
 		return waa[0:4]
@@ -215,52 +271,16 @@ class zzdcore1:
 		else:
 			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
 	
+	
 def main():
 	print('hello')
 	core0 = zzd_core0.zzdcore0()
 	core1 = zzdcore1(core0)
 	zzdcore1.init()
-	phrase0 = zzdcore1.table_phrase[u'小白']
-	phrase1 = zzdcore1.table_phrase[u'播放']
-	phrase2 = zzdcore1.table_phrase[u'歌曲']
-	
-	attr_zhu = (u'sentence', u'zhu')
-	attr_wei = (u'sentence', u'wei')
-	attr_bin = (u'sentence', u'bin')
-	attr_nor = (u'sentence', u'normal')
-	
-	gram_zhu = zzdcore1.grammar_sentence[attr_zhu][0]
-	gram_wei = zzdcore1.grammar_sentence[attr_wei][0]
-	gram_bin = zzdcore1.grammar_sentence[attr_bin][0]
-	gram_nor = zzdcore1.grammar_sentence[attr_nor][0]
-	
-	sen0 = grammar.sentence([phrase0])
-	sen0.satisfygrammar(attr_zhu, gram_zhu, True)
-	
-	sen1 = grammar.sentence([phrase1])
-	sen1.satisfygrammar(attr_wei, gram_wei, True)
-	
-	sen2 = grammar.sentence([phrase2])
-	sen2.satisfygrammar(attr_bin, gram_bin, True)
-	
-	sen = grammar.sentence([sen0, sen1, sen2])
-	sen.satisfygrammar(attr_nor, gram_nor, True)
-	print phrase0
-	print phrase1
-	print phrase2
-	print sen0.v
-	print sen0.len
-	print sen0.a
-	print sen1.v
-	print sen1.len
-	print sen1.a
-	print sen2.v
-	print sen2.len
-	print sen2.a
-	
-	print sen.v
-	print sen.len
-	print sen.a
+	fc = core1._zj(None, u'播放歌曲!')
+	print fc
+'''
+'''
 
 if __name__ == '__main__':
 	main()

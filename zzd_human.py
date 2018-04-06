@@ -14,13 +14,10 @@ class human(zzd_unity.unity):
 		xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
 		book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
 		# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
-		sheet = book.sheet_by_name('grammar_vocable')
-		tmp = u''.join(sheet.col_values(2))
+		sheet = book.sheet_by_name('table_vocable')
+		human.table_vocable = u'0123456789'+u''.join(sheet.col_values(0))
 		book.release_resources()
-		tmp = set(tmp)
-		human.table_vocable = u''
-		for item in tmp:
-			human.table_vocable += item
+		print human.table_vocable
 
 	def act(self, dest, waa_out):
 		res = dest.echo(self, waa_out)
