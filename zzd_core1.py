@@ -19,6 +19,7 @@ MODE = ('work', 'train', 'debug')
 class zzdcore1:
 	inWaaClass = []		#输入语句类型
 	defineDict = {}
+	grammar_zzd = []
 
 	def __init__(self, corelayer0):
 		self.sentence = []
@@ -58,6 +59,8 @@ class zzdcore1:
 			v = sheet.row_values(i)
 			g = grammar.gset(v[0], v[1:])
 			grammar.grammar_all[v[0]] = g
+			if v[0][0] == 'S':
+				zzdcore1.grammar_zzd.append([v[0], g])
 		
 		sheet = book.sheet_by_name('table_vocable')
 		nrows = sheet.nrows
@@ -199,6 +202,8 @@ class zzdcore1:
 					phrs = r[1]
 			if phrs != []:
 				continue
+			if sps == []:
+				continue
 			if len(sps) == 1:
 				return sps[0]
 			else:
@@ -284,8 +289,11 @@ def main():
 	print fc
 	fc = core1._zj(None, u'S命令语句甲', u'播放歌曲')
 	print fc
+	fc = core1._zj(None, u'S命令语句甲', u'小白，播放歌曲!')
+	print fc
 	fc = core1._zj(None, u'测试语句', u'“一瞬间”')
 	print fc
+	print zzdcore1.grammar_zzd
 '''
 '''
 
