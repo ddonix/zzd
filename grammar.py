@@ -13,7 +13,8 @@ def	nl2frame(nl):
 		nl = nl[3:]
 		nl = nl.split(' ')
 		for f in nl:
-			frame.append(f)
+			if f != '':
+				frame.append(f)
 	elif nl[0:3] == u'边界:':
 		nl = nl[3:]
 		nl = nl.split(' ') 
@@ -300,9 +301,7 @@ def _fensp(gs, phrases):
 def main():
 	print('grammar')
 	initall()
-	sp = fensp(u'S命令语句甲', u'播放歌曲!')
-	print sp,sp.s
-	sp = fensp(u'S命令语句甲', u'播放歌曲‘一瞬间’')
+	sp = fensp(u'S命令语句乙', u'播放歌曲!')
 	print sp,sp.s
 
 if __name__ == '__main__':
