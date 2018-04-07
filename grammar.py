@@ -8,7 +8,6 @@ gset_zzd = []
 spbase_all = {}
 
 def	nl2frame(nl):
-	global gset_all
 	frame = []
 	if nl[0:3] == u'顺序:':
 		nl = nl[3:]
@@ -21,9 +20,6 @@ def	nl2frame(nl):
 		frame.append(nl[0])
 		frame.append(u'while_not')
 		frame.append(nl[1])
-	else:
-		if not nl in gset_all:
-			raise NameError
 	return frame
 
 class gset:
@@ -258,15 +254,70 @@ def _fenci(waa):
 def _fensp(gs, phrases):
 	if not phrases or phrases == []:
 		return None
-	if len(phrases) == 1:
-		if gs.contain(phrases[0]):
-			return (phrases[0],[])
-		return None
-	return None
+	if gs.child != []:
+		ress = []
+		for ch in gs.child:
+			res = _fensp(ch, phrases)
+			if res:
+				ress.append(res)
+		if ress == []:
+			return None
+		for res in ress:
+			if res[1] == []:
+				return res
+		return ress[0]
+	else:
+		frame = nl2frame(gs.name)
+		if frame == []:
+			if phrases[0].be(gs.name):
+				return (phrases[0], phrases[1:])
+			else:
+				return None
+		else:
+			ress = []
+			for i, gram in enumerate(frame):
+				if gram in gset_all:
+					g = gset_all[gram]
+					res = _fensp(g, phrases)
+					if res == None:
+						return None
+					else:
+						ress.append(res)
+						phrases = res[1]
+				else:
+					if gram != u'while_not':
+						return None
+					else:
+						while not phrases[0].be(frame[i+1]):
+							ress.append((phrases[0], phrases[1:]))
+							phrases = phrases[1:]
+			sps = []
+			for res in ress:
+				sps.append(res[0])
+			sp = sentencephrase(sps, gs)
+			return (sp, ress[-1][1])
 
 def main():
 	print('grammar')
 	initall()
+	sp = fensp(u'S命令语句丙', u'播放歌曲‘一瞬间’')
+	print sp,sp.s
+	sp = fensp(u'S命令语句甲', u'播放歌曲‘一瞬间’')
+	print sp,sp.s
+
+if __name__ == '__main__':
+	main()
+'''	
+	print('grammar')
+	sp = fensp(u'谓语', u'播放')
+	print sp,sp.s
+	sp = fensp(u'宾语', u'歌曲')
+	print sp,sp.s
+	sp = fensp(u'S命令语句甲', u'播放歌曲')
+	print sp,sp.s
+	initall()
+	sp = fensp(u'S命令语句乙', u'播放歌曲!')
+	print sp,sp.s
 	sp = fensp(u'感叹号', u'!')
 	print sp.s
 	sp = fensp(u'感叹号', u'！')
@@ -282,6 +333,4 @@ def main():
 	print res
 	res = b.be(u'S命令语句甲')
 	print res
-
-if __name__ == '__main__':
-	main()
+'''
