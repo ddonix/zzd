@@ -300,7 +300,7 @@ def _fensp(gs, phrases):
 def main():
 	print('grammar')
 	initall()
-	sp = fensp(u'S命令语句丙', u'播放歌曲‘一瞬间’')
+	sp = fensp(u'S命令语句甲', u'播放歌曲!')
 	print sp,sp.s
 	sp = fensp(u'S命令语句甲', u'播放歌曲‘一瞬间’')
 	print sp,sp.s
