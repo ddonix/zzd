@@ -1,188 +1,287 @@
 #!/usr/bin/python -B
 # -*- coding: UTF-8 -*-
-
 import re
+import xlrd 
 
-grammar_all = {}
-sp_all = {}
+gset_all = {}
+gset_zzd = []
+spbase_all = {}
 
-def prevgrammar(name, nl):
-	gram = u''
-	attrs = []
+def	nl2frame(nl):
+	global gset_all
+	frame = []
 	if nl[0:3] == u'顺序:':
 		nl = nl[3:]
 		nl = nl.split(' ')
-		gram = u'len(X) == %d'%len(nl)
-		for i,p in enumerate(nl):
-			gram += ' and X[%d].be(u\'%s\')'%(i,p)
-			attrs.append(p)
-	elif nl[0:3] == u'单个:':
-		nl = nl[3:]
-		gram = 'x.be(u\'%s\')'%nl
-		attrs.append(nl)
+		for f in nl:
+			frame.append(f)
 	elif nl[0:3] == u'边界:':
 		nl = nl[3:]
-		nl = nl.split(' ')
-		gram = 'X[0].be(u\'%s\') and X[-1].be(u\'%s\')'%(nl[0],nl[1])
-		attrs.append(name)
-	return gram, attrs
-
-def _prevgram(gram):
-	zhPattern = re.compile(u'[\u4e00-\u9fa5]+')
-	gram = list(gram)
-	i = 0
-	first = True
-	while True:
-		if i >= len(gram):
-			break
-		match = zhPattern.search(gram[i])
-		if match:
-			if first == True:
-				gram.insert(i, u'u\'')
-				first = False
-				i += 1
-			else:
-				if i == (len(gram)-1):
-					gram.append('\'')
-					break
-				else:
-					i += 1
-		else:
-			if first == False:
-				gram.insert(i, u'\'')
-				i += 2
-				first = True
-			else:
-				i += 1
-	res = u''
-	for g in gram:
-		res += g
-	return res
+		nl = nl.split(' ') 
+		frame.append(nl[0])
+		frame.append(u'while_not')
+		frame.append(nl[1])
+	else:
+		if not nl in gset_all:
+			raise NameError
+	return frame
 
 class gset:
-	def __init__(self, name, gram):
+	global gset_all 
+	def __init__(self, name, child):
 		self.name = unicode(name)
+		gset_all[self.name] = self
 		self.sp = set()		#明确表示的元素集合
-		self.ag = []		#满足ag中的一项，即属于这个集合。肯定集合
-		for g in gram:
-			gg = prevgrammar(self.name, g)
-			if gg[0] != u'':
-				self.ag.append(gg)
+		self.father = None	#父集
+		self.child = []		#子集
+		for ch in child:
+			if ch == u'':
+				continue
+			if ch in gset_all:
+				ch = gset_all[ch]
+			else:
+				ch = gset(ch, [])
+			ch.father = self
+			self.child.append(ch)
 	
-	def copy(self, name):
-		result = gset(name, [])
-		for s in self.sp:
-			result.sp.addsp(s)
-		for g in self.ag:
-			result.ag.append(g)
-		return result
+	def __lt__(self, other): # if self < other: return True
+		gs = self.father
+		while gs:
+			if gs == other:
+				return True
+			gs = gs.father
+		return False
 	
+	def __gt__(self, other):#if self > other: return True
+		gs = other.father
+		while gs:
+			if gs == self:
+				return True
+			gs = gs.father
+		return False
+	
+	def __le__(self, other): # if self <= other: return True
+		if self == other:
+			return True
+		gs = self.father
+		while gs:
+			if gs == other:
+				return True
+			gs = gs.father
+		return False
+	
+	def __ge__(self, other):#if self >= other: return True
+		if self == other:
+			return True
+		gs = other.father
+		while gs:
+			if gs == self:
+				return True
+			gs = gs.father
+		return False
+
 	def addsp(self, s):
 		if isinstance(s, sentencephrase):
 			self.sp.add(s)
+		else:
+			raise TypeError
 	
-	def addag(self, g):
-		self.ag.append(unicode(g))
-	
-	def contain(self, s):
+	def contain(self, s):		#s的信息不要用,也不要修改s的信息s在这里只读。
 		if not isinstance(s, sentencephrase):
 			raise TypeError
 		if s in self.sp:
-			return True
+			return self
+		if self.child != []:
+			for ch in self.child:
+				res = ch.contain(s)
+				if res:
+					return res
+			return None
 		else:
-			for g in self.ag:
-				if g[0].find(u'x') != -1 and g[0].find(u'X') == -1:
-					x = s
-				elif g[0].find(u'X') != -1 and g[0].find(u'x') == -1:
-					X = s.c
+			nl = self.name
+			frame = []
+			if nl[0:3] == u'顺序:':
+				nl = nl[3:]
+				nl = nl.split(' ')
+				if len(nl) != s.len:
+					return None
+				for i,gram in enumerate(nl):
+					gs = gset_all[gram]
+					if gs.contain(s.c[i]) == None:
+						return None
+				return self
+			elif nl[0:3] == u'边界:':
+				nl = nl[3:]
+				nl = nl.split(' ')
+				l = gset_all[nl[0]]
+				r = gset_all[nl[1]]
+				if l.contain(s.c[0]) and r.contain(s.c[-1]):
+					return self
 				else:
-					#print('^^^%s^^^'%g[0])
-					raise NameError
-				R = False
-				gram = u'R=(%s)'%g[0]
-				try:
-					exec(gram)
-				except:
-					#print(gram)
-					continue
-				if R:
-					return True
-			return False
+					return None
+			else:
+				return None
 	
 class sentencephrase:
-	global grammar_all
-	def __init__(self, arg, g=None):
+	global gset_all
+	def __init__(self, arg, gs=None):
 		if type(arg[0]) == str or type(arg[0]) == unicode:
 			describe = arg
 			self.s = describe[0]	#string
-			self.c = [self]			#child
-			self.t = describe[0]	#tree
+			self.c = []				#child
 			self.len = 1
-			
-			self.attr = []			#attribute
-			for a in describe[1:]:
-				if a == '':
+			self.gs = set()			#
+			for gram in describe[1:]:
+				if gram == '':
 					break
-				self.attr.append(a)
 				try:
-					gram = grammar_all[a]
+					gs = gset_all[gram]
 				except:
-					print('^^^^^^^^%s^^^^^^^'%a)
-					print grammar_all
 					raise TypeError
-				gram.addsp(self)
+				self.addgs(gs)
+				gs.addsp(self)
 		else:
 			senphr = arg
 			self.s = u''
 			self.c = senphr
-			self.t = []
-			self.attr = []
-			
+			self.gs = set()
 			self.len = len(senphr)
 			for sp in senphr:
 				self.s += sp.s
-				self.t.append(sp.t)
-		if g != None:
-			self.attr.append(g.name)
-			g.addsp(self)
-
-	@classmethod
-	def init(cls):
-		pass
+			if gs != None:
+				self.addgs(gs)
+				gs.addsp(self)
 	
 	def be(self, gram):
 		gram = unicode(gram)
-		for a in self.attr:
-			if gram == a:
+		if not gram in gset_all:
+			return False
+		g = gset_all[gram]
+		for gs in self.gs:
+			if g <= gs:
+				self.addgs(g)
+				g.addsp(self)
+				gs.addsp(self)
 				return True
-		#print('$$%s'%gram)
-		g = grammar_all[gram]
-		if g.contain(self):
-			self.attr.append(gram)
+		gs = g.contain(self)
+		if gs:
+			while gs != g:
+				self.addgs(gs)
+				gs.addsp(self)
+				gs = gs.father
+			self.addgs(gs)
+			gs.addsp(self)
 			return True
 		return False
+
+	def addgs(self, gs):
+		if isinstance(gs, gset):
+			self.gs.add(gs)
 	
+	def __radd__(self, other):#return other+self
+		res = sentencephrase([other, self], None)
+		return res
+
 	def append(self, sp):
-		if self.attr == []:
-			self.s += sp.s
-			self.t.append(sp.t)
-			self.c.append(sp)
-			self.len += 1
-			
+		sps = []
+		if self.c == []:
+			sps.append(self)
+		else:	
+			for sp in self.c:
+				sps.append(sp)
+		sps.append(sp)
+		res = sentencephrase(sps, None)
+		return res
+
+def initall():
+	global gset_all
+	global gset_zzd
+	global spbase_all
+	xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
+	book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
+	# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
+	sheet = book.sheet_by_name('grammar_phrase')
+	nrows = sheet.nrows
+	for i in range(nrows):
+		v = sheet.row_values(i)
+		g = gset(v[0], v[1:])
+		gset_all[v[0]] = g
+	
+	sheet = book.sheet_by_name('grammar_sentence')
+	nrows = sheet.nrows
+	for i in range(nrows):
+		v = sheet.row_values(i)
+		g = gset(v[0], v[1:])
+		gset_all[v[0]] = g
+		if v[0][0] == 'S':
+			gset_zzd.append([v[0], g])
+	
+	sheet = book.sheet_by_name('table_vocable')
+	nrows = sheet.nrows
+	for i in range(nrows):
+		v = sheet.row_values(i)
+		sp = sentencephrase(v)
+		spbase_all[v[0]]=sp
+	
+	sheet = book.sheet_by_name('table_phrase')
+	nrows = sheet.nrows
+	for i in range(nrows):
+		v = sheet.row_values(i)
+		sp = sentencephrase(v)
+		spbase_all[v[0]]=sp
+	book.release_resources()
+	
+
+def fensp(gram, waa):
+	if not gram in gset_all:
+		return None
+	phrases = _fenci(waa)
+	res = _fensp(gset_all[gram], phrases)
+	if res and res[1] == []:
+		return res[0]
+	else:
+		return None
+
+def _fenci(waa):
+	phrases = []
+	con = True
+	while con:
+		for p in spbase_all:
+			if waa.find(p) == 0:
+				phrases.append(spbase_all[p])
+				waa = waa[len(p):]
+				con = False
+				break
+		con = not con
+	return phrases
+	
+def _fensp(gs, phrases):
+	if not phrases or phrases == []:
+		return None
+	if len(phrases) == 1:
+		if gs.contain(phrases[0]):
+			return (phrases[0],[])
+		return None
+	return None
+
 def main():
 	print('grammar')
-	g = gset(('',''), [])
-	res = prevgrammar(u'juzi',u'顺序:谓语 宾语')
-	print res[0]
-	print res[1]
-	res = prevgrammar(u'asdf', u'单个:及物动词')
-	print res[0]
-	print res[1]
-	res = prevgrammar(u'addfa', u'边界:上引号 下引号')
-	print res[0]
-	print res[1]
-
-	
+	initall()
+	sp = fensp(u'感叹号', u'!')
+	print sp.s
+	sp = fensp(u'感叹号', u'！')
+	#print sp.s
+	sp = fensp(u'名字', u'小白')
+	#print sp,sp.s
+	sp = fensp(u'主语', u'小白')
+	#print sp,sp.s
+	a = spbase_all[u'播放']
+	b = spbase_all[u'歌曲']
+	c = a+b
+	res = c.be(u'S命令语句甲')
+	print res
+	res = b.be(u'S命令语句甲')
+	print res
 
 if __name__ == '__main__':
 	main()

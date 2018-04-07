@@ -31,7 +31,6 @@ class zzdcore1:
 	
 	@classmethod
 	def init(cls):
-		grammar.sentencephrase.init()
 		zzd_core0.zzdcore0.init()
 		
 		zzdcore1.inWaaClass.append([u'math', zzdcore1._math, zzdcore1._solve_math])			#math
@@ -46,36 +45,6 @@ class zzdcore1:
 		xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
 		book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
 		# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
-		sheet = book.sheet_by_name('grammar_phrase')
-		nrows = sheet.nrows
-		for i in range(nrows):
-			v = sheet.row_values(i)
-			g = grammar.gset(v[0], v[1:])
-			grammar.grammar_all[v[0]] = g
-		
-		sheet = book.sheet_by_name('grammar_sentence')
-		nrows = sheet.nrows
-		for i in range(nrows):
-			v = sheet.row_values(i)
-			g = grammar.gset(v[0], v[1:])
-			grammar.grammar_all[v[0]] = g
-			if v[0][0] == 'S':
-				zzdcore1.grammar_zzd.append([v[0], g])
-		
-		sheet = book.sheet_by_name('table_vocable')
-		nrows = sheet.nrows
-		for i in range(nrows):
-			v = sheet.row_values(i)
-			sp = grammar.sentencephrase(v)
-			grammar.sp_all[v[0]]=sp
-		
-		sheet = book.sheet_by_name('table_phrase')
-		nrows = sheet.nrows
-		for i in range(nrows):
-			v = sheet.row_values(i)
-			sp = grammar.sentencephrase(v)
-			grammar.sp_all[v[0]]=sp
-		
 		sheet = book.sheet_by_name('define')
 		nrows = sheet.nrows
 		for i in range(nrows):
@@ -177,68 +146,74 @@ class zzdcore1:
 		phrases = []
 		con = True
 		while con:
-			for p in grammar.sp_all.keys():
+			for p in grammar.spbase_all.keys():
 				if waa.find(p) == 0:
-					phrases.append(grammar.sp_all[p])
+					phrases.append(grammar.spbase_all[p])
 					waa = waa[len(p):]
 					con = False
 					break
 			con = not con
 		return phrases
 
-	def _fensp(self, friend, senclass, phrases):
-		ag = grammar.grammar_all[senclass].ag
-		for g in ag:
-			sps = []
-			phrs = []
-			for p in phrases:
-				phrs.append(p)
-			for attr in g[1]:
-				r = self._fensp_turn(friend, phrs, attr)
-				if r[0] == None:
-					break
-				else:
-					sps.append(r[0])
-					phrs = r[1]
-			if phrs != []:
-				continue
-			if sps == []:
-				continue
-			if len(sps) != len(g[1]):
-				continue
-			if len(sps) == 1:
-				return sps[0]
-			else:
-				print g[0]
-				print g[1]
-				for s in sps:
-					print s.s
-				return grammar.sentencephrase(sps,grammar.grammar_all[senclass])
-		return None
-	
-	def _fensp_turn(self, friend, phrs, attr):
-		if phrs == []:
+	def _fensp(self, friend, gs, phrases):
+		if phrases == []:
 			return (None, None)
-		
-		sp = phrs.pop(0)
-		if sp.be(attr):
-			return (sp, phrs)
-		sp = grammar.sentencephrase([sp])
-		while phrs != []:
-			sp.append(phrs.pop(0))
-			if sp.be(attr):
-				return (sp, phrs)
-		return (None, None)
+		if gs.child != []:
+			for g in gs.child:
+				res = self._fensp(friend, g, phrases)
+				if res[0] != None:
+					res[0].inn.append(g)
+					g.addsp(res[0])
+					gs.addsp(res[0])
+					return res
+			return (None, None)
+		else:
+			frame = grammar.nl2frame(gs.name)
+			if frame == []:
+				if phrases[0].be(gs.name):
+					phrases[0].inn.append(gs)
+					gs.addsp(phrases[0])
+					return (phrases[0], phrases[1:])
+				else:
+					return (None, None)
+			else:
+				ress = []
+				for i, gram in enumerate(frame):
+					if gram in grammar.grammar_all:
+						g = grammar.grammar_all[gram]
+						res = self._fensp(friend, g, phrases)
+						if res[0] == None:
+							return (None, None)
+					else:
+						if gram != u'while_not':
+							return (None, None)
+						else:
+							sp = phrases[0]
+							if sp.be(frame[i+1]):
+								return (None, None)
+							else:
+								phrases = phrases[1:]
+								while not phrases[0].be(frame[i+1]):
+									sp.append(phrases[0])
+									phrases = phrases[1:]
+								res = (sp, phrases)
+					ress.append(res)
+					phrases = res[1]
+					sp = []
+					for res in ress:
+						sp.append(res[0])
+					sp = grammar.sentencephrase(sp, gs)
+					return (sp, [])
 	
 	def _zj(self, friend, senclass, waa):
 		phrases = self._fenci(friend, senclass, waa)
 		if phrases == []:
 			return False
-		sps = self._fensp(friend, senclass, phrases)
-		if sps == None:
+		gs = grammar.grammar_all[senclass]
+		sps = self._fensp(friend, gs, phrases)
+		if sps[0] == None:
 			return False
-		
-		self.cursen = sps
+		self.cursen = sps[0]
 		attr_nor = senclass
 		if self.cursen.be(attr_nor):
 			return True
@@ -291,7 +266,15 @@ def main():
 	core0 = zzd_core0.zzdcore0()
 	core1 = zzdcore1(core0)
 	zzdcore1.init()
+	fc = core1._zj(None, u'S命令语句乙', u'播放歌f曲!我')
+	print fc
+
+if __name__ == '__main__':
+	main()
+
+'''	
 	fc = core1._zj(None, u'S命令语句甲', u'播放歌曲!')
+	fc = core1._zj(None, u'测试语句', u'“一瞬间”')
 	print fc
 	fc = core1._zj(None, u'S命令语句甲', u'播放歌曲')
 	print fc
@@ -301,10 +284,4 @@ def main():
 	print fc
 	fc = core1._zj(None, u'S命令语句甲', u'小白，播放歌曲“一瞬间”!')
 	print fc
-	fc = core1._zj(None, u'测试语句', u'“一瞬间”')
-	print fc
-'''
-'''
-
-if __name__ == '__main__':
-	main()
+'''	
