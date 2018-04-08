@@ -13,8 +13,7 @@ class zzd(zzd_unity.unity):
 	def __init__(self, show):
 		zzd_unity.unity.__init__(self)
 		self.show = show
-		self.core0 = zzd_core0.zzdcore0()
-		self.core = zzd_core1.zzdcore1(self.core0)
+		self.core = zzd_core1.zzdcore1()
 	
 	@classmethod
 	def init(cls):

@@ -1,6 +1,5 @@
 #!/usr/bin/python -B
 # -*- coding: UTF-8 -*-
-import zzd_core0
 import grammar 
 import xlrd 
 
@@ -21,9 +20,8 @@ class zzdcore1:
 	defineDict = {}
 	keyword_zzd = {}
 
-	def __init__(self, corelayer0):
+	def __init__(self):
 		self.sentence = []
-		self.corelayer0 = corelayer0
 		self.state = 'init'
 		self.mode = 'work'
 		self.friend = None
@@ -31,8 +29,8 @@ class zzdcore1:
 	
 	@classmethod
 	def init(cls):
-		zzd_core0.zzdcore0.init()
-		zzdcore1.inWaaClass[u'verify'] = [zzdcore1._verify, zzdcore1._solve_verify]			#math
+		grammar.initall()
+		zzdcore1.inWaaClass[u'verify'] = [zzdcore1._verify, zzdcore1._solve_verify]			#verify
 		zzdcore1.inWaaClass[u'math'] = [zzdcore1._math, zzdcore1._solve_math]				#math
 		zzdcore1.inWaaClass[u'define'] = [zzdcore1._define, zzdcore1._solve_define]			#define
 		zzdcore1.inWaaClass[u'command'] = [zzdcore1._command, zzdcore1._solve_command]		#command
@@ -58,7 +56,7 @@ class zzdcore1:
 		book.release_resources()
 
 	def inputs(self, friend, waa):
-		(head,sen)= self._trans_2_1(friend, waa)
+		(head,sen) = self._trans_2_1(friend, waa)
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
 			self.sentence.append([waa,(head,sen),outs])
@@ -133,50 +131,41 @@ class zzdcore1:
 		return None
 	
 	def _trans_2_1(self, friend, waa):
-		head = waa[0:4]
-		sen = waa[5:len(waa)]
-		return head, sen
-	
-	def _zj(self, friend, waa):
 		phrases = grammar._fenci(waa)
 		for p in phrases:
 			print p.s
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
-		assert(keyword)
+		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
-			if k == u'None':
-				pass
-			res = None
 			assert k.s in zzdcore1.keyword_zzd
-			ex = u'res = self._zj_%s(friend, phrases)'%zzdcore1.keyword_zzd[k.s][0]
-			try:
-				exec(ex)
-			except:
-				pass
-			return res
+			if zzdcore1.keyword_zzd[k.s][0] == u'other':
+				continue
+			weight = zzdcore1.keyword_zzd[k.s][0].split(' ')
+			for i in range(0,len(weight),2):
+				bit[weight[i]] += int(weight[i+1])
+		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
+		if bit[0][1] == 0:
+			return zzdcore1.inWaaClass[u'other'][1](self, friend, phrases, keyword)
+		return zzdcore1.inWaaClass[bit[0][0]][1](self, friend, phrases, keyword)
+	
+	def _solve_verify(self, friend, phrases, keyword):
+		return (True, None)
+	
+	def _solve_math(self, friend, phrases, keyword):
 		return None
 	
-	def _solve_verify(self, friend, phrases):
-		res = u'comm:'
-		return res
-	
-	def _solve_math(self, friend, phrases):
+	def _solve_define(self, friend, phrases, keyword):
 		return None
 	
-	def _solve_define(self, friend, phrases):
-		res = u'comm:'
-		return res
-	
-	def _solve_command(self, friend, phrases):
-		res = u'comm:'
-		return res
-	
-	def _solve_system(self, friend, phrases):
+	def _solve_command(self, friend, phrases, keyword):
 		return None
 	
-	def _solve_other(self, friend, phrases):
+	def _solve_system(self, friend, phrases, keyword):
 		return None
 	
+	def _solve_other(self, friend, phrases, keyword):
+		return None
+
 	def _sorry(self, waa):
 		if waa[0] == u'copy':
 			return waa[1]
@@ -193,11 +182,10 @@ class zzdcore1:
 def main():
 	print('zzd_core1')
 	grammar.initall()
-	core0 = zzd_core0.zzdcore0()
-	core1 = zzdcore1(core0)
 	zzdcore1.init()
+	core1 = zzdcore1()
 
-	fc = core1._zj(None, u'播放歌曲!')
+	fc = core1._trans_2_1(None, u'认证12345678!')
 	print fc
 
 if __name__ == '__main__':
