@@ -247,12 +247,29 @@ def fensp(gram, waa):
 def _fenci(waa):
 	phrases = []
 	con = False
+	anumber =  u'+-0123456789'
+	eword = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	while waa != '':
-		for i in range(min(8,len(waa)),0,-1):
-			if waa[0:i] in spbase_all[waa[0]]:
-				phrases.append(spbase_all[waa[0]][waa[0:i]])
-				waa = waa[i:]
-				break
+		if waa[0] in anumber:
+			n = spbase_all[waa[0]][waa[0]]
+			waa = waa[1:]
+			while waa != u'' and waa[0] in anumber:
+				n = n+ spbase_all[waa[0]][waa[0]]
+				waa = waa[1:]
+			phrases.append(n)
+		elif waa[0] in eword:
+			n = spbase_all[waa[0]][waa[0]]
+			waa = waa[1:]
+			while waa != u'' and waa[0] in eword:
+				n = n+ spbase_all[waa[0]][waa[0]]
+				waa = waa[1:]
+			phrases.append(n)
+		else:
+			for i in range(min(8,len(waa)),0,-1):
+				if waa[0:i] in spbase_all[waa[0]]:
+					phrases.append(spbase_all[waa[0]][waa[0:i]])
+					waa = waa[i:]
+					break
 	if waa == '':
 		return phrases
 	return None
@@ -309,7 +326,10 @@ def main():
 	sp = _fenci(u'播放歌!')
 	for s in sp:
 		print s.s
-	sp = _fenci(u'播234放23403歌!')
+	sp = _fenci(u'播-234放23403歌+324!')
+	for s in sp:
+		print s.s
+	sp = _fenci(u'播-234放work23403歌+324!')
 	for s in sp:
 		print s.s
 
