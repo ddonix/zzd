@@ -232,6 +232,7 @@ def initall():
 		v = sheet.row_values(i)
 		sp = sentencephrase(v)
 		assert len(v[0]) > 1
+		assert v[0][0] in spbase_all
 		spbase_all[v[0][0]][v[0]] = sp
 	book.release_resources()
 	
