@@ -134,6 +134,7 @@ class sentencephrase:
 				try:
 					gs = gset_all[gram]
 				except:
+					print gram
 					raise TypeError
 				self.addgs(gs)
 				gs.addsp(self)
@@ -218,8 +219,9 @@ def initall():
 	nrows = sheet.nrows
 	for i in range(nrows):
 		v = sheet.row_values(i)
+		if type(v[0]) == float:
+			v[0] = unicode(int(v[0]))
 		sp = sentencephrase(v)
-		assert len(v[0]) == 1
 		spbase_all[v[0]] = {v[0]:sp}
 	
 	sheet = book.sheet_by_name('table_phrase')
@@ -305,6 +307,9 @@ def main():
 	print('grammar')
 	initall()
 	sp = _fenci(u'播放歌!')
+	for s in sp:
+		print s.s
+	sp = _fenci(u'播234放23403歌!')
 	for s in sp:
 		print s.s
 
