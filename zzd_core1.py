@@ -69,7 +69,7 @@ class zzdcore1:
 					self.state = 'stand'
 					self.friend = friend
 				self.sentence.append([waa,(head,sen),res])
-				return res[1]
+				return res
 			else:
 				outs = u'对不起，您需要先进行身份认证!'
 				self.sentence.append([waa,(head,sen),outs])
@@ -78,7 +78,7 @@ class zzdcore1:
 			assert head in zzdcore1.inWaaClass
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
 			self.sentence.append([waa,(head,sen),outs])
-			return outs[1]
+			return outs
 		else:
 			outs = u'对不起，我懵了!'
 			return self._sorry((u'copy', outs))
@@ -88,6 +88,11 @@ class zzdcore1:
 			return (True, u'验证通过')
 		else:
 			return (False, u'您已经通过验证了，不需要再验证。')
+				
+				return (True, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
+			elif len(sen) == 10 and sen[2:10] == u'12345678':
+				return (True, u'您的身份认证通过。谢谢您回来，您有什么想对我说的吗？')
+			else:
 		
 	def _math(self, sen):
 		eq = sen
@@ -108,30 +113,22 @@ class zzdcore1:
 					val = u'错'
 			except:
 				return self._sorry((u'math', sen))
-		return val
+		return (True, val)
 	
 	def _define(self, sen):
 		o = zzdcore1.defineDict.get(sen)
 		if o == None:
 			return self._sorry((u'define',sen))
-		return sen+u'是'+o
+		return (True, sen+u'是'+o)
 	
 	def _command(self, sen):
-		if sen[0:2] == u'id':
-			if self.state != 'init':
-				return (True, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
-			elif len(sen) == 10 and sen[2:10] == u'12345678':
-				return (True, u'您的身份认证通过。谢谢您回来，您有什么想对我说的吗？')
-			else:
-				return (False, u'认证失败。请重新认证。')
-		else:
-			return self._sorry((u'command', sen))
+		return self._sorry((u'command', sen))
 
 	def _system(self, phrases):
-		return None
+		return self._sorry((u'system', sen))
 	
 	def _other(self, phrases):
-		return None
+		return self._sorry((u'system', sen))
 	
 	def _trans_2_1(self, friend, waa):
 		phrases = grammar._fenci(waa)
@@ -171,15 +168,15 @@ class zzdcore1:
 
 	def _sorry(self, waa):
 		if waa[0] == u'copy':
-			return waa[1]
+			return (False, waa[1])
 		elif waa[0] == u'define':
-			return u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。'
+			return (False, u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。')
 		elif waa[0] == u'math':
-			return u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。'
+			return (False, u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。')
 		elif waa[0] == u'command':
-			return u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。'
+			return (False, u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。')
 		else:
-			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
+			return (False, u'对不起，我无法处理\"'+waa[1]+u'\"。')
 	
 	
 def main():
