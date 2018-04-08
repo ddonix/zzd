@@ -5,7 +5,7 @@ import xlrd
 
 gset_all = {}
 gset_zzd = []
-spbase_all = {}
+spbase_all = []
 
 def	nl2frame(nl):
 	frame = []
@@ -194,6 +194,9 @@ def initall():
 	global gset_all
 	global gset_zzd
 	global spbase_all
+	
+	for i in range(7):
+		spbase_all.append({})
 	xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
 	book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
 	# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
@@ -218,14 +221,20 @@ def initall():
 	for i in range(nrows):
 		v = sheet.row_values(i)
 		sp = sentencephrase(v)
-		spbase_all[v[0]]=sp
+		if len(v[0]) > len(spbase_all):
+			spbase_all[-1][v[0]]=sp
+		else:
+			spbase_all[len(v[0])][v[0]]=sp
 	
 	sheet = book.sheet_by_name('table_phrase')
 	nrows = sheet.nrows
 	for i in range(nrows):
 		v = sheet.row_values(i)
 		sp = sentencephrase(v)
-		spbase_all[v[0]]=sp
+		if len(v[0]) > len(spbase_all):
+			spbase_all[-1][v[0]]=sp
+		else:
+			spbase_all[len(v[0])-1][v[0]]=sp
 	book.release_resources()
 	
 
@@ -241,16 +250,23 @@ def fensp(gram, waa):
 
 def _fenci(waa):
 	phrases = []
-	con = True
-	while con:
-		for p in spbase_all:
-			if waa.find(p) == 0:
-				phrases.append(spbase_all[p])
-				waa = waa[len(p):]
-				con = False
+	con = False 
+	while waa != '':
+		con = False
+		for i in range(-1, -len(spbase_all)-1,-1):
+			for p in spbase_all[i]:
+				if waa.find(p) == 0:
+					phrases.append(spbase_all[i][p])
+					waa = waa[len(p):]
+					con = True
+					break
+			if con:
 				break
-		con = not con
-	return phrases
+		if not con:
+			return None
+	if waa == '':
+		return phrases
+	return None
 	
 def _fensp(gs, phrases):
 	if not phrases or phrases == []:
@@ -301,15 +317,18 @@ def _fensp(gs, phrases):
 def main():
 	print('grammar')
 	initall()
-	sp = fensp(u'S命令语句乙', u'播放歌曲!')
-	print sp,sp.s
-	sp = fensp(u'S命令语句乙', u'歌曲!')
-	print sp,sp.s
+	sp = _fenci(u'播放歌!')
+	for s in sp:
+		print s.s
 
 if __name__ == '__main__':
 	main()
 '''	
 	print('grammar')
+	sp = fensp(u'S命令语句乙', u'播放歌曲!')
+	print sp,sp.s
+	sp = fensp(u'S命令语句乙', u'歌曲!')
+	print sp,sp.s
 	sp = fensp(u'谓语', u'播放')
 	print sp,sp.s
 	sp = fensp(u'宾语', u'歌曲')
