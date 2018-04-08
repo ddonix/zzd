@@ -68,7 +68,7 @@ class zzdcore1:
 				if res[0]:
 					self.state = 'stand'
 					self.friend = friend
-				self.sentence.append([waa,(head,sen),res[1]])
+				self.sentence.append([waa,(head,sen),res])
 				return res[1]
 			else:
 				outs = u'对不起，您需要先进行身份认证!'
@@ -78,13 +78,16 @@ class zzdcore1:
 			assert head in zzdcore1.inWaaClass
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
 			self.sentence.append([waa,(head,sen),outs])
-			return outs
+			return outs[1]
 		else:
 			outs = u'对不起，我懵了!'
 			return self._sorry((u'copy', outs))
 	
 	def _verify(self, sen):
-		return None
+		if self.state == 'init':
+			return (True, u'验证通过')
+		else:
+			return (False, u'您已经通过验证了，不需要再验证。')
 		
 	def _math(self, sen):
 		eq = sen
@@ -110,7 +113,7 @@ class zzdcore1:
 	def _define(self, sen):
 		o = zzdcore1.defineDict.get(sen)
 		if o == None:
-			return self._sorry((u'defi',sen))
+			return self._sorry((u'define',sen))
 		return sen+u'是'+o
 	
 	def _command(self, sen):
@@ -122,7 +125,7 @@ class zzdcore1:
 			else:
 				return (False, u'认证失败。请重新认证。')
 		else:
-			return self._sorry((u'comm', sen))
+			return self._sorry((u'command', sen))
 
 	def _system(self, phrases):
 		return None
@@ -149,7 +152,7 @@ class zzdcore1:
 		return zzdcore1.inWaaClass[bit[0][0]][1](self, friend, phrases, keyword)
 	
 	def _solve_verify(self, friend, phrases, keyword):
-		return (True, None)
+		return (u'verify', None)
 	
 	def _solve_math(self, friend, phrases, keyword):
 		return None
@@ -169,11 +172,11 @@ class zzdcore1:
 	def _sorry(self, waa):
 		if waa[0] == u'copy':
 			return waa[1]
-		elif waa[0] == u'defi':
+		elif waa[0] == u'define':
 			return u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。'
 		elif waa[0] == u'math':
 			return u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。'
-		elif waa[0] == u'comm':
+		elif waa[0] == u'command':
 			return u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。'
 		else:
 			return u'对不起，我无法处理\"'+waa[1]+u'\"。'
