@@ -5,7 +5,7 @@ import xlrd
 
 gset_all = {}
 gset_zzd = []
-spbase_all = []
+spbase_all = {}
 
 def	nl2frame(nl):
 	frame = []
@@ -195,8 +195,6 @@ def initall():
 	global gset_zzd
 	global spbase_all
 	
-	for i in range(7):
-		spbase_all.append({})
 	xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
 	book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
 	# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
@@ -221,20 +219,16 @@ def initall():
 	for i in range(nrows):
 		v = sheet.row_values(i)
 		sp = sentencephrase(v)
-		if len(v[0]) > len(spbase_all):
-			spbase_all[-1][v[0]]=sp
-		else:
-			spbase_all[len(v[0])][v[0]]=sp
+		assert len(v[0]) == 1
+		spbase_all[v[0]] = {v[0]:sp}
 	
 	sheet = book.sheet_by_name('table_phrase')
 	nrows = sheet.nrows
 	for i in range(nrows):
 		v = sheet.row_values(i)
 		sp = sentencephrase(v)
-		if len(v[0]) > len(spbase_all):
-			spbase_all[-1][v[0]]=sp
-		else:
-			spbase_all[len(v[0])-1][v[0]]=sp
+		assert len(v[0]) > 1
+		spbase_all[v[0][0]][v[0]] = sp
 	book.release_resources()
 	
 
@@ -250,20 +244,13 @@ def fensp(gram, waa):
 
 def _fenci(waa):
 	phrases = []
-	con = False 
+	con = False
 	while waa != '':
-		con = False
-		for i in range(-1, -len(spbase_all)-1,-1):
-			for p in spbase_all[i]:
-				if waa.find(p) == 0:
-					phrases.append(spbase_all[i][p])
-					waa = waa[len(p):]
-					con = True
-					break
-			if con:
+		for i in range(min(8,len(waa)),0,-1):
+			if waa[0:i] in spbase_all[waa[0]]:
+				phrases.append(spbase_all[waa[0]][waa[0:i]])
+				waa = waa[i:]
 				break
-		if not con:
-			return None
 	if waa == '':
 		return phrases
 	return None
