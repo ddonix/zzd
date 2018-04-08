@@ -223,6 +223,8 @@ def initall():
 			v[0] = unicode(int(v[0]))
 		sp = sentencephrase(v)
 		spbase_all[v[0]] = {v[0]:sp}
+	sp = sentencephrase([u' ', u'空格'])
+	spbase_all[u' '] = {u' ':sp}
 	
 	sheet = book.sheet_by_name('table_phrase')
 	nrows = sheet.nrows
@@ -247,7 +249,7 @@ def fensp(gram, waa):
 def _fenci(waa):
 	phrases = []
 	con = False
-	anumber =  u'+-0123456789'
+	anumber =  u'0123456789'
 	eword = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	while waa != '':
 		if waa[0] in anumber:
@@ -323,13 +325,7 @@ def _fensp(gs, phrases):
 def main():
 	print('grammar')
 	initall()
-	sp = _fenci(u'播放歌!')
-	for s in sp:
-		print s.s
-	sp = _fenci(u'播-234放23403歌+324!')
-	for s in sp:
-		print s.s
-	sp = _fenci(u'播-234放work23403歌+324!')
+	sp = _fenci(u'播-234放word i like you 23403*234(44)歌+324!')
 	for s in sp:
 		print s.s
 
