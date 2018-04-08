@@ -136,90 +136,9 @@ class zzdcore1:
 		return self._sorry((u'copy', sen))
 	
 	def _trans_2_1(self, friend, waa):
-		if not self._zj(friend, waa):
-			return (None, waa)
 		head = waa[0:4]
 		sen = waa[5:len(waa)]
 		return head, sen
-	
-	def _fenci(self, friend, senclass, waa):
-		phrases = []
-		con = True
-		while con:
-			for p in grammar.spbase_all.keys():
-				if waa.find(p) == 0:
-					phrases.append(grammar.spbase_all[p])
-					waa = waa[len(p):]
-					con = False
-					break
-			con = not con
-		return phrases
-
-	def _fensp(self, friend, gs, phrases):
-		if phrases == []:
-			return (None, None)
-		if gs.child != []:
-			for g in gs.child:
-				res = self._fensp(friend, g, phrases)
-				if res[0] != None:
-					res[0].inn.append(g)
-					g.addsp(res[0])
-					gs.addsp(res[0])
-					return res
-			return (None, None)
-		else:
-			frame = grammar.nl2frame(gs.name)
-			if frame == []:
-				if phrases[0].be(gs.name):
-					phrases[0].inn.append(gs)
-					gs.addsp(phrases[0])
-					return (phrases[0], phrases[1:])
-				else:
-					return (None, None)
-			else:
-				ress = []
-				for i, gram in enumerate(frame):
-					if gram in grammar.grammar_all:
-						g = grammar.grammar_all[gram]
-						res = self._fensp(friend, g, phrases)
-						if res[0] == None:
-							return (None, None)
-					else:
-						if gram != u'while_not':
-							return (None, None)
-						else:
-							sp = phrases[0]
-							if sp.be(frame[i+1]):
-								return (None, None)
-							else:
-								phrases = phrases[1:]
-								while not phrases[0].be(frame[i+1]):
-									sp.append(phrases[0])
-									phrases = phrases[1:]
-								res = (sp, phrases)
-					ress.append(res)
-					phrases = res[1]
-					sp = []
-					for res in ress:
-						sp.append(res[0])
-					sp = grammar.sentencephrase(sp, gs)
-					return (sp, [])
-	
-	def _zj(self, friend, senclass, waa):
-		phrases = self._fenci(friend, senclass, waa)
-		if phrases == []:
-			return False
-		gs = grammar.grammar_all[senclass]
-		sps = self._fensp(friend, gs, phrases)
-		if sps[0] == None:
-			return False
-		self.cursen = sps[0]
-		attr_nor = senclass
-		if self.cursen.be(attr_nor):
-			return True
-		else:
-			self.cursen = None
-			return False
 	
 	def _solve_head(self, friend, waa):
 		return waa[0:4]
@@ -262,12 +181,10 @@ class zzdcore1:
 	
 	
 def main():
-	print('hello')
+	print('zzd_core1')
 	core0 = zzd_core0.zzdcore0()
 	core1 = zzdcore1(core0)
 	zzdcore1.init()
-	fc = core1._zj(None, u'S命令语句乙', u'播放歌f曲!我')
-	print fc
 
 if __name__ == '__main__':
 	main()
@@ -284,4 +201,4 @@ if __name__ == '__main__':
 	print fc
 	fc = core1._zj(None, u'S命令语句甲', u'小白，播放歌曲“一瞬间”!')
 	print fc
-'''	
+'''
