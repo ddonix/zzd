@@ -303,6 +303,8 @@ def main():
 	initall()
 	sp = fensp(u'S命令语句乙', u'播放歌曲!')
 	print sp,sp.s
+	sp = fensp(u'S命令语句乙', u'歌曲!')
+	print sp,sp.s
 
 if __name__ == '__main__':
 	main()

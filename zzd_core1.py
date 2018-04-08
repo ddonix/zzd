@@ -140,6 +140,9 @@ class zzdcore1:
 		sen = waa[5:len(waa)]
 		return head, sen
 	
+	def _zj(self, friend, waa):
+		return None
+	
 	def _solve_head(self, friend, waa):
 		return waa[0:4]
 	
@@ -185,6 +188,8 @@ def main():
 	core0 = zzd_core0.zzdcore0()
 	core1 = zzdcore1(core0)
 	zzdcore1.init()
+	fc = core1._zj(None, u'播放歌曲!')
+	print fc
 
 if __name__ == '__main__':
 	main()
