@@ -18,7 +18,6 @@ class human(zzd_unity.unity):
 		human.table_vocable = u'0123456789 '
 		human.table_vocable += u''.join([x for x in sheet.col_values(0) if type(x) != float])
 		book.release_resources()
-		print human.table_vocable
 	
 	def act(self, dest, waa_out):
 		res = dest.echo(self, waa_out)
