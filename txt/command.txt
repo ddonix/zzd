@@ -1,1 +1,0 @@
-播放	mplayer	$1.mp3
