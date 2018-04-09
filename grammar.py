@@ -285,6 +285,8 @@ def _fensp(gs, phrases):
 		else:
 			ress = []
 			for i, gram in enumerate(frame):
+				if gram == '':
+					continue
 				if gram in gset_all:
 					g = gset_all[gram]
 					res = _fensp(g, phrases)
@@ -339,6 +341,8 @@ def main():
 	print sp[1]
 	for k in sp[2]:
 		print k+'='+sp[2][k]
+	
+#	fc = core1._trans_2_1(grammar.gset_all[u'认证语句'], u'
 
 
 if __name__ == '__main__':

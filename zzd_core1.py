@@ -92,7 +92,7 @@ class zzdcore1:
 			for i in range(nrows):
 				identify = sheet.row_values(i)
 				if sen[u'id'] == identify[0][2:]:
-					return (True, u'您的身份认证通过。谢谢您回来，您有什么想对我说的吗？')
+					return (True, u'%s您好，身份认证通过。我有什么为您服务的吗？'%identify[1])
 			return (False, u'认证失败。')
 		else:
 			return (False, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
@@ -138,6 +138,7 @@ class zzdcore1:
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
+			print k.s+'$$$'
 			assert k.s in zzdcore1.keyword_zzd
 			if zzdcore1.keyword_zzd[k.s][0] == u'other':
 				continue
