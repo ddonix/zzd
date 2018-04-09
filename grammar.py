@@ -296,26 +296,30 @@ def _fenci(waa):
 		return phrases
 	return None
 	
-def _fensp(gs, phrases, key=None):
+def _fensp(gs, phrases):
 	if not phrases or phrases == []:
 		return None
 	if gs.child != []:
 		ress = []
 		for ch in gs.child:
-			res = _fensp(ch, phrases, key)
+			res = _fensp(ch, phrases)
 			if res:
 				ress.append(res)
 		if ress == []:
 			return None
 		for res in ress:
 			if res[1] == []:
+				res[2][gs.name] = res[0].s
 				return res
+		ress[0][2][gs.name] = ress[0][0].s
 		return ress[0]
 	else:
 		frame = nl2frame(gs.name)
+		key = {}
 		if frame == []:
 			if phrases[0].be(gs.name):
-				return (phrases[0], phrases[1:])
+				key[gs.name] = phrases[0].s
+				return (sentencephrase(phrases[0]), phrases[1:], key)
 			else:
 				return None
 		else:
@@ -323,10 +327,11 @@ def _fensp(gs, phrases, key=None):
 			for i, gram in enumerate(frame):
 				if gram in gset_all:
 					g = gset_all[gram]
-					res = _fensp(g, phrases, key)
+					res = _fensp(g, phrases)
 					if res == None:
 						return None
 					else:
+						key[g.name] = res[0].s
 						ress.append(res)
 						phrases = res[1]
 				else:
@@ -334,13 +339,13 @@ def _fensp(gs, phrases, key=None):
 						return None
 					else:
 						while not phrases[0].be(frame[i+1]):
-							ress.append((phrases[0], phrases[1:]))
+							ress.append((phrases[0], phrases[1:], {}))
 							phrases = phrases[1:]
 			sps = []
 			for res in ress:
 				sps.append(res[0])
 			sp = sentencephrase(sps, gs)
-			return (sp, ress[-1][1])
+			return (sp, ress[-1][1], key)
 
 def main():
 	print('grammar')
@@ -348,9 +353,13 @@ def main():
 	sp = _fenci(u'播-234放word i like you 23403*234(44)歌+324!')
 	for s in sp:
 		print s.s
-	sp = fensp(u'认证语句', u'认证123456!')
-	print sp,sp.s
-
+	phrases = _fenci(u'认证123456!')
+	sp = _fensp(gset_all[u'认证语句'], phrases)
+	print sp[0]
+	print sp[1]
+	for k in sp[2]:
+		print k+'='+sp[2][k]
+	
 if __name__ == '__main__':
 	main()
 '''	
