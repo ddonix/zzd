@@ -135,8 +135,6 @@ class zzdcore1:
 	
 	def _trans_2_1(self, friend, waa):
 		phrases = grammar._fenci(waa)
-		for p in phrases:
-			print p.s
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
@@ -156,10 +154,8 @@ class zzdcore1:
 		if sp == None:
 			return (u'none', u'认证语法不对')
 		else:
-			sp = sp[0]
-			for gs in sp.gs:
-				print gs.name
-			return (u'verify', {u'id':u'314159'})
+			assert u'阿拉伯数' in sp[2]
+			return (u'verify', {u'id':sp[2][u'阿拉伯数']})
 	
 	def _solve_math(self, friend, phrases, keyword):
 		return None
@@ -195,7 +191,7 @@ def main():
 	zzdcore1.init()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(grammar.gset_all[u'认证语句'], u'认证12345678!')
+	fc = core1._trans_2_1(grammar.gset_all[u'认证语句'], u'认证1313342345678!')
 	print fc[0],fc[1]
 
 if __name__ == '__main__':

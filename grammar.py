@@ -274,6 +274,10 @@ def _fenci(waa):
 			while waa != u'' and waa[0] in anumber:
 				n.s += waa[0]
 				waa = waa[1:]
+			if len(n.s) > 1:
+				n.gs.remove(gset_all[u'阿拉伯数字'])
+				gset_all[u'阿拉伯数字'].sp.remove(n)
+
 			phrases.append(n)
 		elif waa[0] in eword:
 			n = sentencephrase(spbase_all[waa[0]][waa[0]])
@@ -297,7 +301,6 @@ def _fenci(waa):
 	return None
 	
 def _fensp(gs, phrases):
-	print gs.name
 	if not phrases or phrases == []:
 		return None
 	if gs.child != []:
@@ -361,6 +364,15 @@ def main():
 	print sp[1]
 	for k in sp[2]:
 		print k+'='+sp[2][k]
+	
+	
+	phrases = _fenci(u'小白，开始认证123456!')
+	sp = _fensp(gset_all[u'认证语句'], phrases)
+	print sp[0]
+	print sp[1]
+	for k in sp[2]:
+		print k+'='+sp[2][k]
+	
 	
 if __name__ == '__main__':
 	main()
