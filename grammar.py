@@ -339,11 +339,10 @@ def _fensp(gs, phrases):
 					ress.append(res)
 					phrases = res[1]
 				else:
-					if gram != u'while_not':
-						return None
-					while not phrases[0].be(frame[i+1]):
-						ress.append((phrases[0], phrases[1:], {}))
-						phrases = phrases[1:]
+					if gram == u'while_not':
+						while not phrases[0].be(frame[i+1]):
+							ress.append((phrases[0], phrases[1:], {}))
+							phrases = phrases[1:]
 			sps = []
 			for res in ress:
 				sps.append(res[0])
