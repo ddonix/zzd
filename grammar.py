@@ -322,14 +322,24 @@ def main():
 	for s in sp:
 		print s.s
 
-	phrases = _fenci(u'认证身份123456')
+	phrases = _fenci(u'认证身份。口令是123456')
 	for p in phrases:
 		print p.s
-	sp = _fensp(gset_all[u'认证基本语句1'], phrases)
+	sp = _fensp(gset_all[u'认证语句'], phrases)
 	print sp[0]
 	print sp[1]
 	for k in sp[2]:
 		print k+'='+sp[2][k]
+	
+	phrases = _fenci(u'小白，开始认证身份。口令是123456。')
+	for p in phrases:
+		print p.s
+	sp = _fensp(gset_all[u'认证语句'], phrases)
+	print sp[0]
+	print sp[1]
+	for k in sp[2]:
+		print k+'='+sp[2][k]
+
 
 if __name__ == '__main__':
 	main()
