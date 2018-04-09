@@ -1,7 +1,8 @@
 #!/usr/bin/python -B
 # -*- coding: UTF-8 -*-
 import re
-import xlrd 
+import xlrd
+import copy
 
 gset_all = {}
 gset_zzd = []
@@ -122,7 +123,7 @@ class gset:
 class sentencephrase:
 	global gset_all
 	def __init__(self, arg, gs=None):
-		if type(arg[0]) == str or type(arg[0]) == unicode:
+		if type(arg) == list and type(arg[0]) == unicode:
 			describe = arg
 			self.s = describe[0]	#string
 			self.c = []				#child
@@ -138,7 +139,7 @@ class sentencephrase:
 					raise TypeError
 				self.addgs(gs)
 				gs.addsp(self)
-		else:
+		elif type(arg) == list and type(isinstance(arg[0], sentencephrase)):
 			senphr = arg
 			self.s = u''
 			self.c = senphr
@@ -149,6 +150,16 @@ class sentencephrase:
 			if gs != None:
 				self.addgs(gs)
 				gs.addsp(self)
+		elif isinstance(arg, sentencephrase):
+			self.s = arg.s
+			self.c = copy.deepcopy(arg.c)
+			self.len = arg.len
+			self.gs = set()
+			for gs in arg.gs:
+				self.addgs(gs)
+				gs.addsp(self)
+		else:
+			raise TypeError
 	
 	def be(self, gram):
 		gram = unicode(gram)
@@ -254,23 +265,31 @@ def _fenci(waa):
 	eword = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	while waa != '':
 		if waa[0] in anumber:
-			n = spbase_all[waa[0]][waa[0]]
+			n = sentencephrase(spbase_all[waa[0]][waa[0]])
+			gs = gset_all[u'阿拉伯数']
+			n.addgs(gs)
+			gs.addsp(n)
+			
 			waa = waa[1:]
 			while waa != u'' and waa[0] in anumber:
-				n = n+ spbase_all[waa[0]][waa[0]]
+				n.s += waa[0]
 				waa = waa[1:]
 			phrases.append(n)
 		elif waa[0] in eword:
-			n = spbase_all[waa[0]][waa[0]]
+			n = sentencephrase(spbase_all[waa[0]][waa[0]])
+			gs = gset_all[u'英文单词']
+			n.addgs(gs)
+			gs.addsp(n)
+			
 			waa = waa[1:]
 			while waa != u'' and waa[0] in eword:
-				n = n+ spbase_all[waa[0]][waa[0]]
+				n.s += waa[0]
 				waa = waa[1:]
 			phrases.append(n)
 		else:
 			for i in range(min(8,len(waa)),0,-1):
 				if waa[0:i] in spbase_all[waa[0]]:
-					phrases.append(spbase_all[waa[0]][waa[0:i]])
+					phrases.append(sentencephrase(spbase_all[waa[0]][waa[0:i]]))
 					waa = waa[i:]
 					break
 	if waa == '':
