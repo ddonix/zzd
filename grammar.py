@@ -97,6 +97,7 @@ class sentencephrase:
 				try:
 					gs = gset_all[gram]
 				except:
+					print 'E'+gram
 					raise TypeError
 				self.addgs(gs)
 				gs.addsp(self)
@@ -203,9 +204,7 @@ def initall():
 	for i in range(nrows):
 		v = sheet.row_values(i)
 		sp = sentencephrase(v)
-		print v[0][0]
 		assert len(v[0]) > 1
-		print v[0][0]
 		assert v[0][0] in spbase_all
 		spbase_all[v[0][0]][v[0]] = sp
 	book.release_resources()
@@ -327,7 +326,6 @@ def main():
 	for k in sp[2]:
 		print k+'='+sp[2][k]
 	
-	
 	phrases = _fenci(u'小白，开始认证123456!')
 	sp = _fensp(gset_all[u'认证语句'], phrases)
 	print sp[0]
@@ -338,34 +336,3 @@ def main():
 	
 if __name__ == '__main__':
 	main()
-'''	
-	print('grammar')
-	sp = fensp(u'S命令语句乙', u'播放歌曲!')
-	print sp,sp.s
-	sp = fensp(u'S命令语句乙', u'歌曲!')
-	print sp,sp.s
-	sp = fensp(u'谓语', u'播放')
-	print sp,sp.s
-	sp = fensp(u'宾语', u'歌曲')
-	print sp,sp.s
-	sp = fensp(u'S命令语句甲', u'播放歌曲')
-	print sp,sp.s
-	initall()
-	sp = fensp(u'S命令语句乙', u'播放歌曲!')
-	print sp,sp.s
-	sp = fensp(u'感叹号', u'!')
-	print sp.s
-	sp = fensp(u'感叹号', u'！')
-	#print sp.s
-	sp = fensp(u'名字', u'小白')
-	#print sp,sp.s
-	sp = fensp(u'主语', u'小白')
-	#print sp,sp.s
-	a = spbase_all[u'播放']
-	b = spbase_all[u'歌曲']
-	c = a+b
-	res = c.be(u'S命令语句甲')
-	print res
-	res = b.be(u'S命令语句甲')
-	print res
-'''
