@@ -153,7 +153,10 @@ class zzdcore1:
 		return zzdcore1.inWaaClass[bit[0][0]][1](self, friend, phrases, keyword)
 	
 	def _solve_verify(self, friend, phrases, keyword):
-		return (u'verify', {u'id':'314159'})
+		sp = grammar._fensp(u'认证语句', phrases)
+		if sp == None:
+			return (u'none', u'认证语法不对')
+		return (u'verify', {u'id':u'314159'})
 	
 	def _solve_math(self, friend, phrases, keyword):
 		return None
