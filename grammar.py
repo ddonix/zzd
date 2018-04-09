@@ -308,6 +308,12 @@ def _fensp(gs, phrases):
 							phrases = phrases[1:]
 						else:
 							return None
+					elif gram[0:2] == u'ws':
+						if phrases[0].s == gram[2:]:
+							ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
+							phrases = phrases[1:]
+						else:
+							continue
 					elif gram[0] == u'w':
 						assert gram[1:] in gset_all
 						g = gset_all[gram[1:]]
@@ -336,16 +342,7 @@ def main():
 	for s in sp:
 		print s.s
 
-	phrases = _fenci(u'认证身份。口令是123456')
-	for p in phrases:
-		print p.s
-	sp = _fensp(gset_all[u'认证语句'], phrases)
-	print sp[0]
-	print sp[1]
-	for k in sp[2]:
-		print k+'='+sp[2][k]
-	
-	phrases = _fenci(u'小白，开始认证身份。口令123456。')
+	phrases = _fenci(u'小白，认证。口令123456。')
 	for p in phrases:
 		print p.s
 	sp = _fensp(gset_all[u'认证语句'], phrases)
