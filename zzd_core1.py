@@ -154,8 +154,8 @@ class zzdcore1:
 		if sp == None:
 			return (u'none', u'认证语法不对')
 		else:
-			assert u'阿拉伯数' in sp[2]
-			return (u'verify', {u'id':sp[2][u'阿拉伯数']})
+			assert u'数' in sp[2]
+			return (u'verify', {u'id':sp[2][u'数']})
 	
 	def _solve_math(self, friend, phrases, keyword):
 		return None

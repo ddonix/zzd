@@ -8,22 +8,6 @@ gset_all = {}
 gset_zzd = []
 spbase_all = {}
 
-def	nl2frame(nl):
-	frame = []
-	if nl[0] == u'[' and nl[-1] == u']':
-		nl = nl[1:-1]
-		nl = nl.split(' ')
-		for f in nl:
-			if f == '':
-				continue
-			if f == u'...':
-				frame.append(u'while_not')
-			else:
-				frame.append(f)
-	if nl[0] == u'(' and nl[-1] == u')':#功能还没有实现，不是+，而是append。
-		pass
-	return frame
-
 class gset:
 	global gset_all 
 	def __init__(self, name, child):
@@ -84,7 +68,7 @@ class gset:
 		else:
 			raise TypeError
 	
-	def contain(self, s):		#s的信息不要用,也不要修改s的信息s在这里只读。
+	def contain(self, s):		
 		if not isinstance(s, sentencephrase):
 			raise TypeError
 		if s in self.sp:
@@ -95,30 +79,8 @@ class gset:
 				if res:
 					return res
 			return None
-		else:
-			nl = self.name
-			frame = []
-			if nl[0:3] == u'顺序:':
-				nl = nl[3:]
-				nl = nl.split(' ')
-				if len(nl) != s.len:
-					return None
-				for i,gram in enumerate(nl):
-					gs = gset_all[gram]
-					if gs.contain(s.c[i]) == None:
-						return None
-				return self
-			elif nl[0:3] == u'边界:':
-				nl = nl[3:]
-				nl = nl.split(' ')
-				l = gset_all[nl[0]]
-				r = gset_all[nl[1]]
-				if l.contain(s.c[0]) and r.contain(s.c[-1]):
-					return self
-				else:
-					return None
-			else:
-				return None
+		else:						#没子集的都是构造出来的，不需要进行处理.
+			return None
 	
 class sentencephrase:
 	global gset_all
@@ -135,7 +97,6 @@ class sentencephrase:
 				try:
 					gs = gset_all[gram]
 				except:
-					print 'ff'+gram+'gg'
 					raise TypeError
 				self.addgs(gs)
 				gs.addsp(self)
@@ -317,7 +278,10 @@ def _fensp(gs, phrases):
 		ress[0][2][gs.name] = ress[0][0].s
 		return ress[0]
 	else:
-		frame = nl2frame(gs.name)
+		if gs.name[0] == '[' and gs.name[-1] == u']':
+			frame = gs.name[1:-1].split(u' ')
+		else:
+			frame = []
 		key = {}
 		if frame == []:
 			if phrases[0].be(gs.name):
@@ -339,7 +303,7 @@ def _fensp(gs, phrases):
 					ress.append(res)
 					phrases = res[1]
 				else:
-					if gram == u'while_not':
+					if gram == u'...':
 						while not phrases[0].be(frame[i+1]):
 							ress.append((phrases[0], phrases[1:], {}))
 							phrases = phrases[1:]
