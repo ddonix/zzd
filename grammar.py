@@ -297,6 +297,7 @@ def _fenci(waa):
 	return None
 	
 def _fensp(gs, phrases):
+	print gs.name
 	if not phrases or phrases == []:
 		return None
 	if gs.child != []:
@@ -330,21 +331,22 @@ def _fensp(gs, phrases):
 					res = _fensp(g, phrases)
 					if res == None:
 						return None
-					else:
-						key[g.name] = res[0].s
-						ress.append(res)
-						phrases = res[1]
+					key[g.name] = res[0].s
+					for k in res[2]:
+						key[k] = res[2][k]
+					ress.append(res)
+					phrases = res[1]
 				else:
 					if gram != u'while_not':
 						return None
-					else:
-						while not phrases[0].be(frame[i+1]):
-							ress.append((phrases[0], phrases[1:], {}))
-							phrases = phrases[1:]
+					while not phrases[0].be(frame[i+1]):
+						ress.append((phrases[0], phrases[1:], {}))
+						phrases = phrases[1:]
 			sps = []
 			for res in ress:
 				sps.append(res[0])
 			sp = sentencephrase(sps, gs)
+			key[gs.name] = sp.s
 			return (sp, ress[-1][1], key)
 
 def main():
