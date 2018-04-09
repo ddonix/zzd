@@ -264,18 +264,12 @@ def _fensp(gs, phrases):
 		return None
 	if gs.child != []:
 		ress = []
-		for ch in gs.child:
-			res = _fensp(ch, phrases)
+		for i in range(-1,-len(gs.child)-1, -1):
+			res = _fensp(gs.child[i], phrases)
 			if res:
-				ress.append(res)
-		if ress == []:
-			return None
-		for res in ress:
-			if res[1] == []:
 				res[2][gs.name] = res[0].s
+				ress.append(res)
 				return res
-		ress[0][2][gs.name] = ress[0][0].s
-		return ress[0]
 	else:
 		if gs.name[0] == '[' and gs.name[-1] == u']':
 			frame = gs.name[1:-1].split(u' ')
@@ -304,8 +298,16 @@ def _fensp(gs, phrases):
 				else:
 					if gram == u'...':
 						while not phrases[0].be(frame[i+1]):
-							ress.append((phrases[0], phrases[1:], {}))
+							ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
 							phrases = phrases[1:]
+					elif gram[0] == u's':
+						if phrases[0].s == gram[1:]:
+							ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
+							phrases = phrases[1:]
+						else:
+							return None
+					else:
+						return None
 			sps = []
 			for res in ress:
 				sps.append(res[0])
@@ -319,20 +321,15 @@ def main():
 	sp = _fenci(u'播-234放word i like you 23403*234(44)歌+324!')
 	for s in sp:
 		print s.s
-	phrases = _fenci(u'认证123456!')
-	sp = _fensp(gset_all[u'认证语句'], phrases)
+
+	phrases = _fenci(u'认证身份123456')
+	for p in phrases:
+		print p.s
+	sp = _fensp(gset_all[u'认证基本语句1'], phrases)
 	print sp[0]
 	print sp[1]
 	for k in sp[2]:
 		print k+'='+sp[2][k]
-	
-	phrases = _fenci(u'小白，开始认证123456!')
-	sp = _fensp(gset_all[u'认证语句'], phrases)
-	print sp[0]
-	print sp[1]
-	for k in sp[2]:
-		print k+'='+sp[2][k]
-	
-	
+
 if __name__ == '__main__':
 	main()
