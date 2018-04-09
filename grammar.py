@@ -225,6 +225,7 @@ def initall():
 		gset_all[v[0]] = g
 		if v[0][0] == 'S':
 			gset_zzd.append([v[0], g])
+		print g.name
 	
 	sheet = book.sheet_by_name('table_vocable')
 	nrows = sheet.nrows
