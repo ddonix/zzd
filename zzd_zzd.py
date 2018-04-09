@@ -36,4 +36,4 @@ class zzd(zzd_unity.unity):
 		return waa
 	
 	def _trans_2_free(self, waa):
-		return waa
+		return waa[1]

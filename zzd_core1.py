@@ -85,15 +85,19 @@ class zzdcore1:
 	
 	def _verify(self, sen):
 		if self.state == 'init':
-			return (True, u'验证通过')
+			xlsfile = r"data/grammar.xls"		
+			book = xlrd.open_workbook(xlsfile)	
+			sheet = book.sheet_by_name(u'身份验证')
+			nrows = sheet.nrows
+			assert u'id' in sen
+			for i in range(nrows):
+				identify = sheet.row_values(i)
+				if sen[u'id'] == identify[0][2:]:
+					return (True, u'您的身份认证通过。谢谢您回来，您有什么想对我说的吗？')
+			return (False, u'认证失败。')
 		else:
-			return (False, u'您已经通过验证了，不需要再验证。')
+			return (False, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
 				
-				return (True, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
-			elif len(sen) == 10 and sen[2:10] == u'12345678':
-				return (True, u'您的身份认证通过。谢谢您回来，您有什么想对我说的吗？')
-			else:
-		
 	def _math(self, sen):
 		eq = sen
 		if eq.find(u'x') != -1:
@@ -149,7 +153,7 @@ class zzdcore1:
 		return zzdcore1.inWaaClass[bit[0][0]][1](self, friend, phrases, keyword)
 	
 	def _solve_verify(self, friend, phrases, keyword):
-		return (u'verify', None)
+		return (u'verify', {u'id':'314159'})
 	
 	def _solve_math(self, friend, phrases, keyword):
 		return None
