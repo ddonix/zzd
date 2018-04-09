@@ -52,7 +52,6 @@ class zzdcore1:
 		for i in range(nrows):
 			keyword = sheet.row_values(i)
 			zzdcore1.keyword_zzd[keyword[0]] = keyword[1:]
-		print zzdcore1.keyword_zzd
 		book.release_resources()
 
 	def inputs(self, friend, waa):
@@ -153,10 +152,14 @@ class zzdcore1:
 		return zzdcore1.inWaaClass[bit[0][0]][1](self, friend, phrases, keyword)
 	
 	def _solve_verify(self, friend, phrases, keyword):
-		sp = grammar._fensp(u'认证语句', phrases)
+		sp = grammar._fensp(grammar.gset_all[u'认证语句'], phrases)
 		if sp == None:
 			return (u'none', u'认证语法不对')
-		return (u'verify', {u'id':u'314159'})
+		else:
+			sp = sp[0]
+			for gs in sp.gs:
+				print gs.name
+			return (u'verify', {u'id':u'314159'})
 	
 	def _solve_math(self, friend, phrases, keyword):
 		return None
@@ -192,8 +195,8 @@ def main():
 	zzdcore1.init()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(None, u'认证12345678!')
-	print fc
+	fc = core1._trans_2_1(grammar.gset_all[u'认证语句'], u'认证12345678!')
+	print fc[0],fc[1]
 
 if __name__ == '__main__':
 	main()

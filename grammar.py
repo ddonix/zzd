@@ -10,18 +10,18 @@ spbase_all = {}
 
 def	nl2frame(nl):
 	frame = []
-	if nl[0:3] == u'顺序:':
-		nl = nl[3:]
+	if nl[0] == u'[' and nl[-1] == u']':
+		nl = nl[1:-1]
 		nl = nl.split(' ')
 		for f in nl:
-			if f != '':
+			if f == '':
+				continue
+			if f == u'...':
+				frame.append(u'while_not')
+			else:
 				frame.append(f)
-	elif nl[0:3] == u'边界:':
-		nl = nl[3:]
-		nl = nl.split(' ') 
-		frame.append(nl[0])
-		frame.append(u'while_not')
-		frame.append(nl[1])
+	if nl[0] == u'(' and nl[-1] == u')':#功能还没有实现，不是+，而是append。
+		pass
 	return frame
 
 class gset:
@@ -135,7 +135,7 @@ class sentencephrase:
 				try:
 					gs = gset_all[gram]
 				except:
-					print gram
+					print 'ff'+gram+'gg'
 					raise TypeError
 				self.addgs(gs)
 				gs.addsp(self)
@@ -225,7 +225,6 @@ def initall():
 		gset_all[v[0]] = g
 		if v[0][0] == 'S':
 			gset_zzd.append([v[0], g])
-		print g.name
 	
 	sheet = book.sheet_by_name('table_vocable')
 	nrows = sheet.nrows
@@ -297,13 +296,13 @@ def _fenci(waa):
 		return phrases
 	return None
 	
-def _fensp(gs, phrases):
+def _fensp(gs, phrases, key=None):
 	if not phrases or phrases == []:
 		return None
 	if gs.child != []:
 		ress = []
 		for ch in gs.child:
-			res = _fensp(ch, phrases)
+			res = _fensp(ch, phrases, key)
 			if res:
 				ress.append(res)
 		if ress == []:
@@ -324,7 +323,7 @@ def _fensp(gs, phrases):
 			for i, gram in enumerate(frame):
 				if gram in gset_all:
 					g = gset_all[gram]
-					res = _fensp(g, phrases)
+					res = _fensp(g, phrases, key)
 					if res == None:
 						return None
 					else:
@@ -349,6 +348,8 @@ def main():
 	sp = _fenci(u'播-234放word i like you 23403*234(44)歌+324!')
 	for s in sp:
 		print s.s
+	sp = fensp(u'认证语句', u'认证123456!')
+	print sp,sp.s
 
 if __name__ == '__main__':
 	main()
