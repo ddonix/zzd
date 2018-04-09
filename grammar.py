@@ -242,7 +242,9 @@ def initall():
 	for i in range(nrows):
 		v = sheet.row_values(i)
 		sp = sentencephrase(v)
+		print v[0][0]
 		assert len(v[0]) > 1
+		print v[0][0]
 		assert v[0][0] in spbase_all
 		spbase_all[v[0][0]][v[0]] = sp
 	book.release_resources()
@@ -261,32 +263,29 @@ def fensp(gram, waa):
 def _fenci(waa):
 	phrases = []
 	con = False
-	anumber =  u'0123456789'
-	eword = u'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	znumber =  u'0123456789'
+	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	while waa != '':
-		if waa[0] in anumber:
+		if waa[0] in znumber:
 			n = sentencephrase(spbase_all[waa[0]][waa[0]])
-			gs = gset_all[u'阿拉伯数']
+			gs = gset_all[u'数']
 			n.addgs(gs)
 			gs.addsp(n)
 			
 			waa = waa[1:]
-			while waa != u'' and waa[0] in anumber:
+			while waa != u'' and waa[0] in znumber:
 				n.s += waa[0]
 				waa = waa[1:]
-			if len(n.s) > 1:
-				n.gs.remove(gset_all[u'阿拉伯数字'])
-				gset_all[u'阿拉伯数字'].sp.remove(n)
 
 			phrases.append(n)
-		elif waa[0] in eword:
+		elif waa[0] in zstr[10:]:
 			n = sentencephrase(spbase_all[waa[0]][waa[0]])
-			gs = gset_all[u'英文单词']
+			gs = gset_all[u'字符串']
 			n.addgs(gs)
 			gs.addsp(n)
 			
 			waa = waa[1:]
-			while waa != u'' and waa[0] in eword:
+			while waa != u'' and waa[0] in zstr:
 				n.s += waa[0]
 				waa = waa[1:]
 			phrases.append(n)
