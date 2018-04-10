@@ -14,6 +14,8 @@ class gset:
 		self.name = unicode(name)
 		gset_all[self.name] = self
 		self.sp = set()		#明确表示的元素集合
+		self.plot = []		#明确的划分
+
 		self.father = None	#父集
 		self.child = []		#子集
 		for ch in child:
@@ -22,10 +24,20 @@ class gset:
 			if ch in gset_all:
 				ch = gset_all[ch]
 			else:
-				ch = gset(ch, [])
+				if ch[0] == u'[' and ch[-1] == u']':
+					ch = gset(ch, [])
+				elif ch[0] == u'(' and ch[-1] == u')':
+					print 'fffffffffffffffffffff'
 			ch.father = self
 			self.child.append(ch)
-	
+
+	def addplot(self, plot):
+		assert type(plot) == set
+		for gs in plot:
+			assert isinstance(gs, gset)
+			assert gs in self.child
+		self.plot.append(plot)
+
 	def __lt__(self, other): # if self < other: return True
 		gs = self.father
 		while gs:
@@ -62,6 +74,7 @@ class gset:
 			gs = gs.father
 		return False
 
+	
 	def addsp(self, s):
 		if isinstance(s, sentencephrase):
 			self.sp.add(s)
@@ -386,6 +399,7 @@ def main():
 	initall()
 
 	phrases = _fenci(u'小白认证,口令123456')
+	print(u'小白认证,口令123456')
 	for p in phrases:
 		print p.s
 	g = gset_all[u'认证语句']
