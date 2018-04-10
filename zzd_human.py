@@ -2,22 +2,23 @@
 # -*- coding:utf-8 -*- 
 import zzd_unity
 import xlrd
+import sqlite3
 
 class human(zzd_unity.unity):
-	table_vocable = None
-	def __init__(self):
+	table_vocable = set()
+	def __init__(self, name):
 		zzd_unity.unity.__init__(self)
 		self.waalist = []
+		self.name = name
     
 	@classmethod
 	def init(cls):
-		xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
-		book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
-		# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
-		sheet = book.sheet_by_name('table_vocable')
-		human.table_vocable = u'0123456789 '
-		human.table_vocable += u''.join([x for x in sheet.col_values(0) if type(x) != float])
-		book.release_resources()
+		conn = sqlite3.connect('./data/grammar.db')
+		cursor = conn.execute("select name from table_vocable")
+		for v in cursor:
+			assert len(v[0]) == 1
+			human.table_vocable.add(v[0])
+		conn.close()
 	
 	def act(self, dest, waa_out):
 		res = dest.echo(self, waa_out)
@@ -29,3 +30,10 @@ class human(zzd_unity.unity):
     
 	def forword(self, dest, waa_out):
 		return waa_out
+
+def main():
+	print('zzd_human')
+	human.init()
+
+if __name__ == '__main__':
+	main()

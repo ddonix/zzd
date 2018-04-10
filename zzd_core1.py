@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import grammar 
 import xlrd 
+import sqlite3
 
 #init:初始化。
 #stand：完成一次交互，等待下一次交互。没有预期。
@@ -18,12 +19,15 @@ MODE = ('work', 'train', 'debug')
 class zzdcore1:
 	inWaaClass = {}		#输入语句类型
 	defineDict = {}
+	identifyDict = {}
 	keyword_zzd = {}
 
 	def __init__(self):
 		self.sentence = []
 		self.state = 'init'
 		self.mode = 'work'
+		self.name = u'小白'
+		
 		self.friend = None
 		self.cursen = None
 	
@@ -36,26 +40,26 @@ class zzdcore1:
 		zzdcore1.inWaaClass[u'command'] = [zzdcore1._command, zzdcore1._solve_command]		#command
 		zzdcore1.inWaaClass[u'system'] = [zzdcore1._system, zzdcore1._solve_system]			#system
 		zzdcore1.inWaaClass[u'other'] = [zzdcore1._other, zzdcore1._solve_other]			#other
-		
-		xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
-		book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
-
-		# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
-		sheet = book.sheet_by_name(u'define')
-		nrows = sheet.nrows
-		for i in range(nrows):
-			defi = sheet.row_values(i)
+	
+		conn = sqlite3.connect('./data/grammar.db')
+		cursor = conn.execute("select * from gset_phrase")
+		for defi in cursor:
 			zzdcore1.defineDict[defi[0]] = defi[1]
 		
-		sheet = book.sheet_by_name(u'zzd关键字')
-		nrows = sheet.nrows
-		for i in range(nrows):
-			keyword = sheet.row_values(i)
+		cursor = conn.execute("select * from zzd_keyword")
+		for keyword in cursor:
 			zzdcore1.keyword_zzd[keyword[0]] = keyword[1:]
-		book.release_resources()
-
+			
+		cursor = conn.execute("select * from verify")
+		for guest in cursor:
+			print guest[0],guest[1]
+			zzdcore1.identifyDict[guest[0]] = guest[1]
+		conn.close()
+				
 	def inputs(self, friend, waa):
 		(head,sen) = self._trans_2_1(friend, waa)
+		self.friend = friend
+		
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
 			self.sentence.append([waa,(head,sen),outs])
@@ -84,15 +88,9 @@ class zzdcore1:
 	
 	def _verify(self, sen):
 		if self.state == 'init':
-			xlsfile = r"data/grammar.xls"		
-			book = xlrd.open_workbook(xlsfile)	
-			sheet = book.sheet_by_name(u'身份验证')
-			nrows = sheet.nrows
-			assert u'id' in sen
-			for i in range(nrows):
-				identify = sheet.row_values(i)
-				if sen[u'id'] == identify[0][2:]:
-					return (True, u'%s您好，身份认证通过。我有什么为您服务的吗？'%identify[1])
+			if sen[u'id'] in zzdcore1.identifyDict:
+				self.friend.name = zzdcore1.identifyDict[sen[u'id']]
+				return (True, u'%s您好，身份认证通过。我有什么为您服务的吗？'%self.friend.name)
 			return (False, u'认证失败。')
 		else:
 			return (False, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
@@ -138,7 +136,6 @@ class zzdcore1:
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
-			print k.s+'$$$'
 			assert k.s in zzdcore1.keyword_zzd
 			if zzdcore1.keyword_zzd[k.s][0] == u'other':
 				continue

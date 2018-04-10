@@ -71,7 +71,7 @@ def voicePlay(evt):
 
 def enterSen(waa):
 	for item in waa:
-		if -1 == zzd_human.human.table_vocable.find(item):
+		if not item in zzd_human.human.table_vocable:
 			zhdShow(u'对不起，我不认识\"%s\"这个字符。'%item)
 			return
 	xhh.act(zhd, waa)
@@ -101,7 +101,7 @@ def main():
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
 	
-	xhh = zzd_human.human()
+	xhh = zzd_human.human(u'nobody')
 	zhd = zzd_zzd.zzd(show=zhdShow)
 	
 	voice.voiceInit()

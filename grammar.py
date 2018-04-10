@@ -3,9 +3,9 @@
 import re
 import xlrd
 import copy
+import sqlite3
 
 gset_all = {}
-gset_zzd = []
 spbase_all = {}
 
 class gset:
@@ -19,7 +19,7 @@ class gset:
 		self.father = None	#父集
 		self.child = []		#子集
 		for ch in child:
-			if ch == u'':
+			if ch == u'' or ch == None:
 				continue
 			if ch in gset_all:
 				ch = gset_all[ch]
@@ -210,23 +210,22 @@ class gset:
 class sentencephrase:
 	global gset_all
 	def __init__(self, arg, gs=None):
-		if type(arg) == list and type(arg[0]) == unicode:
+		if type(arg) == tuple and type(arg[0]) == unicode:#从数据库中生成
 			describe = arg
 			self.s = describe[0]	#string
 			self.c = []				#child
 			self.len = 1
 			self.gs = set()			#
 			for gram in describe[1:]:
-				if gram == '':
+				if gram == '' or gram == None:
 					break
 				try:
 					gs = gset_all[gram]
 				except:
-					print 'E'+gram
 					raise TypeError
 				self.addgs(gs)
 				gs.addsp(self)
-		elif type(arg) == list and type(isinstance(arg[0], sentencephrase)):
+		elif type(arg) == list and type(isinstance(arg[0], sentencephrase)):#由gset生成
 			senphr = arg
 			self.s = u''
 			self.c = senphr
@@ -234,10 +233,10 @@ class sentencephrase:
 			self.len = len(senphr)
 			for sp in senphr:
 				self.s += sp.s
-			if gs != None:
-				self.addgs(gs)
-				gs.addsp(self)
-		elif type(arg) == str or type(arg) == unicode:
+			assert gs != None
+			self.addgs(gs)
+			gs.addsp(self)
+		elif type(arg) == unicode:
 			assert arg[0] in spbase_all
 			assert arg in spbase_all[arg[0]]
 			arg = spbase_all[arg[0]][arg]
@@ -302,49 +301,34 @@ class sentencephrase:
 
 def initall():
 	global gset_all
-	global gset_zzd
 	global spbase_all
 	
-	xlsfile = r"data/grammar.xls"		# 打开指定路径中的xls文件
-	book = xlrd.open_workbook(xlsfile)	#得到Excel文件的book对象，实例化对象
-	# 通过sheet名字来获取，当然如果知道sheet名字就可以直接指定
-	sheet = book.sheet_by_name('grammar_phrase')
-	nrows = sheet.nrows
-	for i in range(nrows):
-		v = sheet.row_values(i)
+	conn = sqlite3.connect('./data/grammar.db')
+	cursor = conn.execute("select * from gset_phrase")
+	for v in cursor:
 		g = gset(v[0], v[1:])
 		gset_all[v[0]] = g
 	
-	sheet = book.sheet_by_name('grammar_sentence')
-	nrows = sheet.nrows
-	for i in range(nrows):
-		v = sheet.row_values(i)
+	cursor = conn.execute("select * from gset_sentence")
+	for v in cursor:
 		g = gset(v[0], v[1:])
 		gset_all[v[0]] = g
-		if v[0][0] == 'S':
-			gset_zzd.append([v[0], g])
 	
-	sheet = book.sheet_by_name('table_vocable')
-	nrows = sheet.nrows
-	for i in range(nrows):
-		v = sheet.row_values(i)
-		if type(v[0]) == float:
-			v[0] = unicode(int(v[0]))
+	cursor = conn.execute("select * from table_vocable")
+	for v in cursor:
+		assert len(v[0]) == 1
 		sp = sentencephrase(v)
 		spbase_all[v[0]] = {v[0]:sp}
-	sp = sentencephrase([u' ', u'空格'])
+	sp = sentencephrase((u' ', u'空格'))
 	spbase_all[u' '] = {u' ':sp}
 	
-	sheet = book.sheet_by_name('table_phrase')
-	nrows = sheet.nrows
-	for i in range(nrows):
-		v = sheet.row_values(i)
-		sp = sentencephrase(v)
+	cursor = conn.execute("select * from table_phrase")
+	for v in cursor:
 		assert len(v[0]) > 1
 		assert v[0][0] in spbase_all
+		sp = sentencephrase(v)
 		spbase_all[v[0][0]][v[0]] = sp
-	book.release_resources()
-	
+	conn.close()
 
 def fensp(gram, waa):
 	if not gram in gset_all:
@@ -398,9 +382,7 @@ def _fenci(waa):
 def main():
 	print('grammar')
 	initall()
-
-	phrases = _fenci(u'小白认证,口令123456')
-	print(u'小白认证,口令123456')
+	phrases = _fenci(u'小白认证123456')
 	for p in phrases:
 		print p.s
 	g = gset_all[u'认证语句']
@@ -409,32 +391,17 @@ def main():
 	print sp[1]
 	for k in sp[2]:
 		print k+'='+sp[2][k]
-	
 
 if __name__ == '__main__':
 	main()
 '''	
-	sp = _fenci(u'播-234放word i like you 23403*234(44)歌+324!')
-	for s in sp:
-		print s.s
-'''
-'''
-						if self.name == u'逗号':
-							if phrases[0].be(u'标点符号'):
-								phrases[0] = sentencephrase(u'，')
-							else:
-								phrases.insert(0,sentencephrase(u'，'))
-						elif self.name == u'句号':
-							if phrases[0].be(u'标点符号'):
-								phrases[0] = sentencephrase(u'。')
-							else:
-								phrases.insert(0,sentencephrase(u'。'))
-						elif self.name == u'感叹号':
-							if phrases[0].be(u'标点符号'):
-								phrases[0] = sentencephrase(u'！')
-							else:
-								phrases.insert(0,(sentencephrase(u'！'))
-						else:
-							return None
-						return (phrases[0], phrases[1:], key)
-'''
+	sheet = book.sheet_by_name('grammar_sentence')
+	nrows = sheet.nrows
+	for i in range(nrows):
+		v = sheet.row_values(i)
+		g = gset(v[0], v[1:])
+		gset_all[v[0]] = g
+		if v[0][0] == 'S':
+			gset_zzd.append([v[0], g])
+	book.release_resources()
+'''	
