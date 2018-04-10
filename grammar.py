@@ -27,6 +27,7 @@ class gset:
 				if ch[0] == u'[' and ch[-1] == u']':
 					ch = gset(ch, [])
 				elif ch[0] == u'(' and ch[-1] == u')':
+					ch = ch[1:-1].split(' ')
 					print 'fffffffffffffffffffff'
 			ch.father = self
 			self.child.append(ch)
