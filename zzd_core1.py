@@ -27,7 +27,6 @@ class zzdcore1:
 		self.state = 'init'
 		self.mode = 'work'
 		self.name = u'小白'
-		
 		self.friend = None
 		self.cursen = None
 	
@@ -57,8 +56,8 @@ class zzdcore1:
 		conn.close()
 				
 	def inputs(self, friend, waa):
-		(head,sen) = self._trans_2_1(friend, waa)
 		self.friend = friend
+		(head,sen) = self._trans_2_1(waa)
 		
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
@@ -131,7 +130,7 @@ class zzdcore1:
 	def _other(self, phrases):
 		return self._sorry((u'system', sen))
 	
-	def _trans_2_1(self, friend, waa):
+	def _trans_2_1(self, waa):
 		phrases = grammar._fenci(waa)
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
@@ -144,10 +143,10 @@ class zzdcore1:
 				bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
 		if bit[0][1] == 0:
-			return zzdcore1.inWaaClass[u'other'][1](self, friend, phrases, keyword)
-		return zzdcore1.inWaaClass[bit[0][0]][1](self, friend, phrases, keyword)
+			return zzdcore1.inWaaClass[u'other'][1](self, phrases, keyword)
+		return zzdcore1.inWaaClass[bit[0][0]][1](self, phrases, keyword)
 	
-	def _solve_verify(self, friend, phrases, keyword):
+	def _solve_verify(self, phrases, keyword):
 		sp = grammar.gset_all[u'认证语句']._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'认证语法不对')
@@ -155,19 +154,19 @@ class zzdcore1:
 			assert u'数' in sp[2]
 			return (u'verify', {u'id':sp[2][u'数']})
 	
-	def _solve_math(self, friend, phrases, keyword):
+	def _solve_math(self, phrases, keyword):
 		return None
 	
-	def _solve_define(self, friend, phrases, keyword):
+	def _solve_define(self, phrases, keyword):
 		return None
 	
-	def _solve_command(self, friend, phrases, keyword):
+	def _solve_command(self, phrases, keyword):
 		return None
 	
-	def _solve_system(self, friend, phrases, keyword):
+	def _solve_system(self, phrases, keyword):
 		return None
 	
-	def _solve_other(self, friend, phrases, keyword):
+	def _solve_other(self, phrases, keyword):
 		return None
 
 	def _sorry(self, waa):
@@ -189,7 +188,7 @@ def main():
 	zzdcore1.init()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(grammar.gset_all[u'认证语句'], u'认证1313342345678!')
+	fc = core1._trans_2_1(u'认证1313342345678!')
 	print fc[0],fc[1]
 
 if __name__ == '__main__':
