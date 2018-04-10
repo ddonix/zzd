@@ -287,6 +287,40 @@ class sentencephrase:
 		res = sentencephrase(sps, None)
 		return res
 
+def gsetadd(name, yilai):
+	global gset_all
+	global	conn
+	
+	if name in gset_all:
+		return True
+	#sql = u'select * from gset_phrase where name=\'%s\''%name
+	sql = u'select * from gset_phrase where name=\'%s\''%name
+	print sql
+	
+	cursor = conn.execute(sql)
+	ok = True
+	print name
+	print cursor.fetchall()
+'''	gram = cursor.fetchall()[0]
+	conn.close()
+	print gram
+	for child in gram[1:]:
+		if child == '' or child == None:
+			continue
+		gsetadd(child, yilai)
+		print child
+	return ok
+'''
+'''	
+	for child in gram[1:]:
+		print child
+		if child == '' or child == None:
+			continue
+		if not gsetadd(child, yilai):
+			yilai.append(child)
+			ok = False
+'''	
+	
 def initall():
 	global gset_all
 	global spbase_all
@@ -362,18 +396,16 @@ def _fenci(waa, point):
 		return phrases
 	return None
 	
+conn = None
 def main():
 	print('grammar')
-	initall()
-	phrases = _fenci(u'小白，认证123456!', True)
-	for p in phrases:
-		print p.s
-	g = gset_all[u'认证语句']
-	sp = g._fensp(phrases, True)
-	print sp[0]
-	print sp[1]
-	for k in sp[2]:
-		print k+'='+sp[2][k]
+	#initall()
+	global conn
+	conn = sqlite3.connect('./data/grammar.db')
+	yilai = []
+	gsetadd(u'认证确认', yilai)
+	print yilai
+	conn.close()
 
 if __name__ == '__main__':
 	main()
@@ -388,3 +420,14 @@ if __name__ == '__main__':
 			gset_zzd.append([v[0], g])
 	book.release_resources()
 '''	
+'''	
+	phrases = _fenci(u'小白，认证123456!', True)
+	for p in phrases:
+		print p.s
+	g = gset_all[u'认证语句']
+	sp = g._fensp(phrases, True)
+	print sp[0]
+	print sp[1]
+	for k in sp[2]:
+		print k+'='+sp[2][k]
+'''

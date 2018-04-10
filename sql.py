@@ -6,7 +6,7 @@ import sys
 def main():
 	print('sql')
 	conn = sqlite3.connect('./data/grammar.db')
-	sql = u"select * from %s,gset_phrase where name=\'%s\'"%(sys.argv[2].decode('utf8'), sys.argv[1].decode('utf8'))
+	sql = u"select * from %s where name=\'%s\'"%(sys.argv[2].decode('utf8'), sys.argv[1].decode('utf8'))
 	print sql
 	cursor = conn.execute(sql)
 	for c in cursor:
