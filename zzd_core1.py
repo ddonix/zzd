@@ -151,7 +151,7 @@ class zzdcore1:
 		return zzdcore1.inWaaClass[bit[0][0]][1](self, friend, phrases, keyword)
 	
 	def _solve_verify(self, friend, phrases, keyword):
-		sp = grammar._fensp(grammar.gset_all[u'认证语句'], phrases)
+		sp = grammar.gset_all[u'认证语句']._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'认证语法不对')
 		else:
