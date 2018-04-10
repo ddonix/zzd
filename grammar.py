@@ -112,6 +112,17 @@ class sentencephrase:
 			if gs != None:
 				self.addgs(gs)
 				gs.addsp(self)
+		elif type(arg) == str or type(arg) == unicode:
+			assert arg[0] in spbase_all
+			assert arg in spbase_all[arg[0]]
+			arg = spbase_all[arg[0]][arg]
+			self.s = arg.s
+			self.c = copy.deepcopy(arg.c)
+			self.len = arg.len
+			self.gs = set()
+			for gs in arg.gs:
+				self.addgs(gs)
+				gs.addsp(self)
 		elif isinstance(arg, sentencephrase):
 			self.s = arg.s
 			self.c = copy.deepcopy(arg.c)
