@@ -9,7 +9,7 @@ gset_all = {}
 spbase_all = {}
 
 class gset:
-	global gset_all 
+	global gset_all
 	def __init__(self, name, child):
 		self.name = unicode(name)
 		gset_all[self.name] = self
@@ -131,24 +131,12 @@ class gset:
 				else:
 					if mend:
 						if self.name == u'逗号':
-							if phrases[0].be(u'标点符号'):
-								phrases[0] = sentencephrase(u'，')
-							else:
 								phrases.insert(0,sentencephrase(u'，'))
 						elif self.name == u'句号':
-							if phrases[0].be(u'标点符号'):
-								phrases[0] = sentencephrase(u'。')
-							else:
 								phrases.insert(0,sentencephrase(u'。'))
 						elif self.name == u'感叹号':
-							if phrases[0].be(u'标点符号'):
-								phrases[0] = sentencephrase(u'！')
-							else:
 								phrases.insert(0,sentencephrase(u'！'))
 						elif self.name == u'问号':
-							if phrases[0].be(u'标点符号'):
-								phrases[0] = sentencephrase(u'？')
-							else:
 								phrases.insert(0,sentencephrase(u'？'))
 						else:
 							return None
@@ -330,21 +318,12 @@ def initall():
 		spbase_all[v[0][0]][v[0]] = sp
 	conn.close()
 
-def fensp(gram, waa):
-	if not gram in gset_all:
-		return None
-	phrases = _fenci(waa)
-	res = _fensp(gset_all[gram], phrases)
-	if res and res[1] == []:
-		return res[0]
-	else:
-		return None
-
-def _fenci(waa):
+def _fenci(waa, point):
 	phrases = []
 	con = False
 	znumber =  u'0123456789'
 	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	zpoint = u'，。？！,.?!'
 	while waa != '':
 		if waa[0] in znumber:
 			n = sentencephrase(spbase_all[waa[0]][waa[0]])
@@ -369,6 +348,10 @@ def _fenci(waa):
 				n.s += waa[0]
 				waa = waa[1:]
 			phrases.append(n)
+		elif waa[0] in zpoint:
+			if point:
+				phrases.append(sentencephrase(waa[0]))
+			waa = waa[1:]
 		else:
 			for i in range(min(8,len(waa)),0,-1):
 				if waa[0:i] in spbase_all[waa[0]]:
@@ -382,7 +365,7 @@ def _fenci(waa):
 def main():
 	print('grammar')
 	initall()
-	phrases = _fenci(u'小白认证123456')
+	phrases = _fenci(u'小白，认证123456!', True)
 	for p in phrases:
 		print p.s
 	g = gset_all[u'认证语句']

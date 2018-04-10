@@ -58,7 +58,6 @@ class zzdcore1:
 	def inputs(self, friend, waa):
 		self.friend = friend
 		(head,sen) = self._trans_2_1(waa)
-		
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
 			self.sentence.append([waa,(head,sen),outs])
@@ -131,7 +130,7 @@ class zzdcore1:
 		return self._sorry((u'system', sen))
 	
 	def _trans_2_1(self, waa):
-		phrases = grammar._fenci(waa)
+		phrases = grammar._fenci(waa, False)
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
