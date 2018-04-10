@@ -115,6 +115,11 @@ class gset:
 								phrases[0] = sentencephrase(u'。')
 							else:
 								phrases.insert(0,sentencephrase(u'。'))
+						elif self.name == u'感叹号':
+							if phrases[0].be(u'标点符号'):
+								phrases[0] = sentencephrase(u'！')
+							else:
+								phrases.insert(0,sentencephrase(u'！'))
 						else:
 							return None
 						return (phrases[0], phrases[1:], key)
