@@ -119,6 +119,7 @@ class sentencephrase:
 			self.s = arg.s
 			self.c = copy.deepcopy(arg.c)
 			self.len = arg.len
+			
 			self.gs = set()
 			for gs in arg.gs:
 				self.addgs(gs)
