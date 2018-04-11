@@ -117,7 +117,11 @@ class zzdcore1:
 		return (True, val)
 	
 	def _define(self, sen):
-		return (True, sen[0]+u'是'+sen[1])
+		if sen in zzdcore1.defineDict:
+			explain = zzdcore1.defineDict[sen]
+			return (True, sen+u'是'+explain+u'。')
+		else:
+			return self._sorry((u'define', sen))
 	
 	def _command(self, sen):
 		com = sen.encode('utf8')
@@ -167,11 +171,8 @@ class zzdcore1:
 		if sp == None:
 			return (u'none', u'定义语法不对','')
 		else:
-			print sp[2][u'定义词']
 			assert u'定义词' in sp[2]
-			assert sp[2][u'定义词'] in zzdcore1.defineDict
-			explain = zzdcore1.defineDict[sp[2][u'定义词']]
-			return (u'define', (sp[2][u'定义词'], explain), sp[0].s)
+			return (u'define', sp[2][u'定义词'], sp[0].s)
 	
 	def _solve_command(self, phrases, keyword):
 		sp = grammar.gset_all[u'命令语句']._fensp(phrases, True)

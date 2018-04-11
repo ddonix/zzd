@@ -225,6 +225,7 @@ class sentencephrase:
 				try:
 					gs = gset_all[gram]
 				except:
+					print gram+'FFFFFFFF'
 					raise TypeError
 				self.addgs(gs)
 				gs.addsp(self)
