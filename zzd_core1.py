@@ -59,11 +59,11 @@ class zzdcore1:
 				
 	def inputs(self, friend, waa):
 		self.friend = friend
-		(head,sen) = self._trans_2_1(waa)
+		(head,sen,form) = self._trans_2_1(waa)
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
 			self.sentence.append([waa,(head,sen),outs])
-			return self._sorry((u'copy',outs))
+			return self._sorry((u'copy',outs),form)
 
 		if self.state == 'init':
 			if head == u'verify':
@@ -72,19 +72,19 @@ class zzdcore1:
 					self.state = 'stand'
 					self.friend = friend
 				self.sentence.append([waa,(head,sen),res])
-				return res
+				return (res,form)
 			else:
 				outs = u'对不起，您需要先进行身份认证!'
 				self.sentence.append([waa,(head,sen),outs])
-				return self._sorry((u'copy', outs))
+				return self._sorry((u'copy', outs),form)
 		elif self.mode == 'work':
 			assert head in zzdcore1.inWaaClass
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
 			self.sentence.append([waa,(head,sen),outs])
-			return outs
+			return (outs,form)
 		else:
 			outs = u'对不起，我懵了!'
-			return self._sorry((u'copy', outs))
+			return self._sorry((u'copy', outs),form)
 	
 	def _verify(self, sen):
 		if self.state == 'init':
@@ -153,10 +153,10 @@ class zzdcore1:
 	def _solve_verify(self, phrases, keyword):
 		sp = grammar.gset_all[u'认证语句']._fensp(phrases, True)
 		if sp == None:
-			return (u'none', u'认证语法不对')
+			return (u'none', u'认证语法不对', '')
 		else:
 			assert u'数' in sp[2]
-			return (u'verify', {u'id':sp[2][u'数']})
+			return (u'verify', {u'id':sp[2][u'数']}, sp[0].s)
 	
 	def _solve_math(self, phrases, keyword):
 		return None
@@ -167,7 +167,7 @@ class zzdcore1:
 	def _solve_command(self, phrases, keyword):
 		sp = grammar.gset_all[u'命令语句']._fensp(phrases, True)
 		if sp == None:
-			return (u'none', u'命令语法不对')
+			return (u'none', u'命令语法不对','')
 		else:
 			assert u'命令确认' in sp[2]
 			assert u'命令参数' in sp[2]
@@ -182,7 +182,7 @@ class zzdcore1:
 				exec(exe)
 			except:
 				return (u'none', u'命令语法错误')
-			return (u'command', res)
+			return (u'command', res,sp[0].s)
 	
 	def _solve_math(self, phrases, keyword):
 		return None
@@ -195,17 +195,17 @@ class zzdcore1:
 	def _solve_other(self, phrases, keyword):
 		return None
 
-	def _sorry(self, waa):
+	def _sorry(self, waa, form):
 		if waa[0] == u'copy':
-			return (False, waa[1])
+			return (False, waa[1], form)
 		elif waa[0] == u'define':
-			return (False, u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。')
+			return (False, u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。', form)
 		elif waa[0] == u'math':
-			return (False, u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。')
+			return (False, u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。', form)
 		elif waa[0] == u'command':
-			return (False, u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。')
+			return (False, u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。', form)
 		else:
-			return (False, u'对不起，我无法处理\"'+waa[1]+u'\"。')
+			return (False, u'对不起，我无法处理\"'+waa[1]+u'\"。', form)
 	
 	
 def main():

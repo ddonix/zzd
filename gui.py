@@ -56,13 +56,19 @@ def voiceRelease(evt):
 	else:
 		voicetrain = True
 
-def zhdShow(waa):
+def zhdShow(waa, form=''):
 	global autoplay
+	if form != '':
+		input_layer1.delete(0,'end')
+		input_layer1.insert(0, form)
+		input_layer1.update()
+	
 	entry_zzd.delete(0,'end')
 	entry_zzd.insert(0, waa)
 	entry_zzd.update()
 	if autoplay:
 		voice.txt2voice(waa)
+	
 	
 def voicePlay(evt):
 	global entry_zzd
