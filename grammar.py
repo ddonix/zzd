@@ -295,61 +295,47 @@ def gsetinit():
 	conn = sqlite3.connect('./data/grammar.db')
 	
 	cursor = conn.execute("select * from gset_phrase")
-	for v in cursor:
-		spbase_all[v[0]] = gset(v[0], v[1:])
-	
-	cursor = conn.execute("select * from gset_sentence")
-	for v in cursor:
-		spbase_all[v[0]] = gset(v[0], v[1:])
-	conn.close()
-
-'''
-	conn = sqlite3.connect('./data/grammar.db')
-	cursor = conn.execute("select * from gset_phrase")
 	v = cursor.fetchall()
 	cursor = conn.execute("select * from gset_sentence")
 	v.extend(cursor.fetchall())
 	conn.close()
-	for gs in v:
-		gset_all[gs[0]] = gset(gs[0], gs[-1:])
-'''
-'''
-		for g in gset[0][1:]:
+	#for v in vv:
+	#	gset(v[0], v[1:])
+		
 	while v != []:
 		print v[0][0]
 		if v[0][0] in gset_all:
 			v.pop(0)
 			continue
+		skip = True
 		for g in v[0][1:]:
 			if g == '' or g == None or (g in gset_all):
 				continue
-			if g[0] == u'[' and g[-1] == u']':
-				gsp = g[1:-1].split(' ')
-				ok = False
-				for gg in gsp:
-					if gg == '' or (gg in gset_all):
-						continue
-					if gg[0] == u's' and gg[1:] in gset_all:
-						continue
-					if gg[0] == u'p' and gg[1:] in gset_all:
-						continue
-					if gg[0] == u'w' and gg[1:] in gset_all:
-						continue
-					if gg[0:2] == u'ws':
-						continue
-					if gg == u'...':
-						continue
-					break
-				else:
-					ok = True
-				if ok:
+			if not (g[0] == u'[' and g[-1] == u']'):
+				break
+			gsp = g[1:-1].split(' ')
+			skip2 = True
+			for gg in gsp:
+				if gg == '' or gg == u'...' or gg[0] == u's' or gg[0:2] == u'ws' or (gg in gset_all):
 					continue
-				print 'dddd'+g
+				if gg[0] == u'p' and gg[1:] in gset_all:
+					continue
+				if gg[0] == u'w' and gg[1:] in gset_all:
+					continue
+				break
+			else:
+				skip2 = False
+			if skip2:
 				break
 		else:
-			gset(v[0][0], v[0][-1:])
+			gset(v[0][0], v[0][1:])
 			v.pop(0)
-'''
+			skip = False
+		if skip:
+			v.insert(1,v.pop(0))
+	
+	for name in gset_all:
+		print name, len(gset_all[name].child)
 	
 def spinit():
 	global spbase_all
