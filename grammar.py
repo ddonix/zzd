@@ -336,6 +336,7 @@ def gsetinit():
 						continue
 					if gg[0] == u'w' and gg[1:] in gset_all:
 						continue
+					print u'依赖%s'%gg
 					break
 				else:
 					skip2 = False
