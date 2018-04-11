@@ -23,14 +23,23 @@ class gset:
 				continue
 			if ch in gset_all:
 				ch = gset_all[ch]
+				ch.father = self
+				self.child.append(ch)
 			else:
-				if ch[0] == u'[' and ch[-1] == u']':
+				assert ch[0] == u'[' and ch[-1] == u']'
+				if not u'|' in ch:	
 					ch = gset(ch, [])
-				elif ch[0] == u'(' and ch[-1] == u')':
-					assert True	
-					ch = ch[1:-1].split(' ')
-			ch.father = self
-			self.child.append(ch)
+					ch.father = self
+					self.child.append(ch)
+				else:
+					plot = ch[1:-1].split(u'|')
+					plots = set()
+					for p in plot:
+						assert p in gset_all
+						self.child.append(gset_all[p])
+						gset_all[p].father = self
+						plots.add(gset_all[p])
+					self.plot.append(plots)
 
 	def addplot(self, plot):
 		assert type(plot) == set
@@ -313,20 +322,31 @@ def gsetinit():
 				continue
 			if not (g[0] == u'[' and g[-1] == u']'):
 				break
-			gsp = g[1:-1].split(' ')
-			skip2 = True
-			for gg in gsp:
-				if gg == '' or gg == u'...' or gg[0] == u's' or gg[0:2] == u'ws' or (gg in gset_all):
-					continue
-				if gg[0] == u'p' and gg[1:] in gset_all:
-					continue
-				if gg[0] == u'w' and gg[1:] in gset_all:
-					continue
-				break
+			if not u'|' in g:
+				gsp = g[1:-1].split(' ')
+				skip2 = True
+				for gg in gsp:
+					if gg == '' or gg == u'...' or gg[0] == u's' or gg[0:2] == u'ws' or (gg in gset_all):
+						continue
+					if gg[0] == u'p' and gg[1:] in gset_all:
+						continue
+					if gg[0] == u'w' and gg[1:] in gset_all:
+						continue
+					break
+				else:
+					skip2 = False
+				if skip2:
+					break
 			else:
-				skip2 = False
-			if skip2:
-				break
+				gsp = g[1:-1].split('|')
+				skip2 = True
+				for gg in gsp:
+					if not (gg == '' or (gg in gset_all)):
+						break
+				else:
+					skip2 = False
+				if skip2:
+					break
 		else:
 			gset(v[0][0], v[0][1:])
 			v.pop(0)
