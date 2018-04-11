@@ -136,11 +136,10 @@ class zzdcore1:
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
 			assert k.s in zzdcore1.keyword_zzd
-			if zzdcore1.keyword_zzd[k.s][0] == u'other':
-				continue
 			weight = zzdcore1.keyword_zzd[k.s][0].split(' ')
 			for i in range(0,len(weight),2):
-				bit[weight[i]] += int(weight[i+1])
+				if weight[i] != '':
+					bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
 		if bit[0][1] == 0:
 			return zzdcore1.inWaaClass[u'other'][1](self, phrases, keyword)
@@ -184,7 +183,8 @@ class zzdcore1:
 	
 def main():
 	print('zzd_core1')
-	grammar.initall()
+	grammar.gsetinit()
+	grammar.spinit()
 	zzdcore1.init()
 	core1 = zzdcore1()
 
