@@ -43,7 +43,7 @@ class zzdcore1:
 		zzdcore1.inWaaClass[u'other'] = [zzdcore1._other, zzdcore1._solve_other]			#other
 	
 		conn = sqlite3.connect('./data/grammar.db')
-		cursor = conn.execute("select * from gset_phrase")
+		cursor = conn.execute("select * from define")
 		for defi in cursor:
 			zzdcore1.defineDict[defi[0]] = defi[1]
 		
@@ -117,16 +117,17 @@ class zzdcore1:
 		return (True, val)
 	
 	def _define(self, sen):
-		o = zzdcore1.defineDict.get(sen)
-		if o == None:
-			return self._sorry((u'define',sen))
-		return (True, sen+u'是'+o)
+		return (True, sen[0]+u'是'+sen[1])
 	
 	def _command(self, sen):
 		com = sen.encode('utf8')
 		print com
-		os.system(com)
-		return (True, u'好的')
+		print os.getpid()
+		pid = os.fork()
+		if pid == 0:
+			os.system(com)
+		else:
+			return (True, u'好的')
 
 	def _system(self, phrases):
 		return self._sorry((u'system', sen))
@@ -139,6 +140,7 @@ class zzdcore1:
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
+			print '$$'+k.s+'00'
 			assert k.s in zzdcore1.keyword_zzd
 			weight = zzdcore1.keyword_zzd[k.s][0].split(' ')
 			for i in range(0,len(weight),2):
@@ -161,7 +163,15 @@ class zzdcore1:
 		return None
 	
 	def _solve_define(self, phrases, keyword):
-		return None
+		sp = grammar.gset_all[u'定义语句']._fensp(phrases, True)
+		if sp == None:
+			return (u'none', u'定义语法不对','')
+		else:
+			print sp[2][u'定义词']
+			assert u'定义词' in sp[2]
+			assert sp[2][u'定义词'] in zzdcore1.defineDict
+			explain = zzdcore1.defineDict[sp[2][u'定义词']]
+			return (u'define', (sp[2][u'定义词'], explain), sp[0].s)
 	
 	def _solve_command(self, phrases, keyword):
 		sp = grammar.gset_all[u'命令语句']._fensp(phrases, True)

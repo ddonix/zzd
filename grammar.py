@@ -4,7 +4,6 @@ import re
 import xlrd
 import copy
 import sqlite3
-from ipdb import set_trace
 
 gset_all = {}
 spbase_all = {}
@@ -433,10 +432,10 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'小白播放歌曲一瞬间', False)
+	phrases = _fenci(u'正方形是什么意思', False)
 	for p in phrases:
 		print p.s
-	g = gset_all[u'命令语句']
+	g = gset_all[u'定义语句']
 	sp = g._fensp(phrases, True)
 	print sp[0]
 	print sp[1]
