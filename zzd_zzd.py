@@ -22,7 +22,7 @@ class zzd(zzd_unity.unity):
 		waa = self._trans_free_2(waa_in)
 		waa_out = self.core.inputs(sour, waa)
 		waa_out = self._trans_2_free(waa_out)
-		self.show(waa_out, waa_out)
+		self.show(waa_out[0][1], waa_out[1])
 		return waa_out
     
 	def act(self, dest, waa_out):
@@ -35,4 +35,4 @@ class zzd(zzd_unity.unity):
 		return waa
 	
 	def _trans_2_free(self, waa):
-		return waa[1]
+		return waa

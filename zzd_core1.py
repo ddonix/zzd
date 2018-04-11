@@ -63,7 +63,7 @@ class zzdcore1:
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
 			self.sentence.append([waa,(head,sen),outs])
-			return self._sorry((u'copy',outs),form)
+			return (self._sorry((u'copy',outs)),form)
 
 		if self.state == 'init':
 			if head == u'verify':
@@ -76,7 +76,7 @@ class zzdcore1:
 			else:
 				outs = u'对不起，您需要先进行身份认证!'
 				self.sentence.append([waa,(head,sen),outs])
-				return self._sorry((u'copy', outs),form)
+				return (self._sorry((u'copy', outs)),form)
 		elif self.mode == 'work':
 			assert head in zzdcore1.inWaaClass
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
@@ -84,7 +84,7 @@ class zzdcore1:
 			return (outs,form)
 		else:
 			outs = u'对不起，我懵了!'
-			return self._sorry((u'copy', outs),form)
+			return (self._sorry(u'copy', outs),form)
 	
 	def _verify(self, sen):
 		if self.state == 'init':
@@ -123,11 +123,10 @@ class zzdcore1:
 		return (True, sen+u'是'+o)
 	
 	def _command(self, sen):
-		print sen
 		com = sen.encode('utf8')
 		print com
 		os.system(com)
-		return (False, u'Happy')
+		return (True, u'好的')
 
 	def _system(self, phrases):
 		return self._sorry((u'system', sen))
@@ -186,8 +185,6 @@ class zzdcore1:
 	
 	def _solve_math(self, phrases, keyword):
 		return None
-		print 'FFFFFFFFFFFFF'
-		return None
 	
 	def _solve_system(self, phrases, keyword):
 		return None
@@ -195,17 +192,17 @@ class zzdcore1:
 	def _solve_other(self, phrases, keyword):
 		return None
 
-	def _sorry(self, waa, form):
+	def _sorry(self, waa):
 		if waa[0] == u'copy':
-			return (False, waa[1], form)
+			return (False, waa[1])
 		elif waa[0] == u'define':
-			return (False, u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。', form)
+			return (False, u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。')
 		elif waa[0] == u'math':
-			return (False, u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。', form)
+			return (False, u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。')
 		elif waa[0] == u'command':
-			return (False, u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。', form)
+			return (False, u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。')
 		else:
-			return (False, u'对不起，我无法处理\"'+waa[1]+u'\"。', form)
+			return (False, u'对不起，我无法处理\"'+waa[1]+u'\"。')
 	
 	
 def main():
