@@ -123,8 +123,11 @@ class zzdcore1:
 		return (True, sen+u'是'+o)
 	
 	def _command(self, sen):
-		os.system(sen)
-		return (True, u'Happy')
+		print sen
+		com = sen.encode('utf8')
+		print com
+		os.system(com)
+		return (False, u'Happy')
 
 	def _system(self, phrases):
 		return self._sorry((u'system', sen))
@@ -207,8 +210,6 @@ class zzdcore1:
 	
 def main():
 	print('zzd_core1')
-	grammar.gsetinit()
-	grammar.spinit()
 	zzdcore1.init()
 	core1 = zzdcore1()
 
