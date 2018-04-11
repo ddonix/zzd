@@ -160,6 +160,17 @@ class zzdcore1:
 		return None
 	
 	def _solve_command(self, phrases, keyword):
+		sp = grammar.gset_all[u'命令语句']._fensp(phrases, True)
+		if sp == None:
+			return (u'none', u'命令语法不对')
+		else:
+			for k in sp[2]:
+				print k+'='+sp[2][k]
+			return (u'command', {})
+	
+	def _solve_math(self, phrases, keyword):
+		return None
+		print 'FFFFFFFFFFFFF'
 		return None
 	
 	def _solve_system(self, phrases, keyword):
@@ -188,7 +199,7 @@ def main():
 	zzdcore1.init()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(u'播放“一瞬间”')
+	fc = core1._trans_2_1(u'小白播放歌曲一瞬间')
 	print fc[0],fc[1]
 
 if __name__ == '__main__':

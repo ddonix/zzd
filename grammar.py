@@ -4,6 +4,7 @@ import re
 import xlrd
 import copy
 import sqlite3
+from ipdb import set_trace
 
 gset_all = {}
 spbase_all = {}
@@ -116,6 +117,8 @@ class gset:
 					phrases.insert(0,sentencephrase(u'！'))
 				elif self.name == u'问号':
 					phrases.insert(0,sentencephrase(u'？'))
+				elif self.name == u'下引号':
+					phrases.insert(0,sentencephrase(u'”'))
 				else:
 					return None
 				return (phrases[0], [], {})
@@ -147,6 +150,8 @@ class gset:
 								phrases.insert(0,sentencephrase(u'！'))
 						elif self.name == u'问号':
 								phrases.insert(0,sentencephrase(u'？'))
+						elif self.name == u'上引号':
+								phrases.insert(0,sentencephrase(u'“'))
 						else:
 							return None
 						return (phrases[0], phrases[1:], key)
@@ -168,9 +173,11 @@ class gset:
 						phrases = res[1]
 					else:
 						if gram == u'...':
-							while not phrases[0].be(frame[i+1]):
+							while not (phrases[0].be(frame[i+1])):
 								ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
 								phrases = phrases[1:]
+								if phrases == []:
+									break
 						elif gram[0] == u's':
 							if phrases[0].s == gram[1:]:
 								ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
@@ -308,11 +315,8 @@ def gsetinit():
 	cursor = conn.execute("select * from gset_sentence")
 	v.extend(cursor.fetchall())
 	conn.close()
-	#for v in vv:
-	#	gset(v[0], v[1:])
-		
 	while v != []:
-		print v[0][0]
+		print v[0][0],len(v)
 		if v[0][0] in gset_all:
 			v.pop(0)
 			continue
@@ -352,7 +356,9 @@ def gsetinit():
 			v.pop(0)
 			skip = False
 		if skip:
-			v.insert(1,v.pop(0))
+			tmp = v.pop(0)
+			v.append(tmp)
+
 	
 	for name in gset_all:
 		print name, len(gset_all[name].child)
@@ -426,10 +432,10 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'播放“一瞬间”', False)
+	phrases = _fenci(u'小白播放歌曲一瞬间', False)
 	for p in phrases:
 		print p.s
-	g = gset_all[u'播放确认']
+	g = gset_all[u'命令语句']
 	sp = g._fensp(phrases, True)
 	print sp[0]
 	print sp[1]
