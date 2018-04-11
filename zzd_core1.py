@@ -32,7 +32,8 @@ class zzdcore1:
 	
 	@classmethod
 	def init(cls):
-		grammar.initall()
+		grammar.gsetinit()
+		grammar.spinit()
 		zzdcore1.inWaaClass[u'verify'] = [zzdcore1._verify, zzdcore1._solve_verify]			#verify
 		zzdcore1.inWaaClass[u'math'] = [zzdcore1._math, zzdcore1._solve_math]				#math
 		zzdcore1.inWaaClass[u'define'] = [zzdcore1._define, zzdcore1._solve_define]			#define

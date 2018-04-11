@@ -27,8 +27,8 @@ class gset:
 				if ch[0] == u'[' and ch[-1] == u']':
 					ch = gset(ch, [])
 				elif ch[0] == u'(' and ch[-1] == u')':
+					assert True	
 					ch = ch[1:-1].split(' ')
-					print 'fffffffffffffffffffff'
 			ch.father = self
 			self.child.append(ch)
 
@@ -287,55 +287,74 @@ class sentencephrase:
 		res = sentencephrase(sps, None)
 		return res
 
-def gsetadd(name, yilai):
+def gsetinit():
 	global gset_all
-	global	conn
 	
-	if name in gset_all:
-		return True
 	#sql = u'select * from gset_phrase where name=\'%s\''%name
-	sql = u'select * from gset_phrase where name=\'%s\''%name
-	print sql
-	
-	cursor = conn.execute(sql)
-	ok = True
-	print name
-	print cursor.fetchall()
-'''	gram = cursor.fetchall()[0]
-	conn.close()
-	print gram
-	for child in gram[1:]:
-		if child == '' or child == None:
-			continue
-		gsetadd(child, yilai)
-		print child
-	return ok
-'''
-'''	
-	for child in gram[1:]:
-		print child
-		if child == '' or child == None:
-			continue
-		if not gsetadd(child, yilai):
-			yilai.append(child)
-			ok = False
-'''	
-	
-def initall():
-	global gset_all
-	global spbase_all
 	
 	conn = sqlite3.connect('./data/grammar.db')
+	
 	cursor = conn.execute("select * from gset_phrase")
 	for v in cursor:
-		g = gset(v[0], v[1:])
-		gset_all[v[0]] = g
+		spbase_all[v[0]] = gset(v[0], v[1:])
 	
 	cursor = conn.execute("select * from gset_sentence")
 	for v in cursor:
-		g = gset(v[0], v[1:])
-		gset_all[v[0]] = g
+		spbase_all[v[0]] = gset(v[0], v[1:])
+	conn.close()
+
+'''
+	conn = sqlite3.connect('./data/grammar.db')
+	cursor = conn.execute("select * from gset_phrase")
+	v = cursor.fetchall()
+	cursor = conn.execute("select * from gset_sentence")
+	v.extend(cursor.fetchall())
+	conn.close()
+	for gs in v:
+		gset_all[gs[0]] = gset(gs[0], gs[-1:])
+'''
+'''
+		for g in gset[0][1:]:
+	while v != []:
+		print v[0][0]
+		if v[0][0] in gset_all:
+			v.pop(0)
+			continue
+		for g in v[0][1:]:
+			if g == '' or g == None or (g in gset_all):
+				continue
+			if g[0] == u'[' and g[-1] == u']':
+				gsp = g[1:-1].split(' ')
+				ok = False
+				for gg in gsp:
+					if gg == '' or (gg in gset_all):
+						continue
+					if gg[0] == u's' and gg[1:] in gset_all:
+						continue
+					if gg[0] == u'p' and gg[1:] in gset_all:
+						continue
+					if gg[0] == u'w' and gg[1:] in gset_all:
+						continue
+					if gg[0:2] == u'ws':
+						continue
+					if gg == u'...':
+						continue
+					break
+				else:
+					ok = True
+				if ok:
+					continue
+				print 'dddd'+g
+				break
+		else:
+			gset(v[0][0], v[0][-1:])
+			v.pop(0)
+'''
 	
+def spinit():
+	global spbase_all
+	
+	conn = sqlite3.connect('./data/grammar.db')
 	cursor = conn.execute("select * from table_vocable")
 	for v in cursor:
 		assert len(v[0]) == 1
@@ -396,16 +415,20 @@ def _fenci(waa, point):
 		return phrases
 	return None
 	
-conn = None
 def main():
 	print('grammar')
-	#initall()
-	global conn
-	conn = sqlite3.connect('./data/grammar.db')
-	yilai = []
-	gsetadd(u'认证确认', yilai)
-	print yilai
-	conn.close()
+	gsetinit()
+	spinit()
+
+	phrases = _fenci(u'小白，认证123456!', True)
+	for p in phrases:
+		print p.s
+	g = gset_all[u'认证语句']
+	sp = g._fensp(phrases, True)
+	print sp[0]
+	print sp[1]
+	for k in sp[2]:
+		print k+'='+sp[2][k]
 
 if __name__ == '__main__':
 	main()
