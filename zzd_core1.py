@@ -188,7 +188,7 @@ def main():
 	zzdcore1.init()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(u'认证1313342345678!')
+	fc = core1._trans_2_1(u'播放“一瞬间”')
 	print fc[0],fc[1]
 
 if __name__ == '__main__':

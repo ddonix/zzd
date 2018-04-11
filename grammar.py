@@ -426,10 +426,10 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'认证身份，口令是,123456', False)
+	phrases = _fenci(u'播放“一瞬间”', False)
 	for p in phrases:
 		print p.s
-	g = gset_all[u'认证确认1']
+	g = gset_all[u'播放确认']
 	sp = g._fensp(phrases, True)
 	print sp[0]
 	print sp[1]
