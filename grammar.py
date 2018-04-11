@@ -426,10 +426,10 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'小白，认证123456!', True)
+	phrases = _fenci(u'认证身份，口令是,123456', False)
 	for p in phrases:
 		print p.s
-	g = gset_all[u'认证语句']
+	g = gset_all[u'认证确认1']
 	sp = g._fensp(phrases, True)
 	print sp[0]
 	print sp[1]
@@ -450,7 +450,7 @@ if __name__ == '__main__':
 	book.release_resources()
 '''	
 '''	
-	phrases = _fenci(u'小白，认证123456!', True)
+	phrases = _fenci(u'认证身份，口令是,认证123456', True)
 	for p in phrases:
 		print p.s
 	g = gset_all[u'认证语句']
