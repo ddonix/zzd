@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import grammar 
 import xlrd 
+import os 
 import sqlite3
 
 #init:初始化。
@@ -122,7 +123,8 @@ class zzdcore1:
 		return (True, sen+u'是'+o)
 	
 	def _command(self, sen):
-		return self._sorry((u'command', sen))
+		os.system(sen)
+		return (True, u'Happy')
 
 	def _system(self, phrases):
 		return self._sorry((u'system', sen))
@@ -164,9 +166,20 @@ class zzdcore1:
 		if sp == None:
 			return (u'none', u'命令语法不对')
 		else:
-			for k in sp[2]:
-				print k+'='+sp[2][k]
-			return (u'command', {})
+			assert u'命令确认' in sp[2]
+			assert u'命令参数' in sp[2]
+			print sp[2][u'命令确认']
+			print sp[2][u'命令参数']
+			assert sp[2][u'命令确认'][0:2] in zzdcore1.keyword_zzd
+			exe = zzdcore1.keyword_zzd[sp[2][u'命令确认'][0:2]][1]
+			arg = sp[2][u'命令参数']
+			print exe
+			res = ''
+			try:
+				exec(exe)
+			except:
+				return (u'none', u'命令语法错误')
+			return (u'command', res)
 	
 	def _solve_math(self, phrases, keyword):
 		return None
