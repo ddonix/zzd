@@ -14,7 +14,7 @@ class gset:
 		self.name = unicode(name)
 		gset_all[self.name] = self
 		self.sp = set()		#明确表示的元素集合
-		self.plot = []		#明确的划分
+		self.plot = {}		#明确的划分;要有名字：比如人按性别分为男人和女人
 
 		self.father = None	#父集
 		self.child = []		#子集
@@ -34,12 +34,12 @@ class gset:
 				else:
 					plot = ch[1:-1].split(u'|')
 					plots = set()
-					for p in plot:
+					for p in plot[1:]:
 						assert p in gset_all
 						self.child.append(gset_all[p])
 						gset_all[p].father = self
 						plots.add(gset_all[p])
-					self.plot.append(plots)
+					self.plot[plot[0]]=plots
 
 	def addplot(self, plot):
 		assert type(plot) == set
@@ -344,7 +344,7 @@ def gsetinit():
 			else:
 				gsp = g[1:-1].split('|')
 				skip2 = True
-				for gg in gsp:
+				for gg in gsp[1:]:
 					if not (gg == '' or (gg in gset_all)):
 						break
 				else:
