@@ -63,7 +63,7 @@ class zzdcore1:
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
 			self.sentence.append([waa,(head,sen),outs])
-			return (False, self._sorry(u'copy',outs),form)
+			return (self._sorry(u'copy',outs),form)
 
 		if self.state == 'init':
 			if head == u'verify':
@@ -203,10 +203,14 @@ class zzdcore1:
 			return (u'command', res,sp[0].s)
 	
 	def _solve_system(self, phrases, keyword):
-		return None
+		for ph in phrases:
+			print ph.s
+		return (u'none', u'对不起，出错了!', u'')
 	
 	def _solve_other(self, phrases, keyword):
-		return None
+		for ph in phrases:
+			print ph.s
+		return (u'none', u'对不起，出错了!', u'')
 
 	def _sorry(self, head, sen):
 		if head == u'copy':
