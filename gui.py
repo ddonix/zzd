@@ -19,20 +19,8 @@ output_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = False
+autoplay = True
 
-def mouse_press_event(evt):
-	return
-
-def mouse_release_event(evt):
-	return
-
-def mouse_movie_event(evt):
-	return
-
-def mouse_press_event_right(evt):
-	return
-	
 def voicePress(evt):
 	thread.start_new_thread(voice.start_record, ())
 	return
@@ -104,10 +92,6 @@ def main():
 	master = tk.Tk()
 	master.geometry('640x480+20+20')
 	
-	master.bind("<ButtonPress-1>",mouse_press_event)
-	master.bind("<ButtonRelease-1>",mouse_release_event)
-	master.bind("<Motion>",mouse_movie_event)
-	master.bind("<ButtonPress-3>",mouse_press_event_right)
 	master.bind("<Return>",return_event)
 	
 	entry_human = tk.Entry(master)

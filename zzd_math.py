@@ -44,32 +44,51 @@ def transNumber(data):
 
 def c2math(phrases):
 	res = []
-	tran1 = {u'加':u'+',u'加上':'+', u'减':u'-',u'减去':u'-','乘以':u'*', u'除以':u'/', u'大于':u'>',u'小于':u'<',u'等于':u'==',u'大于等于':'>=',u'小于等于':u'<=', u'不等于':u'!='}
+	tran1 = {u'加':u'+',u'加上':'+', u'减':u'-',u'减去':u'-',u'乘以':u'*', u'除以':u'/', u'大于':u'>',u'小于':u'<',u'等于':u'==',u'大于等于':'>=',u'小于等于':u'<=', u'不等于':u'!='}
 	tran2 = {u'乘':'*',u'除':u'/'}
 	x = False
+	rv = False
 	for ph in phrases:
 		if ph.be(u'汉语变量'):
 			x = True
 			break
-	for ph in phrases:
+	for i,ph in enumerate(phrases):
 		if ph.be(u'汉语数'):
-			res.append(unicode(transNumber(ph.s)))
+			if not rv:
+				res.append(unicode(transNumber(ph.s)))
+			else:
+				t = res[-2]
+				res[-2] = unicode(transNumber(ph.s))
+				res.append(t)
+		if ph.be(u'数'):
+			if not rv:
+				res.append(ph.s)
+			else:
+				t = res[-2]
+				res[-2] = transNumber(ph.s)
+				res.append(t)
+		if ph.be(u'汉语变量'):
+			if not rv:
+				res.append(u'x')
+			else:
+				t = res[-2]
+				res[-2] = u'x'
+				res.append(t)
+				
 		if ph.be(u'汉语运算符'):
 			if ph.s in tran1:
+				rv = False
 				res.append(tran1[ph.s])
 			else:
-				res.append(tran1[ph.s])
+				rv = True
+				print ph.s
+				res.append(tran2[ph.s])
 		if ph.be(u'汉语赋值符'):
 			if x:
 				res.append(u'=')
 			else:
 				res.append(u'==')
-		if ph.be(u'汉语变量'):
-			res.append(u'x')
-		if ph.be(u'数'):
-			res.append(ph.s)
 	return u''.join(res)
-
 
 def main():
 	print('zzd_math')

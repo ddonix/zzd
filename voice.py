@@ -70,7 +70,12 @@ def voice2txt():
 
 def txt2voice(txt):
 	global client
-	result = client.synthesis(txt, 'zh', 1, {'vol': 5,})
+	try:
+		a = int(txt)
+		res = 
+	except:
+		res = txt
+	result = client.synthesis(res, 'zh', 1, {'vol': 5,})
 	if not isinstance(result, dict):
 		with open('output2.mp3', 'wb') as f:
 			f.write(result)
