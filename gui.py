@@ -5,6 +5,7 @@ import Tkinter as tk           # 导入 Tkinter 库
 from PIL import Image
 import voice
 import thread 
+import grammar
 import zzd_human
 import zzd_zzd
 
@@ -77,7 +78,7 @@ def voicePlay(evt):
 
 def enterSen(waa):
 	for item in waa:
-		if not item in zzd_human.human.table_vocable:
+		if not item in grammar.table_vocable:
 			zhdShow(u'对不起，我不认识\"%s\"这个字符。'%item)
 			return
 	xhh.act(zhd, waa)

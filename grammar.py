@@ -7,6 +7,7 @@ import sqlite3
 
 gset_all = {}
 spbase_all = {}
+table_vocable = {u' '}
 
 class gset:
 	global gset_all
@@ -378,20 +379,23 @@ def gsetinit():
 		print name, len(gset_all[name].child)
 	
 def spinit():
-	global spbase_all
+	global spbase_all,table_vocable
 	conn = sqlite3.connect('./data/grammar.db')
 	cursor = conn.execute("select * from table_vocable")
+	table_vocable = set()
 	for v in cursor:
 		assert len(v[0]) == 1
 		sp = sentencephrase(v)
 		spbase_all[v[0]] = {v[0]:sp}
+		table_vocable.add(v[0])
 	sp = sentencephrase((u' ', u'空格'))
 	spbase_all[u' '] = {u' ':sp}
 	
 	cursor = conn.execute("select * from table_phrase")
 	for v in cursor:
 		assert len(v[0]) > 1
-		assert v[0][0] in spbase_all
+		for i in v[0]:
+			assert i in spbase_all
 		sp = sentencephrase(v)
 		spbase_all[v[0][0]][v[0]] = sp
 	conn.close()
@@ -462,7 +466,7 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'十加上三十等于几', False)
+	phrases = _fenci(u'十减去三十等于几', False)
 	for p in phrases:
 		print p.s
 	g = gset_all[u'数学语句']

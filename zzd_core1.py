@@ -20,8 +20,8 @@ MODE = ('work', 'train', 'debug')
 
 class zzdcore1:
 	inWaaClass = {}		#输入语句类型
-	defineDict = {}
 	identifyDict = {}
+	defineDict = {}
 	keyword_zzd = {}
 
 	def __init__(self):
@@ -47,15 +47,29 @@ class zzdcore1:
 		cursor = conn.execute("select * from define")
 		for defi in cursor:
 			zzdcore1.defineDict[defi[0]] = defi[1]
+			table_vocable 
+
 		
 		cursor = conn.execute("select * from zzd_keyword")
 		for keyword in cursor:
 			zzdcore1.keyword_zzd[keyword[0]] = keyword[1:]
-			
+			for d in keyword:
+				assert d in grammar.
+		
+		for sp in grammar.spbase_all:
+			for s in grammar.spbase_all[sp]:
+				if grammar.spbase_all[sp][s].be(u'zzd关键字'):
+					assert s in zzdcore1.keyword_zzd
+
 		cursor = conn.execute("select * from verify")
 		for guest in cursor:
 			zzdcore1.identifyDict[guest[0]] = guest[1]
 		conn.close()
+	
+	@classmethod
+	def verifydatabase(cls):
+		pass
+		
 				
 	def inputs(self, friend, waa):
 		self.friend = friend
@@ -229,10 +243,11 @@ class zzdcore1:
 def main():
 	print('zzd_core1')
 	zzdcore1.init()
+	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(u'1大于2吗')
-	print fc[0],fc[1]
+	#fc = core1._trans_2_1(u'1大于2吗')
+	#print fc[0],fc[1]
 
 if __name__ == '__main__':
 	main()
