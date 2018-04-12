@@ -53,7 +53,6 @@ class zzdcore1:
 			
 		cursor = conn.execute("select * from verify")
 		for guest in cursor:
-			print guest[0],guest[1]
 			zzdcore1.identifyDict[guest[0]] = guest[1]
 		conn.close()
 				
@@ -126,10 +125,10 @@ class zzdcore1:
 	def _command(self, sen):
 		com = sen.encode('utf8')
 		print com
-		print os.getpid()
 		pid = os.fork()
 		if pid == 0:
 			os.system(com)
+			sys.exit()
 		else:
 			return (True, u'好的')
 
@@ -163,7 +162,12 @@ class zzdcore1:
 			return (u'verify', {u'id':sp[2][u'数']}, sp[0].s)
 	
 	def _solve_math(self, phrases, keyword):
-		return None
+		sp = grammar.gset_all[u'数学语句']._fensp(phrases, True)
+		if sp == None:
+			return (u'none', u'数学语法不对', '')
+		else:
+			return (u'math', sp[0].s, sp[0].s)
+	
 	
 	def _solve_define(self, phrases, keyword):
 		sp = grammar.gset_all[u'定义语句']._fensp(phrases, True)
@@ -193,9 +197,6 @@ class zzdcore1:
 				return (u'none', u'命令语法错误')
 			return (u'command', res,sp[0].s)
 	
-	def _solve_math(self, phrases, keyword):
-		return None
-	
 	def _solve_system(self, phrases, keyword):
 		return None
 	
@@ -220,7 +221,7 @@ def main():
 	zzdcore1.init()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(u'小白播放歌曲一瞬间')
+	fc = core1._trans_2_1(u'1234+233+2*x=5006')
 	print fc[0],fc[1]
 
 if __name__ == '__main__':

@@ -172,11 +172,18 @@ class gset:
 						phrases = res[1]
 					else:
 						if gram == u'...':
-							while not (phrases[0].be(frame[i+1])):
-								ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
-								phrases = phrases[1:]
-								if phrases == []:
-									break
+							if i < len(frame)-1:
+								while not (phrases[0].be(frame[i+1])):
+									ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
+									phrases = phrases[1:]
+									if phrases == []:
+										break
+							else:
+								while True:
+									ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
+									phrases = phrases[1:]
+									if phrases == []:
+										break
 						elif gram[0] == u's':
 							if phrases[0].s == gram[1:]:
 								ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
@@ -423,9 +430,13 @@ def _fenci(waa, point):
 				waa = waa[1:]
 			phrases.append(n)
 		elif waa[0] in zpoint:
-			if point:
-				phrases.append(sentencephrase(waa[0]))
-			waa = waa[1:]
+			if waa[0:2] == u'!=' or waa[0:2] == u'！=':
+				phrases.append(sentencephrase(u'!='))
+				waa = waa[2:]
+			else:
+				if point:
+					phrases.append(sentencephrase(waa[0]))
+				waa = waa[1:]
 		else:
 			for i in range(min(8,len(waa)),0,-1):
 				if waa[0:i] in spbase_all[waa[0]]:
@@ -441,10 +452,10 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'正方形是什么意思', False)
+	phrases = _fenci(u'1234+233+2*x=5006', False)
 	for p in phrases:
 		print p.s
-	g = gset_all[u'定义语句']
+	g = gset_all[u'数学方程']
 	sp = g._fensp(phrases, True)
 	print sp[0]
 	print sp[1]
