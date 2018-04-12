@@ -21,7 +21,7 @@ output_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = True
+autoplay = False
 voicetrain = False 
 
 def mouse_press_event(evt):

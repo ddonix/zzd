@@ -45,20 +45,24 @@ class zzdcore1:
 	
 		conn = sqlite3.connect('./data/grammar.db')
 		cursor = conn.execute("select * from define")
-		for defi in cursor:
-			zzdcore1.defineDict[defi[0]] = defi[1]
-			table_vocable 
+		for define in cursor:
+			zzdcore1.defineDict[define[0]] = define[1]
+			for defi in define:
+				for d in defi:
+					if not d in grammar.table_vocable:
+						print '定义中没有在字符表中出现的字符',defi, d
+					assert d in grammar.table_vocable
 
 		
 		cursor = conn.execute("select * from zzd_keyword")
 		for keyword in cursor:
 			zzdcore1.keyword_zzd[keyword[0]] = keyword[1:]
-			for d in keyword:
-				assert d in grammar.
 		
 		for sp in grammar.spbase_all:
 			for s in grammar.spbase_all[sp]:
 				if grammar.spbase_all[sp][s].be(u'zzd关键字'):
+					if not s in zzdcore1.keyword_zzd:
+						print '在符号表中定义为zzd关键字，但是没有在关键字表中出现',s
 					assert s in zzdcore1.keyword_zzd
 
 		cursor = conn.execute("select * from verify")
@@ -156,7 +160,6 @@ class zzdcore1:
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
-			print k.s+'FFF'
 			assert k.s in zzdcore1.keyword_zzd
 			weight = zzdcore1.keyword_zzd[k.s][0].split(' ')
 			for i in range(0,len(weight),2):

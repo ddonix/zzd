@@ -395,6 +395,8 @@ def spinit():
 	for v in cursor:
 		assert len(v[0]) > 1
 		for i in v[0]:
+			if not i in spbase_all:
+				print '在词组表中出现的字符没有在字符表中出现',v[0],i
 			assert i in spbase_all
 		sp = sentencephrase(v)
 		spbase_all[v[0][0]][v[0]] = sp
