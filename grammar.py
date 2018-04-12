@@ -400,6 +400,7 @@ def _fenci(waa, point):
 	phrases = []
 	con = False
 	znumber =  u'0123456789'
+	cnumber =  u'零一二三四五六七八九十百千万'
 	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	zpoint = u'，。？！,.?!'
 	while waa != '':
@@ -411,6 +412,18 @@ def _fenci(waa, point):
 			
 			waa = waa[1:]
 			while waa != u'' and waa[0] in znumber:
+				n.s += waa[0]
+				waa = waa[1:]
+
+			phrases.append(n)
+		elif waa[0] in cnumber:
+			n = sentencephrase(spbase_all[waa[0]][waa[0]])
+			gs = gset_all[u'汉语数']
+			n.addgs(gs)
+			gs.addsp(n)
+			
+			waa = waa[1:]
+			while waa != u'' and waa[0] in cnumber:
 				n.s += waa[0]
 				waa = waa[1:]
 
@@ -449,7 +462,7 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'1>2', False)
+	phrases = _fenci(u'1大于2吗', False)
 	for p in phrases:
 		print p.s
 	g = gset_all[u'数学语句']

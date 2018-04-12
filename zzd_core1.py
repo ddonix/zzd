@@ -63,7 +63,7 @@ class zzdcore1:
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
 			self.sentence.append([waa,(head,sen),outs])
-			return (self._sorry((u'copy',outs)),form)
+			return (False, self._sorry(u'copy',outs),form)
 
 		if self.state == 'init':
 			if head == u'verify':
@@ -76,7 +76,7 @@ class zzdcore1:
 			else:
 				outs = u'对不起，您需要先进行身份认证!'
 				self.sentence.append([waa,(head,sen),outs])
-				return (self._sorry((u'copy', outs)),form)
+				return (False, self._sorry(u'copy', outs),form)
 		elif self.mode == 'work':
 			assert head in zzdcore1.inWaaClass
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
@@ -84,7 +84,7 @@ class zzdcore1:
 			return (outs,form)
 		else:
 			outs = u'对不起，我懵了!'
-			return (self._sorry(u'copy', outs),form)
+			return (False, self._sorry(u'copy', outs),form)
 	
 	def _verify(self, sen):
 		if self.state == 'init':
@@ -104,14 +104,14 @@ class zzdcore1:
 				val = int(-c.real/c.imag)
 				val = u'x='+str(val)
 			except:
-				return self._sorry((u'math', sen))
+				return (False, self._sorry(u'math', sen))
 		else:
 			try:
 				val = eval(eq)
 				val = u'对' if type(val) == bool and val else val
-				val = u'错' if type(val) == bool and val else val
+				val = u'错' if type(val) == bool and not val else val
 			except:
-				return self._sorry((u'math', sen))
+				return (False, self._sorry(u'math', sen))
 		return (True, val)
 	
 	def _define(self, sen):
@@ -119,7 +119,7 @@ class zzdcore1:
 			explain = zzdcore1.defineDict[sen]
 			return (True, sen+u'是'+explain+u'。')
 		else:
-			return self._sorry((u'define', sen))
+			return (False, self._sorry(u'define', sen))
 	
 	def _command(self, sen):
 		com = sen.encode('utf8')
@@ -168,8 +168,11 @@ class zzdcore1:
 			if u'数学判断' in sp[2] or u'数学方程' in sp[2]:
 				return (u'math', sp[0].s, sp[0].s)
 			else:
-				return (u'math', u'1+1=x', sp[0].s)
-	
+				sen = zzd_math.c2math(phrases)
+				if sen:
+					return (u'math', sen, sen)
+				else:
+					return (u'none', u'数学语法错误%s'%sp[0].s, sp[0].s)
 	
 	def _solve_define(self, phrases, keyword):
 		sp = grammar.gset_all[u'定义语句']._fensp(phrases, True)
@@ -205,17 +208,17 @@ class zzdcore1:
 	def _solve_other(self, phrases, keyword):
 		return None
 
-	def _sorry(self, waa):
-		if waa[0] == u'copy':
-			return (False, waa[1])
-		elif waa[0] == u'define':
-			return (False, u'对不起，我没有\"'+waa[1]+u'\"的定义。请进入训练模式，添加定义。')
-		elif waa[0] == u'math':
-			return (False, u'对不起，我无法计算\"'+waa[1]+u'\"。请检查表达式。')
-		elif waa[0] == u'command':
-			return (False, u'对不起，我无法执行\"'+waa[1]+u'\"。请检查命令。')
+	def _sorry(self, head, sen):
+		if head == u'copy':
+			return sen
+		elif head == u'define':
+			return u'对不起，我没有\"'+sen+u'\"的定义。请进入训练模式，添加定义。'
+		elif head == u'math':
+			return u'对不起，我无法计算\"'+sen+u'\"。请检查表达式。'
+		elif head == u'command':
+			return u'对不起，我无法执行\"'+sen+u'\"。请检查命令。'
 		else:
-			return (False, u'对不起，我无法处理\"'+waa[1]+u'\"。')
+			return u'对不起，我无法处理\"'+sen+u'\"。'
 	
 	
 def main():
@@ -223,7 +226,7 @@ def main():
 	zzdcore1.init()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(u'二十加三十等于几')
+	fc = core1._trans_2_1(u'1大于2吗')
 	print fc[0],fc[1]
 
 if __name__ == '__main__':
