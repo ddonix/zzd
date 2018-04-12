@@ -4,6 +4,7 @@ import grammar
 import xlrd 
 import os 
 import sqlite3
+import zzd_math
 
 #init:初始化。
 #stand：完成一次交互，等待下一次交互。没有预期。
@@ -107,10 +108,8 @@ class zzdcore1:
 		else:
 			try:
 				val = eval(eq)
-				if val:
-					val = u'对'
-				else:
-					val = u'错'
+				val = u'对' if type(val) == bool and val else val
+				val = u'错' if type(val) == bool and val else val
 			except:
 				return self._sorry((u'math', sen))
 		return (True, val)

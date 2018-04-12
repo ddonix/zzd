@@ -103,7 +103,6 @@ def main():
 	global entry_human,entry_zzd
 	global autoplay
 
-	autoplay = True
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
 	
