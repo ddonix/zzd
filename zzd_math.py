@@ -76,7 +76,7 @@ def main():
 	grammar.gsetinit()
 	grammar.spinit()
 
-	phrases = grammar._fenci(u'十五加三十等于多少', False)
+	phrases = grammar._fenci(u'十加上三十等于几', False)
 	for p in phrases:
 		print p.s
 	res = c2math(phrases)

@@ -462,7 +462,7 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'1大于2吗', False)
+	phrases = _fenci(u'十加上三十等于几', False)
 	for p in phrases:
 		print p.s
 	g = gset_all[u'数学语句']

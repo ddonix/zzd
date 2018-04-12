@@ -20,7 +20,7 @@ output_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = False
+autoplay = True
 voicetrain = False 
 
 def mouse_press_event(evt):
@@ -150,9 +150,6 @@ def main():
 	vinputButton = tk.Button(master, text = "加入训练")
 	vinputButton.place(x=500,y=80, width=80, height=20)
 	vinputButton.bind("<ButtonPress>", addTrain)
-	vinputButton = tk.Button(master, text = "设置/取消识别")
-	vinputButton.place(x=560,y=60, width=80, height=20)
-	vinputButton.bind("<ButtonPress>", voiceTrain)
 	
 	voutButton = tk.Button(master, text = "播放")
 	voutButton.place(x=560,y=150, width=60, height=20)

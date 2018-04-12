@@ -102,7 +102,7 @@ class zzdcore1:
 			try:
 				c = eval(eq1,{u'x':1j})
 				val = int(-c.real/c.imag)
-				val = u'x='+str(val)
+				val = str(val)
 			except:
 				return (False, self._sorry(u'math', sen))
 		else:
@@ -142,6 +142,7 @@ class zzdcore1:
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
+			print k.s+'FFF'
 			assert k.s in zzdcore1.keyword_zzd
 			weight = zzdcore1.keyword_zzd[k.s][0].split(' ')
 			for i in range(0,len(weight),2):
