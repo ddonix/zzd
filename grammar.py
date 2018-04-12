@@ -179,6 +179,8 @@ class gset:
 									if phrases == []:
 										break
 							else:
+								if phrases == []:
+									break
 								while True:
 									ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
 									phrases = phrases[1:]
@@ -447,10 +449,10 @@ def main():
 	gsetinit()
 	spinit()
 
-	phrases = _fenci(u'1234+233+2*x=5006', False)
+	phrases = _fenci(u'二十加三十等于几', False)
 	for p in phrases:
 		print p.s
-	g = gset_all[u'数学方程']
+	g = gset_all[u'数学语句']
 	sp = g._fensp(phrases, True)
 	print sp[0]
 	print sp[1]

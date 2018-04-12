@@ -166,7 +166,10 @@ class zzdcore1:
 		if sp == None:
 			return (u'none', u'数学语法不对', '')
 		else:
-			return (u'math', sp[0].s, sp[0].s)
+			if u'数学判断' in sp[2] or u'数学方程' in sp[2]:
+				return (u'math', sp[0].s, sp[0].s)
+			else:
+				return (u'math', u'1+1=x', sp[0].s)
 	
 	
 	def _solve_define(self, phrases, keyword):
@@ -221,7 +224,7 @@ def main():
 	zzdcore1.init()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(u'1234+233+2*x=5006')
+	fc = core1._trans_2_1(u'二十加三十等于几')
 	print fc[0],fc[1]
 
 if __name__ == '__main__':
