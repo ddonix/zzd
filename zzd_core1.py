@@ -144,7 +144,6 @@ class zzdcore1:
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
-			print '$$'+k.s+'00'
 			assert k.s in zzdcore1.keyword_zzd
 			weight = zzdcore1.keyword_zzd[k.s][0].split(' ')
 			for i in range(0,len(weight),2):

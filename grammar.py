@@ -188,7 +188,10 @@ class gset:
 								ress.append((sentencephrase(phrases[0]), phrases[1:], {}))
 								phrases = phrases[1:]
 							else:
-								continue
+								if mend:
+									ress.append((sentencephrase(gram[2:]), phrases, {}))
+								else:
+									continue
 						elif gram[0] == u'w':
 							assert gram[1:] in gset_all
 							g = gset_all[gram[1:]]
@@ -200,7 +203,12 @@ class gset:
 								ress.append(res)
 								phrases = res[1]
 							else:
-								continue
+								if mend and len(g.sp) == 1:
+									for ph in g.sp:
+										ress.append((ph, phrases, {}))
+										break
+								else:
+									continue
 						else:
 							return None
 				sps = []

@@ -20,7 +20,7 @@ output_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = True
+autoplay = False
 voicetrain = False 
 
 def mouse_press_event(evt):
@@ -103,7 +103,7 @@ def main():
 	global entry_human,entry_zzd
 	global autoplay
 
-	autoplay = True
+	autoplay = False
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
 	
