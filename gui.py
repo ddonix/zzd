@@ -12,8 +12,6 @@ import zzd_zzd
 xhh = None
 zhd = None
 
-input_layer0 = None
-output_layer0 = None
 
 input_layer1 = None
 output_layer1 = None
@@ -22,7 +20,6 @@ entry_human = None
 entry_zzd = None
 	
 autoplay = False
-voicetrain = False 
 
 def mouse_press_event(evt):
 	return
@@ -41,7 +38,7 @@ def voicePress(evt):
 	return
 
 def voiceRelease(evt):
-	global entry_human,voicetrain
+	global entry_human
 	
 	voice.stop_record()
 	waa = voice.voice2txt()
@@ -52,17 +49,15 @@ def voiceRelease(evt):
 	entry_human.delete(0,'end')
 	entry_human.insert(0, waa)
 	
-	if not voicetrain:
-		enterSen(waa)
-	else:
-		voicetrain = True
+	enterSen(waa)
 
 def zhdShow(waa, form=''):
 	global autoplay
+	
+	input_layer1.delete(0,'end')
 	if form != '':
-		input_layer1.delete(0,'end')
 		input_layer1.insert(0, form)
-		input_layer1.update()
+	input_layer1.update()
 	
 	entry_zzd.delete(0,'end')
 	entry_zzd.insert(0, waa)
@@ -89,12 +84,6 @@ def return_event(evt):
 	if waa == u'':
 		return
 	enterSen(waa)
-
-def voiceTrain(evt):
-	voicetrain = not voicetrain
-
-def addTrain(evt):
-	voicetrain = not voicetrain
 
 def main():
 	global xhh,zhd
@@ -125,19 +114,13 @@ def main():
 	entry_human.place(x=95, y=40, width=400, height=20)
 	input_layer1 = tk.Entry(master)
 	input_layer1.place(x=95, y=60, width=400, height=20)
-	input_layer0 = tk.Entry(master)
-	input_layer0.place(x=95, y=80, width=400, height=20)
 	tk.Label(master,text = "entry_human").place(x=5, y=40, width=90, height=20)
 	tk.Label(master,text = "input_layer1").place(x=5, y=60, width=90, height=20)
-	tk.Label(master,text = "input_layer0").place(x=5, y=80, width=90, height=20)
 	
-	output_layer0 = tk.Entry(master)
-	output_layer0.place(x=95, y=110, width=400, height=20)
 	output_layer1 = tk.Entry(master)
 	output_layer1.place(x=95, y=130, width=400, height=20)
 	entry_zzd = tk.Entry(master)
 	entry_zzd.place(x=95, y=150, width=400, height=20)
-	tk.Label(master,text = "output_layer0").place(x=5, y=110, width=90, height=20)
 	tk.Label(master,text = "output_layer1").place(x=5, y=130, width=90, height=20)
 	tk.Label(master,text = "entry_zzd").place(x=5, y=150, width=90, height=20)
 	
@@ -147,10 +130,6 @@ def main():
 	vinputButton.place(x=560,y=40, width=60, height=20)
 	vinputButton.bind("<ButtonPress>", voicePress)
 	vinputButton.bind("<ButtonRelease>", voiceRelease)
-	
-	vinputButton = tk.Button(master, text = "加入训练")
-	vinputButton.place(x=500,y=80, width=80, height=20)
-	vinputButton.bind("<ButtonPress>", addTrain)
 	
 	voutButton = tk.Button(master, text = "播放")
 	voutButton.place(x=560,y=150, width=60, height=20)

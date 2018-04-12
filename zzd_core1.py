@@ -226,8 +226,29 @@ class zzdcore1:
 		return (u'none', u'对不起，出错了!', u'')
 	
 	def _solve_other(self, phrases, keyword):
-		for ph in phrases:
-			print ph.s
+		ph = [x for x in phrases]
+		res = self._solve_verify(ph, keyword)
+		if res[0] != u'none':
+			return res
+		
+		ph = [x for x in phrases]
+		res = self._solve_define(ph, keyword)
+		if res[0] != u'none':
+			return res
+		
+		ph = [x for x in phrases]
+		res = self._solve_command(ph, keyword)
+		if res[0] != u'none':
+			return res
+		
+		ph = [x for x in phrases]
+		res = self._solve_math(ph, keyword)
+		if res[0] != u'none':
+			return res
+		
+		res = self._solve_system(phrases, keyword)
+		if res[0] != u'none':
+			return res
 		return (u'none', u'对不起，出错了!', u'')
 
 	def _sorry(self, head, sen):
@@ -249,8 +270,8 @@ def main():
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
 
-	#fc = core1._trans_2_1(u'1大于2吗')
-	#print fc[0],fc[1]
+	fc = core1._trans_2_1(u'1大于2吗')
+	print fc[0],fc[1]
 
 if __name__ == '__main__':
 	main()
