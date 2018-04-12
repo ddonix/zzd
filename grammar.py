@@ -240,7 +240,6 @@ class sentencephrase:
 				try:
 					gs = gset_all[gram]
 				except:
-					print gram+'FFFFFFFF'
 					raise TypeError
 				self.addgs(gs)
 				gs.addsp(self)
@@ -331,7 +330,6 @@ def gsetinit():
 	v.extend(cursor.fetchall())
 	conn.close()
 	while v != []:
-		print v[0][0],len(v)
 		if v[0][0] in gset_all:
 			v.pop(0)
 			continue
@@ -374,14 +372,11 @@ def gsetinit():
 		if skip:
 			tmp = v.pop(0)
 			v.append(tmp)
-
-	
 	for name in gset_all:
 		print name, len(gset_all[name].child)
 	
 def spinit():
 	global spbase_all
-	
 	conn = sqlite3.connect('./data/grammar.db')
 	cursor = conn.execute("select * from table_vocable")
 	for v in cursor:

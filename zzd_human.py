@@ -19,6 +19,7 @@ class human(zzd_unity.unity):
 			assert len(v[0]) == 1
 			human.table_vocable.add(v[0])
 		conn.close()
+		human.table_vocable.add(u' ')
 	
 	def act(self, dest, waa_out):
 		res = dest.echo(self, waa_out)
