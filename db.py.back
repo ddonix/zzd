@@ -4,13 +4,6 @@ import re
 import xlrd
 import copy
 import sqlite3
-	
-gset_all = {}
-spbase_all = {}
-table_vocable = {u' '}
-identifyDict = {}
-defineDict = {}
-keyword_zzd = {}
 
 
 class gset:
@@ -494,6 +487,18 @@ def coreinit():
 		identifyDict[guest[0]] = guest[1]
 	conn.close()
 
+class database:
+	gset_all = {}
+	spbase_all = {}
+	table_vocable = {u' '}
+	identifyDict = {}
+	defineDict = {}
+	keyword_zzd = {}
+	
+	@classmethod
+	def init(cls):
+
+	
 def main():
 	print('db')
 	gsetinit()
