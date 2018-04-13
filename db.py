@@ -414,10 +414,11 @@ class seph:
 			raise TypeError
 	
 	def setattr(self, name, value):
-		assert self.be(gram)
+		
+		return None
 
 	def getattr(self, name):
-		assert self.be(gram)
+		return None
 
 	def addgs(self, gs):
 		assert isinstance(gs, gset)
@@ -527,12 +528,11 @@ def main():
 	gs = database.gs(u'人')
 	sp1 = database.sp(u'李冬')
 	print '.......................'
+	sp1.setattr(u'性别', u'男人')
 	print gs.contain(sp1).name
-	sp1._setattr(u'人', u'性别', u'男人')
+	sp1.setattr(u'性别', u'女人')
 	print gs.contain(sp1).name
-	sp1._setattr(u'人', u'性别', u'女人')
-	print gs.contain(sp1).name
-	sp1._setattr(u'人', u'性别', u'男人')
+	sp1.setattr(u'性别', u'男人')
 	print gs.contain(sp1).name
 
 if __name__ == '__main__':
