@@ -238,7 +238,7 @@ class gset:
 			return self
 		if self.child != []:
 			for ch in self.child:
-				res = ch.contain(sp)
+				res = ch.contain(s)
 				if res:
 					return res
 		return None

@@ -3,7 +3,7 @@
 import xlrd 
 import os 
 import sqlite3
-import db 
+import db
 import zzd_math
 
 #init:初始化。
@@ -31,9 +31,9 @@ class zzdcore1:
 	
 	@classmethod
 	def init(cls):
-		db.gsetinit()
-		db.spinit()
-		db.coreinit()
+		db.database.gsinit()
+		db.database.spinit()
+		db.database.coreinit()
 		
 		zzdcore1.inWaaClass[u'verify'] = [zzdcore1._verify, zzdcore1._solve_verify]			#verify
 		zzdcore1.inWaaClass[u'math'] = [zzdcore1._math, zzdcore1._solve_math]				#math
@@ -129,12 +129,12 @@ class zzdcore1:
 		return self._sorry((u'system', sen))
 	
 	def _trans_2_1(self, waa):
-		phrases = db._fenci(waa, False)
+		phrases = db.fenci(waa, False)
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
-			assert k.s in db.keyword_zzd
-			weight = db.keyword_zzd[k.s][0].split(' ')
+			assert k.s in db.database._keyword_zzd
+			weight = db.database._keyword_zzd[k.s][0].split(' ')
 			for i in range(0,len(weight),2):
 				if weight[i] != '':
 					bit[weight[i]] += int(weight[i+1])
@@ -152,7 +152,7 @@ class zzdcore1:
 			return (u'verify', {u'id':sp[2][u'数']}, sp[0].s)
 	
 	def _solve_math(self, phrases, keyword):
-		sp = db.gset_all[u'数学语句']._fensp(phrases, True)
+		sp = db.database.gs(u'数学语句')._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'数学语法不对', '')
 		else:
