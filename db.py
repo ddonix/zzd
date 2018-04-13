@@ -471,6 +471,7 @@ def main():
 	
 	sp1 = database.sp(u'李冬')
 	sp1._setattr(u'人', u'性别', u'男')
+	
 	print sp1._getattr(u'人', u'性别')
 
 if __name__ == '__main__':
