@@ -9,6 +9,7 @@ class database:
 	_gset_all = {}
 	_spbase_all = {}
 	_table_vocable = {u' '}
+	
 	_identifyDict = {}
 	_defineDict = {}
 	_keyword_zzd = {}
@@ -55,7 +56,7 @@ class database:
 
 	@classmethod
 	def addsp(cls, sp):
-		assert isinstance(sp, sentencephrase)
+		assert isinstance(sp, seph)
 		assert len(sp.s) >= 1
 		if len(sp.s) == 1:
 			cls._spbase_all[sp.s[0]] = {sp.s:sp}
@@ -131,29 +132,63 @@ class database:
 			raise NameError
 		for v in cursor:
 			assert len(v[0]) == 1
-			sp = sentencephrase(v[0])
+			sp = seph(v[0])
 			database.addsp(sp)
 			database.addv(v[0][0])
 			
 			for g in v[1:]:
-				gs = database.gs(g)
-				gs.addsp(sp)
+				if not (g == '' or g == None):
+					database.gs(g).addsp(sp)
+		
 		try:
 			cursor = conn.execute("select * from table_phrase")
 		except:
 			raise NameError
 		for v in cursor:
 			assert len(v[0]) > 1
-			if not database.legal(v):
+			if not database.legal(v[0]):
 				raise NameError
-			sp = sentencephrase(v)
+			sp = seph(v)
 			database.addsp(sp)
 			
 			for g in v[1:]:
-				gs = database.gs(g)
-				gs.addsp(sp)
+				if not (g == '' or g == None):
+					database.gs(g).addsp(sp)
 		conn.close()
+
+	def coreinit(cls):
+		try:
+			conn = sqlite3.connect('./data/grammar.db')
+			cursor = conn.execute("select * from define")
+		except:
+			raise NameError
+		
+		for define in cursor:
+			if not database.legal(define[0]):
+				raise TypeError
+			if not database.legal(define[1]):
+				raise TypeError
+			cls._defineDict[define[0]] = define[1]
+
+		try:
+			cursor = conn.execute("select * from zzd_keyword")
+		except:
+			raise NameError
+		for keyword in cursor:
+			if not cls.spin(keyword[0]):
+				raise TypeError
+			cls._keyword_zzd[keyword[0]] = keyword[1:]
 	
+		for sp in cls.gs(u'zzd关键字').sp:
+			if not sp in keyword_zzd:
+				print '在符号表中定义为zzd关键字，但是没有在关键字表中出现',s
+				raise NameError
+
+		cursor = conn.execute("select * from verify")
+		for guest in cursor:
+			identifyDict[guest[0]] = guest[1]
+		conn.close()
+
 class gset:
 	def __init__(self, name, child):
 		self.name = unicode(name)
@@ -182,6 +217,21 @@ class gset:
 						plot.add(database.gs(p))
 						self.child.append(database.gs(p))
 					self.plot[plots[0]]=plot
+	
+	def addsp(self, sp):
+		if isinstance(sp, seph):
+			self.sp.add(sp)
+		else:
+			raise TypeError
+	
+
+class seph:
+	def __init__(self, arg):
+		try:
+			self.s = arg[0]			#string
+			self.d = (arg[0])		#迪卡尔
+		except:
+			raise TypeError
 
 def main():
 	print('db')
