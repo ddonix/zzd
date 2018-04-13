@@ -1,9 +1,9 @@
 #!/usr/bin/python -B
 # -*- coding: UTF-8 -*-
-import grammar 
 import xlrd 
 import os 
 import sqlite3
+import db 
 import zzd_math
 
 #init:初始化。
@@ -20,9 +20,6 @@ MODE = ('work', 'train', 'debug')
 
 class zzdcore1:
 	inWaaClass = {}		#输入语句类型
-	identifyDict = {}
-	defineDict = {}
-	keyword_zzd = {}
 
 	def __init__(self):
 		self.sentence = []
@@ -34,8 +31,10 @@ class zzdcore1:
 	
 	@classmethod
 	def init(cls):
-		grammar.gsetinit()
-		grammar.spinit()
+		db.gsetinit()
+		db.spinit()
+		db.coreinit()
+		
 		zzdcore1.inWaaClass[u'verify'] = [zzdcore1._verify, zzdcore1._solve_verify]			#verify
 		zzdcore1.inWaaClass[u'math'] = [zzdcore1._math, zzdcore1._solve_math]				#math
 		zzdcore1.inWaaClass[u'define'] = [zzdcore1._define, zzdcore1._solve_define]			#define
@@ -43,32 +42,6 @@ class zzdcore1:
 		zzdcore1.inWaaClass[u'system'] = [zzdcore1._system, zzdcore1._solve_system]			#system
 		zzdcore1.inWaaClass[u'other'] = [zzdcore1._other, zzdcore1._solve_other]			#other
 	
-		conn = sqlite3.connect('./data/grammar.db')
-		cursor = conn.execute("select * from define")
-		for define in cursor:
-			zzdcore1.defineDict[define[0]] = define[1]
-			for defi in define:
-				for d in defi:
-					if not d in grammar.table_vocable:
-						print '定义中没有在字符表中出现的字符',defi, d
-					assert d in grammar.table_vocable
-
-		
-		cursor = conn.execute("select * from zzd_keyword")
-		for keyword in cursor:
-			zzdcore1.keyword_zzd[keyword[0]] = keyword[1:]
-		
-		for sp in grammar.spbase_all:
-			for s in grammar.spbase_all[sp]:
-				if grammar.spbase_all[sp][s].be(u'zzd关键字'):
-					if not s in zzdcore1.keyword_zzd:
-						print '在符号表中定义为zzd关键字，但是没有在关键字表中出现',s
-					assert s in zzdcore1.keyword_zzd
-
-		cursor = conn.execute("select * from verify")
-		for guest in cursor:
-			zzdcore1.identifyDict[guest[0]] = guest[1]
-		conn.close()
 	
 	@classmethod
 	def verifydatabase(cls):
@@ -106,8 +79,8 @@ class zzdcore1:
 	
 	def _verify(self, sen):
 		if self.state == 'init':
-			if sen[u'id'] in zzdcore1.identifyDict:
-				self.friend.name = zzdcore1.identifyDict[sen[u'id']]
+			if sen[u'id'] in db.identifyDict:
+				self.friend.name = db.identifyDict[sen[u'id']]
 				return (True, u'%s您好，身份认证通过。我有什么为您服务的吗？'%self.friend.name)
 			return (False, u'认证失败。')
 		else:
@@ -133,8 +106,8 @@ class zzdcore1:
 		return (True, val)
 	
 	def _define(self, sen):
-		if sen in zzdcore1.defineDict:
-			explain = zzdcore1.defineDict[sen]
+		if sen in db.defineDict:
+			explain = db.defineDict[sen]
 			return (True, sen+u'是'+explain+u'。')
 		else:
 			return (False, self._sorry(u'define', sen))
@@ -156,12 +129,12 @@ class zzdcore1:
 		return self._sorry((u'system', sen))
 	
 	def _trans_2_1(self, waa):
-		phrases = grammar._fenci(waa, False)
+		phrases = db._fenci(waa, False)
 		keyword = [x for x in phrases if x.be(u'zzd关键字')]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
-			assert k.s in zzdcore1.keyword_zzd
-			weight = zzdcore1.keyword_zzd[k.s][0].split(' ')
+			assert k.s in db.keyword_zzd
+			weight = db.keyword_zzd[k.s][0].split(' ')
 			for i in range(0,len(weight),2):
 				if weight[i] != '':
 					bit[weight[i]] += int(weight[i+1])
@@ -171,7 +144,7 @@ class zzdcore1:
 		return zzdcore1.inWaaClass[bit[0][0]][1](self, phrases, keyword)
 	
 	def _solve_verify(self, phrases, keyword):
-		sp = grammar.gset_all[u'认证语句']._fensp(phrases, True)
+		sp = db.gset_all[u'认证语句']._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'认证语法不对', '')
 		else:
@@ -179,7 +152,7 @@ class zzdcore1:
 			return (u'verify', {u'id':sp[2][u'数']}, sp[0].s)
 	
 	def _solve_math(self, phrases, keyword):
-		sp = grammar.gset_all[u'数学语句']._fensp(phrases, True)
+		sp = db.gset_all[u'数学语句']._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'数学语法不对', '')
 		else:
@@ -193,7 +166,7 @@ class zzdcore1:
 					return (u'none', u'数学语法错误%s'%sp[0].s, sp[0].s)
 	
 	def _solve_define(self, phrases, keyword):
-		sp = grammar.gset_all[u'定义语句']._fensp(phrases, True)
+		sp = db.gset_all[u'定义语句']._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'定义语法不对','')
 		else:
@@ -201,7 +174,7 @@ class zzdcore1:
 			return (u'define', sp[2][u'定义词'], sp[0].s)
 	
 	def _solve_command(self, phrases, keyword):
-		sp = grammar.gset_all[u'命令语句']._fensp(phrases, True)
+		sp = db.gset_all[u'命令语句']._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'命令语法不对','')
 		else:
@@ -209,8 +182,8 @@ class zzdcore1:
 			assert u'命令参数' in sp[2]
 			print sp[2][u'命令确认']
 			print sp[2][u'命令参数']
-			assert sp[2][u'命令确认'][0:2] in zzdcore1.keyword_zzd
-			exe = zzdcore1.keyword_zzd[sp[2][u'命令确认'][0:2]][1]
+			assert sp[2][u'命令确认'][0:2] in db.keyword_zzd
+			exe = db.keyword_zzd[sp[2][u'命令确认'][0:2]][1]
 			arg = sp[2][u'命令参数']
 			print exe
 			res = ''

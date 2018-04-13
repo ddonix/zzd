@@ -8,6 +8,9 @@ import sqlite3
 gset_all = {}
 spbase_all = {}
 table_vocable = {u' '}
+identifyDict = {}
+defineDict = {}
+keyword_zzd = {}
 
 class gset:
 	global gset_all
@@ -320,88 +323,6 @@ class sentencephrase:
 		res = sentencephrase(sps, None)
 		return res
 
-def gsetinit():
-	global gset_all
-	
-	#sql = u'select * from gset_phrase where name=\'%s\''%name
-	
-	conn = sqlite3.connect('./data/grammar.db')
-	
-	cursor = conn.execute("select * from gset_phrase")
-	v = cursor.fetchall()
-	cursor = conn.execute("select * from gset_sentence")
-	v.extend(cursor.fetchall())
-	conn.close()
-	while v != []:
-		if v[0][0] in gset_all:
-			v.pop(0)
-			continue
-		skip = True
-		for g in v[0][1:]:
-			if g == '' or g == None or (g in gset_all):
-				continue
-			if not (g[0] == u'[' and g[-1] == u']'):
-				break
-			if not u'|' in g:
-				gsp = g[1:-1].split(' ')
-				skip2 = True
-				for gg in gsp:
-					if gg == '' or gg == u'...' or gg[0] == u's' or gg[0:2] == u'ws' or (gg in gset_all):
-						continue
-					if gg[0] == u'p' and gg[1:] in gset_all:
-						continue
-					if gg[0] == u'w' and gg[1:] in gset_all:
-						continue
-					print u'依赖%s'%gg
-					break
-				else:
-					skip2 = False
-				if skip2:
-					break
-			else:
-				gsp = g[1:-1].split('|')
-				skip2 = True
-				for gg in gsp[1:]:
-					if not (gg == '' or (gg in gset_all)):
-						break
-				else:
-					skip2 = False
-				if skip2:
-					break
-		else:
-			gset(v[0][0], v[0][1:])
-			v.pop(0)
-			skip = False
-		if skip:
-			tmp = v.pop(0)
-			v.append(tmp)
-	for name in gset_all:
-		print name, len(gset_all[name].child)
-	
-def spinit():
-	global spbase_all,table_vocable
-	conn = sqlite3.connect('./data/grammar.db')
-	cursor = conn.execute("select * from table_vocable")
-	table_vocable = set()
-	for v in cursor:
-		assert len(v[0]) == 1
-		sp = sentencephrase(v)
-		spbase_all[v[0]] = {v[0]:sp}
-		table_vocable.add(v[0])
-	sp = sentencephrase((u' ', u'空格'))
-	spbase_all[u' '] = {u' ':sp}
-	
-	cursor = conn.execute("select * from table_phrase")
-	for v in cursor:
-		assert len(v[0]) > 1
-		for i in v[0]:
-			if not i in spbase_all:
-				print '在词组表中出现的字符没有在字符表中出现',v[0],i
-			assert i in spbase_all
-		sp = sentencephrase(v)
-		spbase_all[v[0][0]][v[0]] = sp
-	conn.close()
-
 def _fenci(waa, point):
 	phrases = []
 	con = False
@@ -463,10 +384,120 @@ def _fenci(waa, point):
 		return phrases
 	return None
 	
+
+def gsetinit():
+	global gset_all, spbase_all, table_vocable, identifyDict, defineDict, keyword_zzd
+	
+	conn = sqlite3.connect('./data/grammar.db')
+	cursor = conn.execute("select * from gset_phrase")
+	v = cursor.fetchall()
+	cursor = conn.execute("select * from gset_sentence")
+	v.extend(cursor.fetchall())
+	conn.close()
+	while v != []:
+		if v[0][0] in gset_all:
+			v.pop(0)
+			continue
+		skip = True
+		for g in v[0][1:]:
+			if g == '' or g == None or (g in gset_all):
+				continue
+			if not (g[0] == u'[' and g[-1] == u']'):
+				break
+			if not u'|' in g:
+				gsp = g[1:-1].split(' ')
+				skip2 = True
+				for gg in gsp:
+					if gg == '' or gg == u'...' or gg[0] == u's' or gg[0:2] == u'ws' or (gg in gset_all):
+						continue
+					if gg[0] == u'p' and gg[1:] in gset_all:
+						continue
+					if gg[0] == u'w' and gg[1:] in gset_all:
+						continue
+					print u'依赖%s'%gg
+					break
+				else:
+					skip2 = False
+				if skip2:
+					break
+			else:
+				gsp = g[1:-1].split('|')
+				skip2 = True
+				for gg in gsp[1:]:
+					if not (gg == '' or (gg in gset_all)):
+						break
+				else:
+					skip2 = False
+				if skip2:
+					break
+		else:
+			gset(v[0][0], v[0][1:])
+			v.pop(0)
+			skip = False
+		if skip:
+			tmp = v.pop(0)
+			v.append(tmp)
+	for name in gset_all:
+		print name, len(gset_all[name].child)
+	
+def spinit():
+	global gset_all, spbase_all, table_vocable, identifyDict, defineDict, keyword_zzd
+	conn = sqlite3.connect('./data/grammar.db')
+	cursor = conn.execute("select * from table_vocable")
+	table_vocable = set()
+	for v in cursor:
+		assert len(v[0]) == 1
+		sp = sentencephrase(v)
+		spbase_all[v[0]] = {v[0]:sp}
+		table_vocable.add(v[0])
+	sp = sentencephrase((u' ', u'空格'))
+	spbase_all[u' '] = {u' ':sp}
+	
+	cursor = conn.execute("select * from table_phrase")
+	for v in cursor:
+		assert len(v[0]) > 1
+		for i in v[0]:
+			if not i in spbase_all:
+				print '在词组表中出现的字符没有在字符表中出现',v[0],i
+			assert i in spbase_all
+		sp = sentencephrase(v)
+		spbase_all[v[0][0]][v[0]] = sp
+	conn.close()
+
+def coreinit():
+	global gset_all, spbase_all, table_vocable, identifyDict, defineDict, keyword_zzd
+	conn = sqlite3.connect('./data/grammar.db')
+	cursor = conn.execute("select * from define")
+	for define in cursor:
+		defineDict[define[0]] = define[1]
+		for defi in define:
+			for d in defi:
+				if not d in table_vocable:
+					print '定义中没有在字符表中出现的字符',defi, d
+				assert d in table_vocable
+
+		
+	cursor = conn.execute("select * from zzd_keyword")
+	for keyword in cursor:
+		keyword_zzd[keyword[0]] = keyword[1:]
+		
+	for sp in spbase_all:
+		for s in spbase_all[sp]:
+			if spbase_all[sp][s].be(u'zzd关键字'):
+				if not s in keyword_zzd:
+					print '在符号表中定义为zzd关键字，但是没有在关键字表中出现',s
+				assert s in keyword_zzd
+
+	cursor = conn.execute("select * from verify")
+	for guest in cursor:
+		identifyDict[guest[0]] = guest[1]
+	conn.close()
+	
 def main():
-	print('grammar')
+	print('db')
 	gsetinit()
 	spinit()
+	coreinit()
 
 	phrases = _fenci(u'十减去三十等于几', False)
 	for p in phrases:
