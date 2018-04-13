@@ -220,6 +220,15 @@ class gset:
 						self.child.append(database.gs(p))
 					self.plot[plots[0]]=plot
 	
+	@classmethod
+	def decare(cls, gs):
+		name = u'['
+		for g in gs[0:-1]:
+			name += g.name+u' '
+		name += gs[-1].name+u']'
+		res = gset(name, [])
+		return res
+
 	def addsp(self, sp):
 		if isinstance(sp, seph):
 			self.sp.add(sp)
@@ -365,16 +374,35 @@ class seph:
 		if type(s) == unicode:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
+			self.attr = {}
 		elif type(s) == list and isinstance(s[0], seph):
 			self.s = u''			#sting
 			d = []
+			self.attr = {}
 			for sp in s:
 				self.s += sp.s
 				d.append(sp.d)
 			self.d = tuple(d)
 		else:
 			raise TypeError
+	
+	def setattr(self, name, value):
+		assert self.be(gram)
+		
+	
+	def getattr(self, name):
+		assert self.be(gram)
+		return u'男'
 
+	def _setattr(self, gram, name, value):
+		assert self.be(gram)
+		
+	
+	def _getattr(self, gram, name):
+		assert self.be(gram)
+		return u'男'
+
+	
 	def be(self, gram):
 		gs = database.gs(gram)
 		if gs.contain(self) != None:
@@ -441,15 +469,9 @@ def main():
 	database.spinit()
 	database.coreinit()
 	
-	phrases = fenci(u'十减去三十等于几', False)
-	for p in phrases:
-		print p.s
-	g = database.gs(u'数学语句')
-	sp = g._fensp(phrases, True)
-	print sp[0]
-	print sp[1]
-	for k in sp[2]:
-		print k+'='+sp[2][k]
+	sp1 = database.sp(u'李冬')
+	sp1._setattr(u'人', u'性别', u'男')
+	print sp1._getattr(u'人', u'性别')
 
 if __name__ == '__main__':
 	main()
