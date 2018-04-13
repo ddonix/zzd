@@ -61,7 +61,7 @@ def voicePlay(evt):
 
 def enterSen(waa):
 	for item in waa:
-		if not item in db.table_vocable:
+		if not db.database.legal(item):
 			zhdShow(u'对不起，我不认识\"%s\"这个字符。'%item)
 			return
 	xhh.act(zhd, waa)

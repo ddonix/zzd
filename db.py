@@ -4,7 +4,6 @@ import re
 import xlrd
 import copy
 import sqlite3
-import ipdb
 
 class database: 
 	_gset_all = {}
@@ -340,8 +339,7 @@ class gset:
 								else:
 									continue
 						elif gram[0] == u'w':
-							assert gram[1:] in gset_all
-							g = gset_all[gram[1:]]
+							g = database.gs(gram[1:])
 							res = g._fensp(phrases, mend)
 							if res != None:
 								key[g.name] = res[0].s
@@ -375,10 +373,10 @@ class seph:
 			self.s = u''			#sting
 			d = []
 			for sp in s:
+				self.s += sp.s
 				d.append(sp.d)
 			self.d = tuple(d)
 		else:
-			print s
 			raise TypeError
 
 	def be(self, gram):
@@ -405,7 +403,7 @@ def fenci(waa, point):
 			while waa != u'' and waa[0] in znumber:
 				s += waa[0]
 				waa = waa[1:]
-			sp = seph(s)
+			sp = seph(unicode(s))
 			database.gs(u'数').addsp(sp)
 			phrases.append(sp)
 		elif waa[0] in cnumber:
@@ -414,7 +412,7 @@ def fenci(waa, point):
 			while waa != u'' and waa[0] in cnumber:
 				s += waa[0]
 				waa = waa[1:]
-			sp = seph(s)
+			sp = seph(unicode(s))
 			database.gs(u'汉语数').addsp(sp)
 			phrases.append(sp)
 		elif waa[0] in zstr[10:]:
@@ -423,7 +421,7 @@ def fenci(waa, point):
 			while waa != u'' and waa[0] in zstr:
 				s += waa[0]
 				waa = waa[1:]
-			sp = seph(s)
+			sp = seph(unicode(s))
 			database.gs(u'字符串').addsp(sp)
 			phrases.append(sp)
 		elif waa[0:2] == u'!=':

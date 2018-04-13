@@ -79,8 +79,8 @@ class zzdcore1:
 	
 	def _verify(self, sen):
 		if self.state == 'init':
-			if sen[u'id'] in db.identifyDict:
-				self.friend.name = db.identifyDict[sen[u'id']]
+			if sen[u'id'] in db.database._identifyDict:
+				self.friend.name = db.database._identifyDict[sen[u'id']]
 				return (True, u'%s您好，身份认证通过。我有什么为您服务的吗？'%self.friend.name)
 			return (False, u'认证失败。')
 		else:
@@ -106,8 +106,8 @@ class zzdcore1:
 		return (True, val)
 	
 	def _define(self, sen):
-		if sen in db.defineDict:
-			explain = db.defineDict[sen]
+		if sen in db.database._defineDict:
+			explain = db.database._defineDict[sen]
 			return (True, sen+u'是'+explain+u'。')
 		else:
 			return (False, self._sorry(u'define', sen))
@@ -144,7 +144,7 @@ class zzdcore1:
 		return zzdcore1.inWaaClass[bit[0][0]][1](self, phrases, keyword)
 	
 	def _solve_verify(self, phrases, keyword):
-		sp = db.gset_all[u'认证语句']._fensp(phrases, True)
+		sp = db.database.gs(u'认证语句')._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'认证语法不对', '')
 		else:
@@ -166,7 +166,7 @@ class zzdcore1:
 					return (u'none', u'数学语法错误%s'%sp[0].s, sp[0].s)
 	
 	def _solve_define(self, phrases, keyword):
-		sp = db.gset_all[u'定义语句']._fensp(phrases, True)
+		sp = db.database.gs(u'定义语句')._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'定义语法不对','')
 		else:
@@ -174,7 +174,7 @@ class zzdcore1:
 			return (u'define', sp[2][u'定义词'], sp[0].s)
 	
 	def _solve_command(self, phrases, keyword):
-		sp = db.gset_all[u'命令语句']._fensp(phrases, True)
+		sp = db.database.gs(u'命令语句')._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'命令语法不对','')
 		else:
@@ -243,7 +243,7 @@ def main():
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
 
-	fc = core1._trans_2_1(u'1大于2吗')
+	fc = core1._trans_2_1(u'14>24')
 	print fc[0],fc[1]
 
 if __name__ == '__main__':
