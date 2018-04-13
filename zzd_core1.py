@@ -182,8 +182,8 @@ class zzdcore1:
 			assert u'命令参数' in sp[2]
 			print sp[2][u'命令确认']
 			print sp[2][u'命令参数']
-			assert sp[2][u'命令确认'][0:2] in db.keyword_zzd
-			exe = db.keyword_zzd[sp[2][u'命令确认'][0:2]][1]
+			assert sp[2][u'命令确认'][0:2] in db.database._keyword_zzd
+			exe = db.database._keyword_zzd[sp[2][u'命令确认'][0:2]][1]
 			arg = sp[2][u'命令参数']
 			print exe
 			res = ''
