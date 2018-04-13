@@ -512,3 +512,275 @@ def main():
 
 if __name__ == '__main__':
 	main()
+
+class database:
+	@classmethod
+	def gs(cls, gram):
+		return None
+	
+	@classmethod
+	def sp(cls, s):
+		return None
+	
+class seph:
+	def __init__(self, arg):
+		try:
+			self.s = arg[0]			#string
+			self.d = (arg[0])		#迪卡尔
+			
+			for gram in arg[1:]:
+				if not gram == '' or gram == None:
+					break
+				gs = database.gs(gram)
+				gs.addsp(self)
+		except:
+			raise TypeError
+
+	def copyseph(s):
+		try:
+			sp = seph([s])
+			sp.d = copy.deepcopy(database.sp(s))
+		except:
+			raise TypeError
+
+	def newseph:
+		elif type(arg) == list and type(isinstance(arg[0], seph)):#由gset生成
+			self.s = u''
+			self.d = arg
+			
+			for sp in senphr:
+				self.s += sp.s
+			assert gs != None
+			self.addgs(gs)
+			gs.addsp(self)
+			raise TypeError
+	
+	def be(self, gram):
+		gram = unicode(gram)
+		if not gram in gset_all:
+			return False
+		g = gset_all[gram]
+		for gs in self.gs:
+			if gs <= g:
+				self.addgs(g)
+				g.addsp(self)
+				gs.addsp(self)
+				return True
+		gs = g.contain(self)
+		if gs:
+			while gs != g:
+				self.addgs(gs)
+				gs.addsp(self)
+				gs = gs.father
+			self.addgs(gs)
+			gs.addsp(self)
+			return True
+		return False
+
+	def addgs(self, gs):
+		if isinstance(gs, gset):
+			self.gs.add(gs)
+	
+	def __radd__(self, other):#return other+self
+		res = sentencephrase([other, self], None)
+		return res
+
+	def append(self, sp):
+		sps = []
+		if self.c == []:
+			sps.append(self)
+		else:	
+			for sp in self.c:
+				sps.append(sp)
+		sps.append(sp)
+		res = sentencephrase(sps, None)
+		return res
+
+def _fenci(waa, point):
+	phrases = []
+	con = False
+	znumber =  u'0123456789'
+	cnumber =  u'零一二三四五六七八九十百千万'
+	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	zpoint = u'，。？！,.?!'
+	while waa != '':
+		if waa[0] in znumber:
+			n = sentencephrase(spbase_all[waa[0]][waa[0]])
+			gs = gset_all[u'数']
+			n.addgs(gs)
+			gs.addsp(n)
+			
+			waa = waa[1:]
+			while waa != u'' and waa[0] in znumber:
+				n.s += waa[0]
+				waa = waa[1:]
+
+			phrases.append(n)
+		elif waa[0] in cnumber:
+			n = sentencephrase(spbase_all[waa[0]][waa[0]])
+			gs = gset_all[u'汉语数']
+			n.addgs(gs)
+			gs.addsp(n)
+			
+			waa = waa[1:]
+			while waa != u'' and waa[0] in cnumber:
+				n.s += waa[0]
+				waa = waa[1:]
+
+			phrases.append(n)
+		elif waa[0] in zstr[10:]:
+			n = sentencephrase(spbase_all[waa[0]][waa[0]])
+			gs = gset_all[u'字符串']
+			n.addgs(gs)
+			gs.addsp(n)
+			
+			waa = waa[1:]
+			while waa != u'' and waa[0] in zstr:
+				n.s += waa[0]
+				waa = waa[1:]
+			phrases.append(n)
+		elif waa[0] in zpoint:
+			if waa[0:2] == u'!=' or waa[0:2] == u'！=':
+				phrases.append(sentencephrase(u'!='))
+				waa = waa[2:]
+			else:
+				if point:
+					phrases.append(sentencephrase(waa[0]))
+				waa = waa[1:]
+		else:
+			for i in range(min(8,len(waa)),0,-1):
+				if waa[0:i] in spbase_all[waa[0]]:
+					phrases.append(sentencephrase(spbase_all[waa[0]][waa[0:i]]))
+					waa = waa[i:]
+					break
+	if waa == '':
+		return phrases
+	return None
+	
+
+def gsetinit():
+	global gset_all, spbase_all, table_vocable, identifyDict, defineDict, keyword_zzd
+	
+	conn = sqlite3.connect('./data/grammar.db')
+	cursor = conn.execute("select * from gset_phrase")
+	v = cursor.fetchall()
+	cursor = conn.execute("select * from gset_sentence")
+	v.extend(cursor.fetchall())
+	conn.close()
+	while v != []:
+		if v[0][0] in gset_all:
+			v.pop(0)
+			continue
+		skip = True
+		for g in v[0][1:]:
+			if g == '' or g == None or (g in gset_all):
+				continue
+			if not (g[0] == u'[' and g[-1] == u']'):
+				break
+			if not u'|' in g:
+				gsp = g[1:-1].split(' ')
+				skip2 = True
+				for gg in gsp:
+					if gg == '' or gg == u'...' or gg[0] == u's' or gg[0:2] == u'ws' or (gg in gset_all):
+						continue
+					if gg[0] == u'p' and gg[1:] in gset_all:
+						continue
+					if gg[0] == u'w' and gg[1:] in gset_all:
+						continue
+					print u'依赖%s'%gg
+					break
+				else:
+					skip2 = False
+				if skip2:
+					break
+			else:
+				gsp = g[1:-1].split('|')
+				skip2 = True
+				for gg in gsp[1:]:
+					if not (gg == '' or (gg in gset_all)):
+						break
+				else:
+					skip2 = False
+				if skip2:
+					break
+		else:
+			gset(v[0][0], v[0][1:])
+			v.pop(0)
+			skip = False
+		if skip:
+			tmp = v.pop(0)
+			v.append(tmp)
+	for name in gset_all:
+		print name, len(gset_all[name].child)
+	
+def spinit():
+	global gset_all, spbase_all, table_vocable, identifyDict, defineDict, keyword_zzd
+	conn = sqlite3.connect('./data/grammar.db')
+	cursor = conn.execute("select * from table_vocable")
+	table_vocable = set()
+	for v in cursor:
+		assert len(v[0]) == 1
+		sp = sentencephrase(v)
+		spbase_all[v[0]] = {v[0]:sp}
+		table_vocable.add(v[0])
+	sp = sentencephrase((u' ', u'空格'))
+	spbase_all[u' '] = {u' ':sp}
+	
+	cursor = conn.execute("select * from table_phrase")
+	for v in cursor:
+		assert len(v[0]) > 1
+		for i in v[0]:
+			if not i in spbase_all:
+				print '在词组表中出现的字符没有在字符表中出现',v[0],i
+			assert i in spbase_all
+		sp = sentencephrase(v)
+		spbase_all[v[0][0]][v[0]] = sp
+	conn.close()
+
+def coreinit():
+	global gset_all, spbase_all, table_vocable, identifyDict, defineDict, keyword_zzd
+	conn = sqlite3.connect('./data/grammar.db')
+	cursor = conn.execute("select * from define")
+	for define in cursor:
+		defineDict[define[0]] = define[1]
+		for defi in define:
+			for d in defi:
+				if not d in table_vocable:
+					print '定义中没有在字符表中出现的字符',defi, d
+				assert d in table_vocable
+
+		
+	cursor = conn.execute("select * from zzd_keyword")
+	for keyword in cursor:
+		keyword_zzd[keyword[0]] = keyword[1:]
+		
+	for sp in spbase_all:
+		for s in spbase_all[sp]:
+			if spbase_all[sp][s].be(u'zzd关键字'):
+				if not s in keyword_zzd:
+					print '在符号表中定义为zzd关键字，但是没有在关键字表中出现',s
+				assert s in keyword_zzd
+
+	cursor = conn.execute("select * from verify")
+	for guest in cursor:
+		identifyDict[guest[0]] = guest[1]
+	conn.close()
+
+def main():
+	print('db')
+	gsetinit()
+	spinit()
+	coreinit()
+
+	phrases = _fenci(u'十减去三十等于几', False)
+	for p in phrases:
+		print p.s
+	g = gset_all[u'数学语句']
+	sp = g._fensp(phrases, True)
+	print sp[0]
+	print sp[1]
+	for k in sp[2]:
+		print k+'='+sp[2][k]
+
+if __name__ == '__main__':
+	main()
