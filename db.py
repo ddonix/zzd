@@ -136,7 +136,6 @@ class database:
 			for g in v[1:]:
 				if not (g == '' or g == None):
 					database.gs(g).addsp(sp)
-		
 		try:
 			cursor = conn.execute("select * from table_phrase")
 		except:
@@ -190,7 +189,25 @@ class database:
 		for guest in cursor:
 			cls._identifyDict[guest[0]] = guest[1]
 		conn.close()
-
+	
+	@classmethod
+	def datacheck(cls, mend):
+		for gram in cls._gset_all:
+			gs = cls.gs(gram)
+			cls.checkgs(gs, mend)
+	
+	@classmethod
+	def checkgs(cls, gs, mend):
+		for sp in gs.sp:
+			for ch in gs.child:
+				if ch.contain(sp):
+					print('check error. %s in %s and %s'%(sp.s, gs.name, ch.name))
+					if mend:
+						raise TypeError
+					else:
+						raise TypeError
+		print(u'%s check success.'%gs.name)
+	
 class gset:
 	def __init__(self, name, child):
 		self.name = unicode(name)
@@ -230,10 +247,18 @@ class gset:
 		return res
 
 	def addsp(self, sp):
-		if isinstance(sp, seph):
-			self.sp.add(sp)
-		else:
+		if not isinstance(sp, seph):
 			raise TypeError
+		if not self.contain(sp):
+			self.sp.add(sp)
+	
+	def removesp(self, sp):
+		if not isinstance(sp, seph):
+			raise TypeError
+		if sp not in self.sp:
+			raise TypeError
+		self.sp.remove(sp)
+	
 	
 	def contain(self, sp):
 		if not isinstance(sp, seph):
@@ -374,10 +399,12 @@ class seph:
 		if type(s) == unicode:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
+			self.gs = {}
 			self.attr = {}
 		elif type(s) == list and isinstance(s[0], seph):
 			self.s = u''			#sting
 			d = []
+			self.gs = {}
 			self.attr = {}
 			for sp in s:
 				self.s += sp.s
@@ -388,21 +415,48 @@ class seph:
 	
 	def setattr(self, name, value):
 		assert self.be(gram)
-		
-	
+
 	def getattr(self, name):
 		assert self.be(gram)
 		return u'男'
 
+	def addgs(self, gs):
+		assert isinstance(gs, gset)
+		assert not gs in self.gs
+		self.gs.add(gs)
+
+	def removegs(self, gs):
+		assert isinstance(gs, gset)
+		assert gs in self.gs
+		self.gs.remove(gs)
+
 	def _setattr(self, gram, name, value):
 		assert self.be(gram)
+		gs = database.gs(gram)
+		
+		if name in self.attr:
+			oldgs = database.gs(self.attr[name])
+			newgs = database.gs(value)
+			oldgs.removesp(self)
+			newgs.addsp(self)
+			self.attr[name]=value
+			return True
+		
+		for p in gs.plot:
+			if p == name:
+				for v in gs.plot[p]:
+					if v.name == value:
+						gs.removesp(self)
+						v.addsp(self)
+						self.attr[name]=value
+						return True
+		return False
 		
 	
 	def _getattr(self, gram, name):
 		assert self.be(gram)
 		return u'男'
 
-	
 	def be(self, gram):
 		gs = database.gs(gram)
 		if gs.contain(self) != None:
@@ -468,11 +522,18 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
+	database.datacheck(True)
 	
+	gs = database.gs(u'人')
 	sp1 = database.sp(u'李冬')
-	sp1._setattr(u'人', u'性别', u'男')
-	
-	print sp1._getattr(u'人', u'性别')
+	print '.......................'
+	print gs.contain(sp1).name
+	sp1._setattr(u'人', u'性别', u'男人')
+	print gs.contain(sp1).name
+	sp1._setattr(u'人', u'性别', u'女人')
+	print gs.contain(sp1).name
+	sp1._setattr(u'人', u'性别', u'男人')
+	print gs.contain(sp1).name
 
 if __name__ == '__main__':
 	main()
