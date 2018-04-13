@@ -44,14 +44,14 @@ class database:
 	def legal(cls, s):
 		for v in s:
 			if not v in cls._table_vocable:
-				print '%s中有非法字符%s',%(s,v)
+				print u'%s中有非法字符%s'%(s,v)
 				return False
 		return True
 	
 	@classmethod
 	def addgs(cls, gs):
 		assert isinstance(gs, gset)
-		cls._spbase_all[gs.name] = gs
+		cls._gset_all[gs.name] = gs
 
 	@classmethod
 	def addsp(cls, sp):
@@ -68,7 +68,62 @@ class database:
 			cls._table_vocable.add(v)
 
 	@classmethod
-	def spinit():
+	def gsinit(cls):
+		try:
+			conn = sqlite3.connect('./data/grammar.db')
+			cursor = conn.execute("select * from gset_phrase")
+			v = cursor.fetchall()
+			cursor = conn.execute("select * from gset_sentence")
+			v.extend(cursor.fetchall())
+			conn.close()
+		except:
+			return NameError
+		while v != []:
+			if cls.gsin(v[0][0]):
+				v.pop(0)
+				continue
+			skip = True
+			for g in v[0][1:]:
+				if g == '' or g == None or cls.gsin(g):
+					continue
+				if not (g[0] == u'[' and g[-1] == u']'):
+					break
+				if not u'|' in g:
+					gsp = g[1:-1].split(u' ')
+					skip2 = True
+					for gg in gsp:
+						if gg == '' or gg == u'...' or cls.gsin(gg):
+							continue
+						if gg[0] == u'w' and cls.gsin(gg[1:]):
+							continue
+						if gg[0] == u's' or gg[0:2] == u'ws':
+							continue
+						print u'%s:  依赖： %s'%(v[0][0],gg)
+						break
+					else:
+						skip2 = False
+					if skip2:
+						break
+				else:
+					gsp = g[1:-1].split('|')
+					skip2 = True
+					for gg in gsp[1:]:
+						if not (gg == '' or cls.gsin(gg)):
+							break
+					else:
+						skip2 = False
+					if skip2:
+						break
+			else:
+				gset(v[0][0], v[0][1:])
+				v.pop(0)
+				skip = False
+			if skip:
+				tmp = v.pop(0)
+				v.append(tmp)
+
+	@classmethod
+	def spinit(cls):
 		try:
 			conn = sqlite3.connect('./data/grammar.db')
 			cursor = conn.execute("select * from table_vocable")
@@ -83,7 +138,6 @@ class database:
 			for g in v[1:]:
 				gs = database.gs(g)
 				gs.addsp(sp)
-		
 		try:
 			cursor = conn.execute("select * from table_phrase")
 		except:
@@ -99,22 +153,40 @@ class database:
 				gs = database.gs(g)
 				gs.addsp(sp)
 		conn.close()
-
 	
 class gset:
 	def __init__(self, name, child):
 		self.name = unicode(name)
+		database.addgs(self)
+		
+		self.sp = set()		#明确表示的元素集合
+		self.plot = {}		#明确的划分;要有名字：比如人按性别分为男人和女人
 
-class sentencephrase:
-	def __init__(self, s):
-		self.s = s
-		self.d = [s]
-		self.key = {}
+		self.child = []		#子集
+		for ch in child:
+			if ch == u'' or ch == None:
+				continue
+			if database.gsin(ch):
+				ch = database.gs(ch)
+				self.child.append(ch)
+			else:
+				assert ch[0] == u'[' and ch[-1] == u']'
+				if not u'|' in ch:
+					ch = gset(ch, [])
+					self.child.append(ch)
+				else:
+					plots = ch[1:-1].split(u'|')
+					plot = set()
+					for p in plots[1:]:
+						assert database.gsin(p)
+						plot.add(database.gs(p))
+						self.child.append(database.gs(p))
+					self.plot[plots[0]]=plot
 
 def main():
 	print('db')
-	print database.gs(u'名词')
-	print database.sp(u'1')
+	print database.gsinit()
+	print database.spinit()
 
 if __name__ == '__main__':
 	main()
