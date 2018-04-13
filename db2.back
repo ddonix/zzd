@@ -1,0 +1,313 @@
+#!/usr/bin/python -B
+# -*- coding: UTF-8 -*-
+import re
+import xlrd
+import copy
+import sqlite3
+
+_gset_all = {}
+_spbase_all = {}
+_table_vocable = {u' '}
+	
+_identifyDict = {}
+_defineDict = {}
+_keyword_zzd = {}
+	
+def gs(gram):
+	try:
+		return _gset_all[gram]
+	except:
+		raise NameError
+
+def sp(s):
+	try:
+		return _spbase_all[s[0]][s]
+	except:
+		raise NameError
+	
+def gsin(gs):
+	if gs in _gset_all:
+		return True
+	return False
+	
+def spin(sp):
+	if sp[0] in _spbase_all:
+		if sp in _spbase_all[sp[0]]:
+			return True
+	return False
+	
+def legal(s):
+	for v in s:
+		if not v in _table_vocable:
+			print u'%s中有非法字符%s'%(s,v)
+			return False
+	return True
+	
+def addgs(gs):
+	assert isinstance(gs, gset)
+	_gset_all[gs.name] = gs
+
+def addsp(sp):
+	assert isinstance(sp, seph)
+	assert len(sp.s) >= 1
+	if len(sp.s) == 1:
+		_spbase_all[sp.s[0]] = {sp.s:sp}
+	else:
+		_spbase_all[sp.s[0]][sp.s] = sp
+	
+def addv(s):
+	for v in s:
+		_table_vocable.add(v)
+
+def fenci(waa, point):
+	phrases = []
+	con = False
+	znumber =  u'0123456789'
+	cnumber =  u'零一二三四五六七八九十百千万亿'
+	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	zpoint = u'，。,.！!？?'
+	if not legal(waa):
+		raise
+	while waa != '':
+		if waa[0] == u' ':
+			waa = waa[1:]
+		elif waa[0] in znumber:
+			s = waa[0]
+			waa = waa[1:]
+			while waa != u'' and waa[0] in znumber:
+				s += waa[0]
+				waa = waa[1:]
+			sp = seph(s)
+			gs(u'数').addsp(sp)
+			phrases.append(sp)
+		elif waa[0] in cnumber:
+			s = waa[0]
+			waa = waa[1:]
+			while waa != u'' and waa[0] in cnumber:
+				s += waa[0]
+				waa = waa[1:]
+			sp = seph(s)
+			gs(u'汉语数').addsp(sp)
+			phrases.append(sp)
+		elif waa[0] in zstr[10:]:
+			s = waa[0]
+			waa = waa[1:]
+			while waa != u'' and waa[0] in zstr:
+				s += waa[0]
+				waa = waa[1:]
+			sp = seph(s)
+			gs(u'字符串').addsp(sp)
+			phrases.append(sp)
+		elif waa[0:2] == u'!=':
+			phrases.append(sp(u'!='))
+			waa = waa[2:]
+		elif waa[0] in zpoint:
+			if point:
+				phrases.append(sp(waa[0]))
+			waa = waa[1:]
+		else:
+			for i in range(min(8,len(waa)),0,-1):
+				if spin(waa[0:i]):
+					phrases.append(sp(waa[0:i]))
+					waa = waa[i:]
+					break
+	return phrases
+	
+
+def gsinit():
+	try:
+		conn = sqlite3.connect('./data/grammar.db')
+		cursor = conn.execute("select * from gset_phrase")
+		v = cursor.fetchall()
+		cursor = conn.execute("select * from gset_sentence")
+		v.extend(cursor.fetchall())
+		conn.close()
+	except:
+		return NameError
+	while v != []:
+		if gsin(v[0][0]):
+			v.pop(0)
+			continue
+		skip = True
+		for g in v[0][1:]:
+			if g == '' or g == None or gsin(g):
+				continue
+			if not (g[0] == u'[' and g[-1] == u']'):
+				break
+			if not u'|' in g:
+				gsp = g[1:-1].split(u' ')
+				skip2 = True
+				for gg in gsp:
+					if gg == '' or gg == u'...' or gsin(gg):
+						continue
+					if gg[0] == u'w' and gsin(gg[1:]):
+						continue
+					if gg[0] == u's' or gg[0:2] == u'ws':
+						continue
+					print u'%s:  依赖： %s'%(v[0][0],gg)
+					break
+				else:
+					skip2 = False
+				if skip2:
+					break
+			else:
+				gsp = g[1:-1].split('|')
+				skip2 = True
+				for gg in gsp[1:]:
+					if not (gg == '' or gsin(gg)):
+						break
+				else:
+					skip2 = False
+				if skip2:
+					break
+		else:
+			gset(v[0][0], v[0][1:])
+			v.pop(0)
+			skip = False
+		if skip:
+			tmp = v.pop(0)
+			v.append(tmp)
+
+def spinit():
+	try:
+		conn = sqlite3.connect('./data/grammar.db')
+		cursor = conn.execute("select * from table_vocable")
+	except:
+		raise NameError
+	for v in cursor:
+		assert len(v[0]) == 1
+		sp = seph(v[0])
+		addsp(sp)
+		addv(v[0][0])
+			
+		for g in v[1:]:
+			if not (g == '' or g == None):
+				gs(g).addsp(sp)
+		
+	try:
+		cursor = conn.execute("select * from table_phrase")
+	except:
+		raise NameError
+	for v in cursor:
+		assert len(v[0]) > 1
+		if not legal(v[0]):
+			raise NameError
+		sp = seph(v[0])
+		addsp(sp)
+		
+		for g in v[1:]:
+			if not (g == '' or g == None):
+				gs(g).addsp(sp)
+	conn.close()
+
+def coreinit():
+	try:
+		conn = sqlite3.connect('./data/grammar.db')
+		cursor = conn.execute("select * from define")
+	except:
+		raise NameError
+	
+	for define in cursor:
+		if not legal(define[0]):
+			raise TypeError
+		if not legal(define[1]):
+			raise TypeError
+		_defineDict[define[0]] = define[1]
+
+	try:
+		cursor = conn.execute("select * from zzd_keyword")
+	except:
+		raise NameError
+	for keyword in cursor:
+		if not spin(keyword[0]):
+			print keyword[0]
+			raise TypeError
+		_keyword_zzd[keyword[0]] = keyword[1:]
+	
+	for sp in gs(u'zzd关键字').sp:
+		if not sp.s in _keyword_zzd:
+			print('%s在符号表中定义为zzd关键字，但是没有在关键字表中出现'%sp)
+			raise NameError
+
+	try:
+		cursor = conn.execute("select * from verify")
+	except:
+		raise TypeError
+	for guest in cursor:
+		_identifyDict[guest[0]] = guest[1]
+	conn.close()
+
+class gset:
+	def __init__(self, name, child):
+		self.name = unicode(name)
+		addgs(self)
+		
+		self.sp = set()		#明确表示的元素集合
+		self.plot = {}		#明确的划分;要有名字：比如人按性别分为男人和女人
+
+		self.child = []		#子集
+		for ch in child:
+			if ch == u'' or ch == None:
+				continue
+			if gsin(ch):
+				ch = gs(ch)
+				self.child.append(ch)
+			else:
+				assert ch[0] == u'[' and ch[-1] == u']'
+				if not u'|' in ch:
+					ch = gset(ch, [])
+					self.child.append(ch)
+				else:
+					plots = ch[1:-1].split(u'|')
+					plot = set()
+					for p in plots[1:]:
+						assert gsin(p)
+						plot.add(gs(p))
+						self.child.append(gs(p))
+					self.plot[plots[0]]=plot
+	
+	def addsp(self, sp):
+		if isinstance(sp, seph):
+			self.sp.add(sp)
+		else:
+			raise TypeError
+	
+	def contain(self, sp):
+		if not isinstance(sp, senphr):
+			raise TypeError
+		if sp in self.sp:
+			return self
+		if self.child != []:
+			for ch in self.child:
+				res = ch.contain(s)
+				if res:
+					return res
+		return None
+	
+
+class seph:
+	def __init__(self, s):
+		try:
+			self.s = s				#sting
+			self.d = (s)			#迪卡尔
+		except:
+			raise TypeError
+
+	def be(self, gram):
+		gs = gs(gram)
+		if gs.contain(self) != None:
+			return True
+		return False
+
+def main():
+	print('db')
+	gsinit()
+	spinit()
+	coreinit()
+	waa = u'12sdiasd四边形播放歌曲多少等于大于等于一瞬间345'
+	ph = fenci(waa, True)
+	for p in ph:
+		print(p.s)
+
+if __name__ == '__main__':
+	main()
