@@ -418,7 +418,6 @@ class seph:
 
 	def getattr(self, name):
 		assert self.be(gram)
-		return u'男'
 
 	def addgs(self, gs):
 		assert isinstance(gs, gset)
@@ -437,6 +436,7 @@ class seph:
 		if name in self.attr:
 			oldgs = database.gs(self.attr[name])
 			newgs = database.gs(value)
+			assert newgs in gs.plot[name]
 			oldgs.removesp(self)
 			newgs.addsp(self)
 			self.attr[name]=value
