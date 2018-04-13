@@ -105,7 +105,7 @@ class database:
 				else:
 					gsp = g[1:-1].split('|')
 					skip2 = True
-					for gg in gsp[1:]:
+					for gg in gsp:
 						if not (gg == '' or cls.gsin(gg)):
 							break
 					else:
@@ -195,18 +195,42 @@ class database:
 		for gram in cls._gset_all:
 			gs = cls.gs(gram)
 			cls.checkgs(gs, mend)
+			print ''
+			print ''
 	
 	@classmethod
 	def checkgs(cls, gs, mend):
-		for sp in gs.sp:
+		#检查gs的sp与子集的sp是否有重合
+		print u'检查集合 %s：'%gs.name
+		
+		print u'1.子集'
+		if gs.child != []:
+			print u'包含以下子集'
 			for ch in gs.child:
+				print ch.name
+		else:
+			print u'没有子集'
+		
+
+		print u'2.元素'
+		if gs.sp != {}:
+			print u'包含以下元素'
+			for sp in gs.sp:
+				print sp.s
+		else:
+			print u'没有元素'
+		
+
+		for sp in gs.sp:
+			for ch in gs.child[1:]:
 				if ch.contain(sp):
 					print('check error. %s in %s and %s'%(sp.s, gs.name, ch.name))
 					if mend:
 						raise TypeError
 					else:
 						raise TypeError
-		print(u'%s check success.'%gs.name)
+		#检查gs的子集是否
+		print(u'check success.')
 	
 class gset:
 	def __init__(self, name, child):
@@ -233,8 +257,9 @@ class gset:
 					plot = set()
 					for p in plots[1:]:
 						assert database.gsin(p)
-						plot.add(database.gs(p))
-						self.child.append(database.gs(p))
+						ch = gset(u'[%s|%s]'%(plots[0],p),[])
+						self.child.append(ch)
+						plot.add(ch)
 					self.plot[plots[0]]=plot
 	
 	@classmethod
@@ -414,7 +439,6 @@ class seph:
 			raise TypeError
 	
 	def setattr(self, name, value):
-		
 		return None
 
 	def getattr(self, name):
@@ -528,11 +552,11 @@ def main():
 	gs = database.gs(u'人')
 	sp1 = database.sp(u'李冬')
 	print '.......................'
-	sp1.setattr(u'性别', u'男人')
+	sp1.setattr(u'性别', u'男')
 	print gs.contain(sp1).name
-	sp1.setattr(u'性别', u'女人')
+	sp1.setattr(u'性别', u'女')
 	print gs.contain(sp1).name
-	sp1.setattr(u'性别', u'男人')
+	sp1.setattr(u'性别', u'男')
 	print gs.contain(sp1).name
 
 if __name__ == '__main__':
