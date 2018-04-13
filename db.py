@@ -1,8 +1,5 @@
 #!/usr/bin/python -B
 # -*- coding: UTF-8 -*-
-import re
-import xlrd
-import copy
 import sqlite3
 
 class database: 
