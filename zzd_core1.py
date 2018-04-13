@@ -25,7 +25,7 @@ class zzdcore1:
 		self.sentence = []
 		self.state = 'init'
 		self.mode = 'work'
-		self.name = u'小白'
+		self.name = db.database._identifyDict[u'299792458']
 		self.friend = None
 		self.cursen = None
 	
@@ -54,7 +54,7 @@ class zzdcore1:
 		if head == u'none':
 			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
 			self.sentence.append([waa,(head,sen),outs])
-			return (self._sorry(u'copy',outs),form)
+			return ((False, self._sorry(u'copy',outs)),form)
 
 		if self.state == 'init':
 			if head == u'verify':
@@ -81,7 +81,7 @@ class zzdcore1:
 		if self.state == 'init':
 			if sen[u'id'] in db.database._identifyDict:
 				self.friend.name = db.database._identifyDict[sen[u'id']]
-				return (True, u'%s您好，身份认证通过。我有什么为您服务的吗？'%self.friend.name)
+				return (True, u'%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name))
 			return (False, u'认证失败。')
 		else:
 			return (False, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')

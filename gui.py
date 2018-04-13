@@ -19,7 +19,7 @@ output_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = False
+autoplay = True
 
 def voicePress(evt):
 	thread.start_new_thread(voice.start_record, ())
@@ -66,12 +66,15 @@ def enterSen(waa):
 			return
 	xhh.act(zhd, waa)
 
-def return_event(evt):
+def human_entry():
 	global entry_human
 	waa = entry_human.get()
 	if waa == u'':
 		return
 	enterSen(waa)
+
+def return_event(evt):
+	human_entry()
 
 def main():
 	global xhh,zhd
@@ -108,7 +111,7 @@ def main():
 	tk.Label(master,text = "output_layer1").place(x=5, y=130, width=90, height=20)
 	tk.Label(master,text = "entry_zzd").place(x=5, y=150, width=90, height=20)
 	
-	tk.Button(master, text = "确定", command = enterSen).place(x=500,y=40, width=60, height=20)
+	tk.Button(master, text = "确定", command = human_entry).place(x=500,y=40, width=60, height=20)
 	
 	vinputButton = tk.Button(master, text = "按住说话")
 	vinputButton.place(x=560,y=40, width=60, height=20)

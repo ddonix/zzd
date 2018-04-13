@@ -144,10 +144,14 @@ def txt2voice(txt):
 	global client
 	try:
 		a = int(txt)
-		rank = rankis(a)
-		res = rank[0]
+		if a:
+			rank = rankis(a)
+			res = rank[0]
+		else:
+			res = u'0'
 	except:
 		res = txt
+	
 	result = client.synthesis(res, 'zh', 1, {'vol': 5,})
 	if not isinstance(result, dict):
 		with open('output2.mp3', 'wb') as f:
