@@ -97,7 +97,6 @@ class database:
 							continue
 						if gg[0] == u's' or gg[0:2] == u'ws':
 							continue
-						print u'%s:  依赖： %s'%(v[0][0],gg)
 						break
 					else:
 						skip2 = False
