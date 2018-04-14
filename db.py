@@ -11,6 +11,7 @@ class database:
 	_identifyDict = {}
 	_defineDict = {}
 	_gset_key = {}
+	_keyword_zzd = {}
 	_mend_add = {}
 	_mend_replace = {}
 	
@@ -189,8 +190,25 @@ class database:
 		except:
 			raise NameError
 		for keyword in cursor:
-			assert keyword[0] in cls._gset_all
-			cls._gset_key[keyword[0]] = keyword[1:]
+			if keyword[0] in cls._gset_all:
+				cls._gset_key[keyword[0]] = keyword[1:]
+				for sp in cls._gset_all[keyword[0]].sp:
+					cls._keyword_zzd[sp.s] = keyword[1:]
+					
+			elif keyword[0][0] == u'(' and keyword[0][-1] == u')':
+				cls._gset_key[keyword[0]] = keyword[1:]
+				gs = gset(keyword[0],[])
+				item = keyword[0][1:-1].split(u' ')
+				for sp in item:
+					assert database.spin(sp)
+					gs.addsp(database.sp(sp))
+					cls._keyword_zzd[sp] = keyword[1:]
+			else:
+				print keyword[0]
+				raise NameError
+
+		for sp in cls._keyword_zzd:
+			print 'keyword  '+sp
 	
 		try:
 			cursor = conn.execute("select * from verify")
