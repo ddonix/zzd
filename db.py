@@ -460,31 +460,22 @@ class gset:
 				key[self.name] = sp.s
 				return (sp, ress[-1][1], key)
 	
-	#只处理基本集合。没有子集，不依赖任何别的集合。例如，句号，感叹号，阿拉伯数字
+	#只处理基本集合。没有子集，不依赖任何别的集合。例如，句号，感叹号，阿拉伯数字,基本汉字
 	def ___fensp(self, phrases, mend):
 		assert self.child == []
 		assert self.name[0] != u'[' and self.name[0] != u')'
 		if phrases == []:
 			if not mend:
 				return None
-			elif self.name == u'逗号':
-				phrases.insert(0,database.sp(u'，'))
-			elif self.name == u'句号':
-				phrases.insert(0,database.sp(u'。'))
-			elif self.name == u'感叹号':
-				phrases.insert(0,database.sp(u'！'))
-			elif self.name == u'问号':
-				phrases.insert(0,database.sp(u'？'))
-			elif self.name == u'下引号':
-				phrases.insert(0,database.sp(u'”'))
-			elif self.name == u'上引号':
-				phrases.insert(0,database.sp(u'“'))
-			else:
+			if not self.name in database._mend_zzd:
 				return None
+			phrases.insert(0,database.sp(database._mend_zzd[self.name]))
 			return (phrases[0], [], {})
 		else:
 			if phrases[0] in self.sp:
 				return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+			else:
+				return None
 		
 class seph:
 	def __init__(self, s):
