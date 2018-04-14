@@ -459,6 +459,85 @@ class gset:
 				key[self.name] = sp.s
 				return (sp, ress[-1][1], key)
 	
+	def __fensp(self, phrases, mend):
+		return None
+	
+class seph:
+	def __init__(self, s):
+		if type(s) == unicode:
+			self.s = s				#sting
+			self.d = (s)			#迪卡尔
+			self.gs = {}
+			self.attr = {}
+		elif type(s) == list and isinstance(s[0], seph):
+			self.s = u''			#sting
+			d = []
+			self.gs = {}
+			self.attr = {}
+			for sp in s:
+				self.s += sp.s
+				d.append(sp.d)
+			self.d = tuple(d)
+		else:
+			raise TypeError
+	
+	def setattr(self, name, value):
+		return None
+
+	def getattr(self, name):
+		return None
+
+	def addgs(self, gs):
+		assert isinstance(gs, gset)
+		assert not gs in self.gs
+		self.gs.add(gs)
+
+	def removegs(self, gs):
+		assert isinstance(gs, gset)
+		assert gs in self.gs
+		self.gs.remove(gs)
+
+	def _setattr(self, gram, name, value):
+		assert self.be(gram)
+		gs = database.gs(gram)
+		
+		if name in self.attr:
+			oldgs = database.gs(self.attr[name])
+			newgs = database.gs(value)
+			assert newgs in gs.plot[name]
+			oldgs.removesp(self)
+			newgs.addsp(self)
+			self.attr[name]=value
+			return True
+		
+		for p in gs.plot:
+			if p == name:
+				for v in gs.plot[p]:
+					if v.name == value:
+						gs.removesp(self)
+						v.addsp(self)
+						self.attr[name]=value
+						return True
+		return False
+		
+	
+	def _getattr(self, gram, name):
+		assert self.be(gram)
+		return u'男'
+
+	def be(self, gram):
+		gs = database.gs(gram)
+		if gs.contain(self) != None:
+			return True
+		return False
+
+def fenci(waa, point):
+	phrases = []
+	con = False
+	znumber =  u'0123456789'
+	cnumber =  u'零一二三四五六七八九十百千万亿'
+	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	
 class seph:
 	def __init__(self, s):
 		if type(s) == unicode:

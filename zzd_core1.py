@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import xlrd 
 import os 
+import sys
 import sqlite3
 import db
 import zzd_math
