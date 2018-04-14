@@ -19,7 +19,8 @@ output_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = False
+autoplay = True
+
 def voicePress(evt):
 	thread.start_new_thread(voice.start_record, ())
 	return

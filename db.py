@@ -800,8 +800,6 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
-	database.checkgs(u'认证确认', False)
-'''	
 	gs = database.gs(u'人')
 	sp1 = database.sp(u'李冬')
 	print '.......................'
@@ -811,7 +809,6 @@ def main():
 	print gs.contain(sp1).name
 	sp1.setattr(u'性别', u'男')
 	print gs.contain(sp1).name
-'''
 
 if __name__ == '__main__':
 	main()
