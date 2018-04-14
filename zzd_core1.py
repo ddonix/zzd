@@ -243,9 +243,16 @@ def main():
 	zzdcore1.init()
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
-
-	fc = core1._trans_2_1(u'14>24')
-	print fc[0],fc[1]
+	a = u'佳'
+	phs = db.fenci(a, True)
+	g = db.database.gs(u'汉语运算符')
+	sp = g.fensp_1(phs,True)
+	print sp[0].s
 
 if __name__ == '__main__':
 	main()
+	
+'''	
+	fc = core1._trans_2_1(u'14>24')
+	print fc[0],fc[1]
+'''
