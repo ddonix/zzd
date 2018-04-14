@@ -10,7 +10,7 @@ class database:
 	
 	_identifyDict = {}
 	_defineDict = {}
-	_keyword_zzd = {}
+	_gset_key = {}
 	_mend_add = {}
 	_mend_replace = {}
 	
@@ -19,6 +19,7 @@ class database:
 		try:
 			return cls._gset_all[gram]
 		except:
+			print gram
 			raise NameError
 
 	@classmethod
@@ -106,6 +107,7 @@ class database:
 					else:
 						skip2 = False
 					if skip2:
+						print v[0][0]+u' 依赖 '+g
 						break
 				else:
 					gsp = g[1:-1].split('|')
@@ -116,6 +118,7 @@ class database:
 					else:
 						skip2 = False
 					if skip2:
+						print v[0][0]+u' 依赖 '+gg
 						break
 			else:
 				gram = gset.prevgram(v[0][1:])
@@ -186,16 +189,10 @@ class database:
 		except:
 			raise NameError
 		for keyword in cursor:
-			if not cls.spin(keyword[0]):
-				print keyword[0]
-				raise TypeError
-			cls._keyword_zzd[keyword[0]] = keyword[1:]
+			print keyword[0]
+			assert keyword[0] in cls._gset_all
+			cls._gset_key[keyword[0]] = keyword[1:]
 	
-		for sp in cls.gs(u'zzd关键字').sp:
-			if not sp.s in cls._keyword_zzd:
-				print('%s在符号表中定义为zzd关键字，但是没有在关键字表中出现'%sp)
-				raise NameError
-
 		try:
 			cursor = conn.execute("select * from verify")
 		except:
@@ -231,10 +228,11 @@ class database:
 			print ''
 	
 	@classmethod
-	def checkgs(cls, gram, mend):
+	def checkgs(cls, gram, recursion, mend):
 		assert database.gsin(gram)
 		#检查gs的sp与子集的sp是否有重合
 		gs = database.gs(gram)
+		print gs
 		print u'检查集合 %s：'%gs.name
 		print u'1.实例信息'
 		print gs
@@ -265,8 +263,11 @@ class database:
 					else:
 						raise TypeError
 		#检查gs的子集是否
-		print(u'check success.')
-	
+		if recursion:
+			for ch in gs.child:
+				cls.checkgs(ch.name, True, mend)
+		print(u'check success................................')
+
 class gset:
 	def __init__(self, name, child):
 		self.name = unicode(name)
@@ -337,6 +338,8 @@ class gset:
 	@classmethod
 	def __prevgram(cls, gram, res):
 		if gram == []:
+			return
+		if gram[0] == '' or gram[0] == None:
 			return
 		if len(gram) == 1:
 			if gram[0][0] == u'w':
@@ -800,15 +803,7 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
-	gs = database.gs(u'人')
-	sp1 = database.sp(u'李冬')
-	print '.......................'
-	sp1.setattr(u'性别', u'男')
-	print gs.contain(sp1).name
-	sp1.setattr(u'性别', u'女')
-	print gs.contain(sp1).name
-	sp1.setattr(u'性别', u'男')
-	print gs.contain(sp1).name
+	database.checkgs(u'命令确认', True, False)#递归不修复
 
 if __name__ == '__main__':
 	main()
