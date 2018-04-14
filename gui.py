@@ -20,14 +20,12 @@ entry_human = None
 entry_zzd = None
 	
 autoplay = False
-
 def voicePress(evt):
 	thread.start_new_thread(voice.start_record, ())
 	return
 
 def voiceRelease(evt):
 	global entry_human
-	
 	voice.stop_record()
 	waa = voice.voice2txt()
 	if waa == None:
@@ -36,7 +34,6 @@ def voiceRelease(evt):
 		return
 	entry_human.delete(0,'end')
 	entry_human.insert(0, waa)
-	
 	enterSen(waa)
 
 def zhdShow(waa, form=''):

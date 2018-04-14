@@ -11,6 +11,7 @@ class database:
 	_identifyDict = {}
 	_defineDict = {}
 	_keyword_zzd = {}
+	_mend_zzd = {}
 	
 	@classmethod
 	def gs(cls, gram):
@@ -191,6 +192,13 @@ class database:
 			raise TypeError
 		for guest in cursor:
 			cls._identifyDict[guest[0]] = guest[1]
+		
+		try:
+			cursor = conn.execute("select * from mend")
+		except:
+			raise TypeError
+		for mend in cursor:
+			cls._mend_zzd[mend[0]] = mend[1]
 		conn.close()
 	
 	@classmethod
@@ -358,16 +366,9 @@ class gset:
 			if not mend:
 				return None
 			else:
-				if self.name == u'句号':
-					phrases.insert(0,database.sp(u'。'))
-				elif self.name == u'感叹号':
-					phrases.insert(0,database.sp(u'！'))
-				elif self.name == u'问号':
-					phrases.insert(0,database.sp(u'？'))
-				elif self.name == u'下引号':
-					phrases.insert(0,database.sp(u'”'))
-				else:
+				if not self.name in database._mend_zzd:
 					return None
+				phrases.insert(0,database.sp(database._mend_zzd[self.name]))
 				return (phrases[0], [], {})
 		if self.child != []:
 			ress = []
@@ -459,7 +460,129 @@ class gset:
 				key[self.name] = sp.s
 				return (sp, ress[-1][1], key)
 	
-	def __fensp(self, phrases, mend):
+	#只处理基本集合。没有子集，不依赖任何别的集合。例如，句号，感叹号，阿拉伯数字
+	def ___fensp(self, phrases, mend):
+		assert self.child == []
+		assert self.name[0] != u'[' and self.name[0] != u')'
+		if phrases == []:
+			if not mend:
+				return None
+			elif self.name == u'逗号':
+				phrases.insert(0,database.sp(u'，'))
+			elif self.name == u'句号':
+				phrases.insert(0,database.sp(u'。'))
+			elif self.name == u'感叹号':
+				phrases.insert(0,database.sp(u'！'))
+			elif self.name == u'问号':
+				phrases.insert(0,database.sp(u'？'))
+			elif self.name == u'下引号':
+				phrases.insert(0,database.sp(u'”'))
+			elif self.name == u'上引号':
+				phrases.insert(0,database.sp(u'“'))
+			else:
+				return None
+			return (phrases[0], [], {})
+		else:
+			if phrases[0] in self.sp:
+				return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+		
+class seph:
+	def __init__(self, s):
+		if type(s) == unicode:
+			self.s = s				#sting
+			self.d = (s)			#迪卡尔
+			self.gs = {}
+			self.attr = {}
+		elif type(s) == list and isinstance(s[0], seph):
+			self.s = u''			#sting
+			d = []
+			self.gs = {}
+			self.attr = {}
+			for sp in s:
+				self.s += sp.s
+				d.append(sp.d)
+			self.d = tuple(d)
+		else:
+			raise TypeError
+	
+	def setattr(self, name, value):
+		return None
+
+	def getattr(self, name):
+		return None
+
+	def addgs(self, gs):
+		assert isinstance(gs, gset)
+		assert not gs in self.gs
+		self.gs.add(gs)
+
+	def removegs(self, gs):
+		assert isinstance(gs, gset)
+		assert gs in self.gs
+		self.gs.remove(gs)
+
+	def _setattr(self, gram, name, value):
+		assert self.be(gram)
+		gs = database.gs(gram)
+		
+		if name in self.attr:
+			oldgs = database.gs(self.attr[name])
+			newgs = database.gs(value)
+			assert newgs in gs.plot[name]
+			oldgs.removesp(self)
+			newgs.addsp(self)
+			self.attr[name]=value
+			return True
+		
+		for p in gs.plot:
+			if p == name:
+				for v in gs.plot[p]:
+					if v.name == value:
+						gs.removesp(self)
+						v.addsp(self)
+						self.attr[name]=value
+						return True
+		return False
+		
+	
+	def _getattr(self, gram, name):
+		assert self.be(gram)
+		return u'男'
+
+	def be(self, gram):
+		gs = database.gs(gram)
+		if gs.contain(self) != None:
+			return True
+		return False
+
+def fenci(waa, point):
+	phrases = []
+	con = False
+	znumber =  u'0123456789'
+	cnumber =  u'零一二三四五六七八九十百千万亿'
+	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	
+class seph:
+	def __init__(self, s):
+		if type(s) == unicode:
+			self.s = s				#sting
+			self.d = (s)			#迪卡尔
+			self.gs = {}
+			self.attr = {}
+		elif type(s) == list and isinstance(s[0], seph):
+			self.s = u''			#sting
+			d = []
+			self.gs = {}
+			self.attr = {}
+			for sp in s:
+				self.s += sp.s
+				d.append(sp.d)
+			self.d = tuple(d)
+		else:
+			raise TypeError
+	
+	def setattr(self, name, value):
+		return None
 		return None
 	
 class seph:
