@@ -243,9 +243,9 @@ def main():
 	zzdcore1.init()
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
-	a = u'认证身份'
-	phs = db.fenci(a, True)
-	g = db.database.gs(u'认证确认')
+	a = u'小白认证身份'
+	phs = db.fenci(a, False)
+	g = db.database.gs(u'认证确认1')
 	sp = g._fensp(phs,True)
 	print sp[0].s
 	print sp[1]

@@ -391,54 +391,42 @@ class gset:
 		assert self.child == []
 		assert self.name[0] != u'(' and self.name[0] != u')'
 		assert self.name[0] != u'[' and self.name[0] != u']'
-		if phrases == []:
+		if phrases != [] and phrases[0] in self.sp:
+			return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+		else:
 			if not mend:
 				return None
-			if not self.name in database._mend_add:
-				return None
-			phrases.insert(0,database.sp(database._mend_add[self.name]))
-			return (phrases[0], [], {})
-		else:
-			if phrases[0] in self.sp:
+			if self.name in database._mend_add:
+				phrases.insert(0,database.sp(database._mend_add[self.name]))
 				return (phrases[0], phrases[1:], {self.name:phrases[0].s})
-			else:
-				if not mend:
-					return None
-				if not phrases[0].s in database._mend_replace:
-					return None
+			if phrases != [] and phrases[0].s in database._mend_replace:
 				for replace in database._mend_replace[phrases[0].s]:
 					if database.sp(replace) in self.sp:
 						phrases[0] = database.sp(replace)
 						return (phrases[0], phrases[1:], {self.name:phrases[0].s})
-				return None
+			return None
 	
 	#只处理()集合。没有子集，不依赖任何别的集合。例如(, o ?)
 	def fensp_2(self, phrases, mend):
 		assert self.child == []
 		assert self.name[0] == u'(' and self.name[-1] == u')'
-		if phrases == []:
+		if phrases != [] and phrases[0] in self.sp:
+			return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+		else:
 			if not mend:
 				return None
 			for sp in self.sp:
 				if sp in database._mend_add:
 					phrases.insert(0,database.sp(sp))
-					return (phrases[0], [], {})
-			return None
-		else:
-			if phrases[0] in self.sp:
-				return (phrases[0], phrases[1:], {self.name:phrases[0].s})
-			else:
-				if not mend:
-					return None
-				if not phrases[0].s in database._mend_replace:
-					return None
+					return (phrases[0], phrases[1:], {self.name:sp})
+			if phrases != [] and phrases[0].s in database._mend_replace:
 				for replace in database._mend_replace[phrases[0].s]:
 					if database.sp(replace) in self.sp:
 						phrases[0] = database.sp(replace)
 						return (phrases[0], phrases[1:], {self.name:phrases[0].s})
-				return None
+			return None
 	
-	#只处理[]集合。没有子集。例如[主语 谓语 句号] [上引号 ... 下引号] [认证命令 (身份)]
+	#只处理[]集合。没有子集,但是要递归。例如[主语 谓语 句号] [上引号 ... 下引号] [认证命令 (身份)]
 	def fensp_3(self, phrases, mend):
 		assert self.child == []
 		assert self.name[0] == u'[' and self.name[-1] == u']'
@@ -451,12 +439,16 @@ class gset:
 			assert not (gram == '' or gram == u' ')
 			if database.gsin(gram):
 				g = database.gs(gram)
-				if gram[0] == u'(' and gram[-1] == u')':
-					res = g.fensp_2(phrases, mend)
+				if g.child == []:
+					if gram[0] == u'(' and gram[-1] == u')':
+						res = g.fensp_2(phrases, mend)
+					else:
+						res = g.fensp_1(phrases, mend)
 				else:
-					res = g.fensp_1(phrases, mend)
+					res = g._fensp(phrases, mend)
 				if res == None:
 					return None
+				
 				key[gram] = res[0].s
 				for k in res[2]:
 					key[k] = res[2][k]
