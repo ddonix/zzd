@@ -237,25 +237,16 @@ class zzdcore1:
 		else:
 			return u'对不起，我无法处理\"'+sen+u'\"。'
 	
-	
+
 def main():
 	print('zzd_core1')
 	zzdcore1.init()
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
-	a = u'小白认证身份'
-	phs = db.fenci(a, False)
-	g = db.database.gs(u'认证确认1')
-	sp = g._fensp(phs,True)
-	print sp[0].s
-	print sp[1]
-	print sp[2]
-	for s in sp[2]:
-		print s,sp[2][s]
 	
 	a = u'小白暂停播放'
 	phs = db.fenci(a, False)
-	g = db.database.gs(u'命令确认1')
+	g = db.database.gs(u'命令语句')
 	sp = g._fensp(phs,True)
 	print sp[0].s
 	print sp[1]

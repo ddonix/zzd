@@ -189,7 +189,6 @@ class database:
 		except:
 			raise NameError
 		for keyword in cursor:
-			print keyword[0]
 			assert keyword[0] in cls._gset_all
 			cls._gset_key[keyword[0]] = keyword[1:]
 	
@@ -803,7 +802,6 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
-	database.checkgs(u'命令确认', True, False)#递归不修复
 
 if __name__ == '__main__':
 	main()
