@@ -1,6 +1,7 @@
 #!/usr/bin/python -B
 # -*- coding: UTF-8 -*-
 import sqlite3
+import copy
 
 class database: 
 	_gset_all = {}
@@ -113,7 +114,9 @@ class database:
 					if skip2:
 						break
 			else:
-				gset(v[0][0], v[0][1:])
+				gram = gset.prevgram(v[0][1:])
+				gset(v[0][0], gram)
+				
 				v.pop(0)
 				skip = False
 			if skip:
@@ -270,6 +273,59 @@ class gset:
 		name += gs[-1].name+u']'
 		res = gset(name, [])
 		return res
+	
+	@classmethod
+	def prevgram(cls, gram):
+		res = []
+		for g in gram:
+			res.extend(cls._prevgram(g))
+		return res
+	
+	@classmethod
+	def _prevgram(cls, gram):
+		if gram == '' or gram == None:
+			return []
+		if not (gram[0] == u'[' and gram[-1] == u']'):
+			return [gram]
+		gram = gram[1:-1].split(u' ')
+		tmp = []
+		cls.__prevgram(gram,tmp)
+		tmp.sort(key=lambda x:len(x))
+		
+		res = []
+		for t in tmp:
+			r = u'[%s'%t[0]
+			for s in t[1:]:
+				r += ' %s'%s
+			r += u']'
+			res.append(r)
+		return res
+	
+	@classmethod
+	def __prevgram(cls, gram, res):
+		if gram == []:
+			return
+		if len(gram) == 1:
+			if gram[0][0] == u'w':
+				res.append([])
+				res.append([gram[0][1:]])
+			else:
+				res.append([gram[0]])
+			return
+		cls.__prevgram(gram[1:], res)
+		if gram[0][0] == u'w':
+			res2 = []
+			for g in res:
+				ag = copy.deepcopy(g)
+				ag.insert(0,gram[0][1:])
+				res2.append(ag)
+			res.extend(res2)
+			return
+		else:
+			for g in res:
+				g.insert(0,gram[0])
+			return
+			
 
 	def addsp(self, sp):
 		if not isinstance(sp, seph):
@@ -391,22 +447,6 @@ class gset:
 							else:
 								if mend:
 									ress.append((database.sp(gram[2:]), phrases, {}))
-								else:
-									continue
-						elif gram[0] == u'w':
-							g = database.gs(gram[1:])
-							res = g._fensp(phrases, mend)
-							if res != None:
-								key[g.name] = res[0].s
-								for k in res[2]:
-									key[k] = res[2][k]
-								ress.append(res)
-								phrases = res[1]
-							else:
-								if mend and len(g.sp) == 1:
-									for ph in g.sp:
-										ress.append((ph, phrases, {}))
-										break
 								else:
 									continue
 						else:
@@ -548,7 +588,7 @@ def main():
 	database.spinit()
 	database.coreinit()
 	database.datacheck(True)
-	
+'''	
 	gs = database.gs(u'人')
 	sp1 = database.sp(u'李冬')
 	print '.......................'
@@ -558,6 +598,7 @@ def main():
 	print gs.contain(sp1).name
 	sp1.setattr(u'性别', u'男')
 	print gs.contain(sp1).name
+'''
 
 if __name__ == '__main__':
 	main()
