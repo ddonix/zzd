@@ -243,11 +243,15 @@ def main():
 	zzdcore1.init()
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
-	a = u'佳'
+	a = u'认证身份'
 	phs = db.fenci(a, True)
-	g = db.database.gs(u'汉语运算符')
-	sp = g.fensp_1(phs,True)
+	g = db.database.gs(u'认证确认')
+	sp = g._fensp(phs,True)
 	print sp[0].s
+	print sp[1]
+	print sp[2]
+	for s in sp[2]:
+		print s,sp[2][s]
 
 if __name__ == '__main__':
 	main()

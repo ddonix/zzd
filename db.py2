@@ -100,7 +100,7 @@ class database:
 							continue
 						if gg[0] == u'w' and cls.gsin(gg[1:]):
 							continue
-						if gg[0] == u'(' or gg[-1] == u')':
+						if gg[0] == u's' or gg[0:2] == u'ws':
 							continue
 						break
 					else:
@@ -120,6 +120,7 @@ class database:
 			else:
 				gram = gset.prevgram(v[0][1:])
 				gset(v[0][0], gram)
+				
 				v.pop(0)
 				skip = False
 			if skip:
@@ -275,13 +276,6 @@ class gset:
 		self.sp = set()		#明确表示的元素集合
 		self.plot = {}		#明确的划分;要有名字：比如人按性别分为男人和女人
 
-		if name[0] == u'[' and name[-1] == u']':
-			assert child == []
-			name = name[1:-1].split(u' ')
-			for gram in name:
-				if gram[0] == u'(' and gram[-1] == u')':
-					gset(gram, [])
-		
 		self.child = []		#子集
 		for ch in child:
 			if ch == u'' or ch == None:
@@ -389,8 +383,7 @@ class gset:
 	#只处理基本集合。没有子集，不依赖任何别的集合。例如，句号，感叹号，阿拉伯数字,基本汉字
 	def fensp_1(self, phrases, mend):
 		assert self.child == []
-		assert self.name[0] != u'(' and self.name[0] != u')'
-		assert self.name[0] != u'[' and self.name[0] != u']'
+		assert self.name[0] != u'[' and self.name[0] != u')'
 		if phrases == []:
 			if not mend:
 				return None
@@ -415,7 +408,7 @@ class gset:
 	#只处理()集合。没有子集，不依赖任何别的集合。例如(, o ?)
 	def fensp_2(self, phrases, mend):
 		assert self.child == []
-		assert self.name[0] == u'(' and self.name[-1] == u')'
+		assert self.name[0] == u'(' and self.name[-1] != u')'
 		if phrases == []:
 			if not mend:
 				return None
@@ -441,7 +434,7 @@ class gset:
 	#只处理[]集合。没有子集。例如[主语 谓语 句号] [上引号 ... 下引号] [认证命令 (身份)]
 	def fensp_3(self, phrases, mend):
 		assert self.child == []
-		assert self.name[0] == u'[' and self.name[-1] == u']'
+		assert self.name[0] == u'[' and self.name[-1] != u']'
 		frame = self.name[1:-1].split(u' ')
 		if phrases == []:
 			return None
@@ -478,17 +471,24 @@ class gset:
 						if phrases == []:
 							break
 			else:
-				print gram
 				raise TypeError
 			sps = []
 			for res in ress:
 				sps.append(res[0])
-		sp = seph(sps)
-		g.addsp(sp)
-		key[self.name] = sp.s
-		return (sp, ress[-1][1], key)
+			sp = seph(sps)
+			g.addsp(sp)
+			key[self.name] = sp.s
+			return (sp, ress[-1][1], key)
 	
 	def _fensp(self, phrases, mend):
+		if phrases == []:
+			if not mend:
+				return None
+			else:
+				if not self.name in database._mend_add:
+					return None
+				phrases.insert(0,database.sp(database._mend_add[self.name]))
+				return (phrases[0], [], {})
 		if self.child != []:
 			ress = []
 			for i in range(-1,-len(self.child)-1, -1):
@@ -499,13 +499,89 @@ class gset:
 					return res
 			return None
 		else:
-			if self.name[0] == '(' and self.name[-1] == u')':
-				return self.fensp_2(phrases, mend)
-			elif self.name[0] == '[' and self.name[-1] == u']':
-				return self.fensp_3(phrases, mend)
+			if self.name[0] == '[' and self.name[-1] == u']':
+				frame = self.name[1:-1].split(u' ')
 			else:
-				return self.fensp_1(phrases, mend)
+				frame = []
+			key = {}
+			if frame == []:
+				if phrases[0].be(self.name):
+					key[self.name] = phrases[0].s
+					return (phrases[0], phrases[1:], key)
+				else:
+					if mend:
+						if self.name == u'逗号':
+								phrases.insert(0,database.sp(u'，'))
+						elif self.name == u'句号':
+								phrases.insert(0,database.sp(u'。'))
+						elif self.name == u'感叹号':
+								phrases.insert(0,database.sp(u'！'))
+						elif self.name == u'问号':
+								phrases.insert(0,database.sp(u'？'))
+						elif self.name == u'上引号':
+								phrases.insert(0,database.sp(u'“'))
+						else:
+							return None
+						return (phrases[0], phrases[1:], key)
+					return None
+			else:
+				ress = []
+				for i, gram in enumerate(frame):
+					if gram == '':
+						continue
+					if database.gsin(gram):
+						g = database.gs(gram)
+						res = g._fensp(phrases, mend)
+						if res == None:
+							return None
+						key[g.name] = res[0].s
+						for k in res[2]:
+							key[k] = res[2][k]
+						ress.append(res)
+						phrases = res[1]
+					else:
+						if gram == u'...':
+							if i < len(frame)-1:
+								while not (phrases[0].be(frame[i+1])):
+									ress.append((phrases[0], phrases[1:], {}))
+									phrases = phrases[1:]
+									if phrases == []:
+										break
+							else:
+								if phrases == []:
+									break
+								while True:
+									ress.append((phrases[0], phrases[1:], {}))
+									phrases = phrases[1:]
+									if phrases == []:
+										break
+						elif gram[0] == u's':
+							if phrases[0].s == gram[1:]:
+								ress.append((phrases[0], phrases[1:], {}))
+								phrases = phrases[1:]
+							else:
+								return None
+						elif gram[0:2] == u'ws':
+							if phrases[0].s == gram[2:]:
+								ress.append((phrases[0], phrases[1:], {}))
+								phrases = phrases[1:]
+							else:
+								if mend:
+									ress.append((database.sp(gram[2:]), phrases, {}))
+								else:
+									continue
+						else:
+							return None
+				sps = []
+				for res in ress:
+					sps.append(res[0])
+				sp = seph(sps)
+				g.addsp(sp)
+				key[self.name] = sp.s
+				return (sp, ress[-1][1], key)
+	
 
+		
 class seph:
 	def __init__(self, s):
 		if type(s) == unicode:
@@ -808,7 +884,6 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
-	database.checkgs(u'认证确认', False)
 '''	
 	gs = database.gs(u'人')
 	sp1 = database.sp(u'李冬')
