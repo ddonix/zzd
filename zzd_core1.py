@@ -1,9 +1,8 @@
 #!/usr/bin/python -B
 # -*- coding: UTF-8 -*-
-import xlrd 
 import os 
 import sys
-import sqlite3
+import thread
 import db
 import zzd_math
 
@@ -29,6 +28,9 @@ class zzdcore1:
 		self.name = db.database._identifyDict[u'299792458']
 		self.friend = None
 		self.cursen = None
+		os.system(u'rm /tmp/mfifo -f')
+		os.system(u'mkfifo /tmp/mfifo')
+		self.FSM = {u'music':False} #有限状态机Finite-state machine
 	
 	@classmethod
 	def init(cls):
@@ -114,14 +116,35 @@ class zzdcore1:
 			return (False, self._sorry(u'define', sen))
 	
 	def _command(self, sen):
-		com = sen.encode('utf8')
-		print com
-		pid = os.fork()
-		if pid == 0:
-			#os.system(com)
-			sys.exit()
+		cmd = sen[0]
+		arg = sen[1]
+		exe = sen[2]
+		print cmd
+		print arg
+		print exe
+		if exe != None:
+			os.system(exe)
+		elif cmd == u'播放':
+			if arg == None:
+				return (False, u'我不知道播放什么歌曲')
+			if self.FSM[u'music'] == True:
+				os.system('echo stop >> /tmp/mfifo')
+				self.FSM[u'musci'] = False
+			else:
+				thread.start_new_thread( mplayer_thread, ("mplayer播放歌曲", self, arg))
+		elif cmd == u'暂停':
+			if self.FSM[u'musci'] == True:
+				os.system(u'echo pause >> /tmp/mfifo')
+		elif cmd == u'继续':
+			if self.FSM[u'musci'] == True:
+				os.system(u'echo pause >> /tmp/mfifo')
+		elif cmd == u'停止':
+			if self.FSM[u'musci'] == True:
+				os.system(u'echo stop >> /tmp/mfifo')
+				self.FSM[u'musci'] = False
 		else:
-			return (True, u'好的')
+			return (False, u'不识别的命令')
+		return (True, u'好的')
 
 	def _system(self, phrases):
 		return self._sorry((u'system', sen))
@@ -179,27 +202,29 @@ class zzdcore1:
 		if sp == None:
 			return (u'none', u'命令语法不对','')
 		else:
-			assert u'命令确认' in sp[2]
+			assert u'zzd命令' in sp[2]
+			cmd = sp[2][u'zzd命令']
+			print u'执行命令：%s'%cmd
 			if u'命令参数' in sp[2]:
-				print sp[2][u'命令确认']
-				print sp[2][u'命令参数']
-				assert sp[2][u'命令确认'][0:2] in db.database._keyword_zzd
-				exe = db.database._keyword_zzd[sp[2][u'命令确认'][0:2]][1]
 				arg = sp[2][u'命令参数']
-				print exe
+				print u'命令参数：%s'%arg
 			else:
-				print 'FFFFFFFFFFF'+sp[2][u'命令确认']
-				#assert sp[2][u'命令确认'][0:2] in db.database._keyword_zzd
-				#exe = db.database._keyword_zzd[sp[2][u'命令确认'][0:2]][1]
-				#arg = sp[2][u'命令参数']
-				#print exe
-				
-			res = ''
-			try:
-				exec(exe)
-			except:
-				return (u'none', u'命令语法错误')
-			return (u'command', res,sp[0].s)
+				arg = None
+				print u'无参数'
+			
+			assert cmd in db.database._keyword_zzd
+			exe = db.database._keyword_zzd[cmd][1]
+			if exe == '' or exe == None:
+				print u'内建命令'
+				res = None
+			else:
+				res = ''
+				try:
+					exec(exe)
+				except:
+					return (u'none', u'不识别的命令:%s'%exe, sp[0].s)
+				print res
+			return (u'command', (cmd, arg, res),sp[0].s)
 	
 	def _solve_system(self, phrases, keyword):
 		for ph in phrases:
@@ -251,7 +276,7 @@ def main():
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
 	
-	a = u'小白暂停'
+	a = u'小白播放歌曲'
 	phs = db.fenci(a, False)
 	g = db.database.gs(u'命令语句')
 	sp = g._fensp(phs,True)
@@ -261,11 +286,55 @@ def main():
 	for s in sp[2]:
 		print s,sp[2][s]
 	
+	a = u'小白播放歌曲一瞬间'
+	phs = db.fenci(a, False)
+	g = db.database.gs(u'命令语句')
+	sp = g._fensp(phs,True)
+	print sp[0].s
+	print sp[1]
+	print sp[2]
+	for s in sp[2]:
+		print s,sp[2][s]
+	
+	a = u'播放一瞬间'
+	phs = db.fenci(a, False)
+	g = db.database.gs(u'命令语句')
+	sp = g._fensp(phs,True)
+	print sp[0].s
+	print sp[1]
+	print sp[2]
+	for s in sp[2]:
+		print s,sp[2][s]
+	
+	a = u'暂停播放'
+	phs = db.fenci(a, False)
+	g = db.database.gs(u'命令语句')
+	sp = g._fensp(phs,True)
+	print sp[0].s
+	print sp[1]
+	print sp[2]
+	for s in sp[2]:
+		print s,sp[2][s]
+	
+	a = u'暂停'
+	phs = db.fenci(a, False)
+	g = db.database.gs(u'命令语句')
+	sp = g._fensp(phs,True)
+	print sp[0].s
+	print sp[1]
+	print sp[2]
+	for s in sp[2]:
+		print s,sp[2][s]
 
+	#播放线程
+def mplayer_thread( threadName, core1, arg):
+	core1.FSM[u'music'] = True
+	print(u'开始播放')
+	cmd = u'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg[1:-1]
+	print cmd
+	os.system(cmd)
+	print(u'播放完毕')
+	core1.FSM[u'music'] = False
+	
 if __name__ == '__main__':
 	main()
-	
-'''	
-	fc = core1._trans_2_1(u'14>24')
-	print fc[0],fc[1]
-'''
