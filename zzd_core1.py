@@ -251,7 +251,7 @@ def main():
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
 	
-	a = u'小白暂停播放'
+	a = u'小白暂停'
 	phs = db.fenci(a, False)
 	g = db.database.gs(u'命令语句')
 	sp = g._fensp(phs,True)
@@ -261,17 +261,6 @@ def main():
 	for s in sp[2]:
 		print s,sp[2][s]
 	
-	a = u'小白播放歌曲一瞬间'
-	phs = db.fenci(a, False)
-	g = db.database.gs(u'命令语句')
-	sp = g._fensp(phs,True)
-	print sp[0].s
-	print sp[1]
-	print sp[2]
-	for s in sp[2]:
-		print s,sp[2][s]
-
-
 
 if __name__ == '__main__':
 	main()
