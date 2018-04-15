@@ -166,6 +166,8 @@ class zzdcore1:
 			f.close()
 			self.FSM[u'musci'] = False
 			self.FSM[u'pause'] = False
+		elif cmd == u'再见':
+			return (True, u'再见')
 		else:
 			return (False, u'不识别的命令:%s'%cmd)
 		return (True, u'好的')

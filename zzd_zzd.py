@@ -26,6 +26,7 @@ class zzd(zzd_unity.unity):
 		print waa_out[0][1]
 		print waa_out[1]
 		self.show(waa_out[0][1], waa_out[1])
+		
 		return waa_out
 
 	def act(self, dest, waa_out):
