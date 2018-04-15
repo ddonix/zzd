@@ -166,8 +166,8 @@ class zzdcore1:
 			f.close()
 			self.FSM[u'musci'] = False
 			self.FSM[u'pause'] = False
-		elif cmd == u'再见':
-			return (True, u'再见')
+		elif cmd == u'再见' or cmd == u'拜拜':
+			return (True, cmd)
 		else:
 			return (False, u'不识别的命令:%s'%cmd)
 		return (True, u'好的')
@@ -190,10 +190,10 @@ class zzdcore1:
 					bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
 		if bit[0][1] == 0:
-			return zzdcore1.inWaaClass[u'other'][1](self, phrases, keyword)
-		return zzdcore1.inWaaClass[bit[0][0]][1](self, phrases, keyword)
+			return zzdcore1.inWaaClass[u'other'][1](self, phrases)
+		return zzdcore1.inWaaClass[bit[0][0]][1](self, phrases)
 	
-	def _solve_verify(self, phrases, keyword):
+	def _solve_verify(self, phrases):
 		sp = db.database.gs(u'认证语句')._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'认证语法不对', '')
@@ -201,7 +201,7 @@ class zzdcore1:
 			assert u'数' in sp[2]
 			return (u'verify', {u'id':sp[2][u'数']}, sp[0].s)
 	
-	def _solve_math(self, phrases, keyword):
+	def _solve_math(self, phrases):
 		sp = db.database.gs(u'数学语句')._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'数学语法不对', '')
@@ -215,7 +215,7 @@ class zzdcore1:
 				else:
 					return (u'none', u'数学语法错误%s'%sp[0].s, sp[0].s)
 	
-	def _solve_define(self, phrases, keyword):
+	def _solve_define(self, phrases):
 		sp = db.database.gs(u'定义语句')._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'定义语法不对','')
@@ -223,7 +223,7 @@ class zzdcore1:
 			assert u'定义词' in sp[2]
 			return (u'define', sp[2][u'定义词'], sp[0].s)
 	
-	def _solve_command(self, phrases, keyword):
+	def _solve_command(self, phrases):
 		sp = db.database.gs(u'命令语句')._fensp(phrases, True)
 		if sp == None:
 			return (u'none', u'命令语法不对','')
@@ -252,33 +252,33 @@ class zzdcore1:
 				print res
 			return (u'command', (cmd, arg, res),sp[0].s)
 	
-	def _solve_system(self, phrases, keyword):
+	def _solve_system(self, phrases):
 		for ph in phrases:
 			print ph.s
 		return (u'none', u'对不起，出错了!', u'')
 	
-	def _solve_other(self, phrases, keyword):
+	def _solve_other(self, phrases):
 		ph = [x for x in phrases]
-		res = self._solve_verify(ph, keyword)
+		res = self._solve_verify(ph)
 		if res[0] != u'none':
 			return res
 		
 		ph = [x for x in phrases]
-		res = self._solve_define(ph, keyword)
+		res = self._solve_define(ph)
 		if res[0] != u'none':
 			return res
 		
 		ph = [x for x in phrases]
-		res = self._solve_command(ph, keyword)
+		res = self._solve_command(ph)
 		if res[0] != u'none':
 			return res
 		
 		ph = [x for x in phrases]
-		res = self._solve_math(ph, keyword)
+		res = self._solve_math(ph)
 		if res[0] != u'none':
 			return res
 		
-		res = self._solve_system(phrases, keyword)
+		res = self._solve_system(phrases)
 		if res[0] != u'none':
 			return res
 		return (u'none', u'对不起，出错了!', u'')
@@ -300,7 +300,7 @@ def main():
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
 	
-	a = u'小白播放歌曲一瞬间'
+	a = u'再见'
 	phs = db.fenci(a, False)
 	g = db.database.gs(u'命令语句')
 	sp = g._fensp(phs,True)

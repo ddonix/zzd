@@ -1,7 +1,7 @@
 # -*- coding:utf-8 -*- 
 import zzd_unity
 import zzd_core1
-
+import sys
 #语音的层级
 #free:自由表达的语言，有各种风格，例如幽默、严肃、简练、罗嗦.例如：一加一是不是比二大呢？(这里的呢字在表义上是多余的)
 #2:规范汉语，汉语的规范表达。例如：1+1大于2，是吗？
@@ -26,7 +26,8 @@ class zzd(zzd_unity.unity):
 		print waa_out[0][1]
 		print waa_out[1]
 		self.show(waa_out[0][1], waa_out[1])
-		
+		if waa_out[0][0] == True and (waa_out[0][1] == u'再见' or waa_out[0][1] == '拜拜'):
+			sys.exit()
 		return waa_out
 
 	def act(self, dest, waa_out):
