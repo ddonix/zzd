@@ -22,15 +22,12 @@ class zzd(zzd_unity.unity):
 		waa = self._trans_free_2(waa_in)
 		waa_out = self.core.inputs(sour, waa)
 		waa_out = self._trans_2_free(waa_out)
-		print waa_out
-		print waa_out[0]
+		print waa_out[0][0]
+		print waa_out[0][1]
 		print waa_out[1]
 		self.show(waa_out[0][1], waa_out[1])
 		return waa_out
 
-	def pause(self):
-		self.core1.pause()
-    
 	def act(self, dest, waa_out):
 		return None
 	

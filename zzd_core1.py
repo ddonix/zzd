@@ -23,14 +23,12 @@ class zzdcore1:
 
 	def __init__(self):
 		self.sentence = []
-		self.state = 'init'
-		self.mode = 'work'
 		self.name = db.database._identifyDict[u'299792458']
 		self.friend = None
 		self.cursen = None
-		os.system(u'rm /tmp/mfifo -f')
-		os.system(u'mkfifo /tmp/mfifo')
-		self.FSM = {u'music':False} #有限状态机Finite-state machine
+		self.expect = []
+		#有限状态机Finite-state machine
+		self.FSM = {u'verify':False, u'work':False, u'music':False, u'pause':False} 
 	
 	@classmethod
 	def init(cls):
@@ -52,42 +50,49 @@ class zzdcore1:
 		
 				
 	def inputs(self, friend, waa):
-		self.friend = friend
 		(head,sen,form) = self._trans_2_1(waa)
 		if head == u'none':
-			outs = u'对不起，我不明白您的意思!错误信息\"%s\"'%sen
+			outs = sen
 			self.sentence.append([waa,(head,sen),outs])
-			return ((False, self._sorry(u'copy',outs)),form)
+			return ((False, outs),form)
 
-		if self.state == 'init':
+		if self.FSM[u'verify'] == False:
 			if head == u'verify':
+				self.friend = friend
 				res = self._verify(sen)
 				if res[0]:
-					self.state = 'stand'
-					self.friend = friend
+					self.FSM[u'verify'] = True
+					self.FSM[u'work'] = True
+				else:
+					self.friend = None
 				self.sentence.append([waa,(head,sen),res])
 				return (res,form)
 			else:
 				outs = u'对不起，您需要先进行身份认证!'
 				self.sentence.append([waa,(head,sen),outs])
-				return (False, self._sorry(u'copy', outs),form)
-		elif self.mode == 'work':
+				return ((False,outs),form)
+		else:
+			if head == u'verify':
+				outs = u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。'
+				return ((False,outs),form) 
+		
+		if self.FSM[u'work'] == True:
 			assert head in zzdcore1.inWaaClass
+			assert friend == self.friend
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
 			self.sentence.append([waa,(head,sen),outs])
 			return (outs,form)
-		else:
-			outs = u'对不起，我懵了!'
-			return (False, self._sorry(u'copy', outs),form)
+		outs = u'对不起，我懵了!'
+		return ((False,outs),form)
 	
 	def _verify(self, sen):
-		if self.state == 'init':
-			if sen[u'id'] in db.database._identifyDict:
-				self.friend.name = db.database._identifyDict[sen[u'id']]
-				return (True, u'%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name))
-			return (False, u'认证失败。')
-		else:
-			return (False, u'您已经认证过身份了。服务多人功能正在开发中，请耐心等待。')
+		assert self.FSM[u'verify'] == False
+		if sen[u'id'] in db.database._identifyDict:
+			self.friend.name = db.database._identifyDict[sen[u'id']]
+			return (True, u'%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name))
+		return (False, u'认证失败。')
+		
+		
 				
 	def _math(self, sen):
 		eq = sen
@@ -115,11 +120,6 @@ class zzdcore1:
 		else:
 			return (False, self._sorry(u'define', sen))
 	
-	def _pp_music(self):
-		if self.FSM[u'music'] == True:
-			print u'echo pause >> /tmp/mfifo'.encode('utf8')
-			os.system(u'echo pause >> /tmp/mfifo'.encode('utf8'))
-
 	def _command(self, sen):
 		cmd = sen[0]
 		arg = sen[1]
@@ -133,23 +133,36 @@ class zzdcore1:
 			if arg == None:
 				return (False, u'我不知道播放什么歌曲')
 			if self.FSM[u'music'] == True:
-				os.system('echo stop >> /tmp/mfifo')
+				assert os.path.exists('/tmp/mfifo')
+				
 				self.FSM[u'musci'] = False
 			else:
 				thread.start_new_thread( mplayer_thread, ("mplayer播放歌曲", self, arg))
 		elif cmd == u'暂停':
-			if self.FSM[u'music'] == True:
-				print u'echo pause >> /tmp/mfifo'.encode('utf8')
-				os.system(u'echo pause >> /tmp/mfifo'.encode('utf8'))
+			if self.FSM[u'music'] == True and self.FSM[u'pause'] == False:
+				assert os.path.exists('/tmp/mfifo')
+				f = open('/tmp/mfifo','w+')
+				f.write('pausing pause\n')
+				f.close()
+				self.FSM[u'pause'] = True
+				print 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'
 		elif cmd == u'继续':
-			if self.FSM[u'music'] == True:
-				os.system(u'echo pause >> /tmp/mfifo'.encode('utf8'))
+			if self.FSM[u'music'] == True and self.FSM[u'pause'] == True:
+				assert os.path.exists('/tmp/mfifo')
+				f = open('/tmp/mfifo','w+')
+				f.write('pausing pause\n')
+				f.close()
+				self.FSM[u'pause'] = False
+				print 'JJJJJJJJJJJJJJJJJJJJJJJJJJJJ'
 		elif cmd == u'停止':
 			if self.FSM[u'music'] == True:
-				os.system(u'echo stop >> /tmp/mfifo'.encode('utf8'))
+				f = open('/tmp/mfifo','w+')
+				f.write('stop\n')
+				f.close()
 				self.FSM[u'musci'] = False
+				self.FSM[u'pause'] = False
 		else:
-			return (False, u'不识别的命令')
+			return (False, u'不识别的命令:%s'%cmd)
 		return (True, u'好的')
 
 	def _system(self, phrases):
@@ -264,9 +277,7 @@ class zzdcore1:
 		return (u'none', u'对不起，出错了!', u'')
 
 	def _sorry(self, head, sen):
-		if head == u'copy':
-			return sen
-		elif head == u'define':
+		if head == u'define':
 			return u'对不起，我没有\"'+sen+u'\"的定义。请进入训练模式，添加定义。'
 		elif head == u'math':
 			return u'对不起，我无法计算\"'+sen+u'\"。请检查表达式。'
@@ -282,16 +293,6 @@ def main():
 	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
 	
-	a = u'小白播放歌曲'
-	phs = db.fenci(a, False)
-	g = db.database.gs(u'命令语句')
-	sp = g._fensp(phs,True)
-	print sp[0].s
-	print sp[1]
-	print sp[2]
-	for s in sp[2]:
-		print s,sp[2][s]
-	
 	a = u'小白播放歌曲一瞬间'
 	phs = db.fenci(a, False)
 	g = db.database.gs(u'命令语句')
@@ -302,46 +303,21 @@ def main():
 	for s in sp[2]:
 		print s,sp[2][s]
 	
-	a = u'播放一瞬间'
-	phs = db.fenci(a, False)
-	g = db.database.gs(u'命令语句')
-	sp = g._fensp(phs,True)
-	print sp[0].s
-	print sp[1]
-	print sp[2]
-	for s in sp[2]:
-		print s,sp[2][s]
-	
-	a = u'暂停播放'
-	phs = db.fenci(a, False)
-	g = db.database.gs(u'命令语句')
-	sp = g._fensp(phs,True)
-	print sp[0].s
-	print sp[1]
-	print sp[2]
-	for s in sp[2]:
-		print s,sp[2][s]
-	
-	a = u'暂停'
-	phs = db.fenci(a, False)
-	g = db.database.gs(u'命令语句')
-	sp = g._fensp(phs,True)
-	print sp[0].s
-	print sp[1]
-	print sp[2]
-	for s in sp[2]:
-		print s,sp[2][s]
-
 	#播放线程
 def mplayer_thread( threadName, core1, arg):
-	core1.FSM[u'music'] = True
 	print(u'开始播放')
 	cmd = u'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg[1:-1]
 	cmd = cmd.encode('utf8')
+	os.system('rm /tmp/mfifo -rf')
+	os.system('mkfifo /tmp/mfifo')
 	print cmd
+	core1.FSM[u'music'] = True
+	core1.FSM[u'pause'] = False
 	os.system(cmd)
-	print(u'播放完毕')
 	core1.FSM[u'music'] = False
+	core1.FSM[u'pause'] = False
+	print(u'播放完毕')
+	
 	
 if __name__ == '__main__':
 	main()

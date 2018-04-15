@@ -6,8 +6,10 @@ from PIL import Image
 import voice
 import thread 
 import db
+import os
 import zzd_human
 import zzd_zzd
+import time 
 
 xhh = None
 zhd = None
@@ -22,11 +24,13 @@ entry_zzd = None
 autoplay = True
 
 def voicePress(evt):
+	os.system('amixer set Master 60%')
 	thread.start_new_thread(voice.start_record, ())
 	return
 
 def voiceRelease(evt):
 	global entry_human
+	os.system('amixer set Master 100%')
 	voice.stop_record()
 	waa = voice.voice2txt()
 	if waa == None:
@@ -50,7 +54,6 @@ def zhdShow(waa, form=''):
 	entry_zzd.update()
 	if autoplay:
 		voice.txt2voice(waa)
-	
 	
 def voicePlay(evt):
 	global entry_zzd

@@ -3,9 +3,9 @@
 
 import wave
 import os
+import subprocess
 from pyaudio import PyAudio,paInt16
 from aip import AipSpeech
-
 recordflag = False
 stoped = False
 
@@ -78,7 +78,8 @@ def txt2voice(txt):
 
 def main():
 	voiceInit()
-	print voice2txt()
+	a = subprocess.check_output(["date", "+%H:%M:%S"])
+	txt2voice(a)
 
 if __name__ == '__main__':
 	main()

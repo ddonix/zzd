@@ -156,4 +156,4 @@ def txt2voice(txt):
 	if not isinstance(result, dict):
 		with open('output2.mp3', 'wb') as f:
 			f.write(result)
-		os.system('mplayer output2.mp3')
+		os.system('play output2.mp3')

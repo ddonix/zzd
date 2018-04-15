@@ -2,6 +2,7 @@
 # -*- coding: UTF-8 -*-
 import sqlite3
 import copy
+import os
 
 class database: 
 	_gset_all = {}
@@ -819,6 +820,9 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
+	os.system('rm /tmp/mfifo -rf')
+	os.system('mkfifo /tmp/mfifo')
+	print os.path.exists('/tmp/mfifo')
 
 if __name__ == '__main__':
 	main()
