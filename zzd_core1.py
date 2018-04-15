@@ -133,14 +133,15 @@ class zzdcore1:
 			else:
 				thread.start_new_thread( mplayer_thread, ("mplayer播放歌曲", self, arg))
 		elif cmd == u'暂停':
-			if self.FSM[u'musci'] == True:
-				os.system(u'echo pause >> /tmp/mfifo')
+			if self.FSM[u'music'] == True:
+				print u'echo pause >> /tmp/mfifo'.encode('utf8')
+				os.system(u'echo pause >> /tmp/mfifo'.encode('utf8'))
 		elif cmd == u'继续':
-			if self.FSM[u'musci'] == True:
-				os.system(u'echo pause >> /tmp/mfifo')
+			if self.FSM[u'music'] == True:
+				os.system(u'echo pause >> /tmp/mfifo'.encode('utf8'))
 		elif cmd == u'停止':
-			if self.FSM[u'musci'] == True:
-				os.system(u'echo stop >> /tmp/mfifo')
+			if self.FSM[u'music'] == True:
+				os.system(u'echo stop >> /tmp/mfifo'.encode('utf8'))
 				self.FSM[u'musci'] = False
 		else:
 			return (False, u'不识别的命令')
@@ -331,6 +332,7 @@ def mplayer_thread( threadName, core1, arg):
 	core1.FSM[u'music'] = True
 	print(u'开始播放')
 	cmd = u'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg[1:-1]
+	cmd = cmd.encode('utf8')
 	print cmd
 	os.system(cmd)
 	print(u'播放完毕')

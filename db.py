@@ -142,7 +142,6 @@ class database:
 			sp = seph(v[0])
 			database.addsp(sp)
 			database.addv(v[0][0])
-			
 			for g in v[1:]:
 				if not (g == '' or g == None):
 					database.gs(g).addsp(sp)
