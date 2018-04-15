@@ -115,6 +115,11 @@ class zzdcore1:
 		else:
 			return (False, self._sorry(u'define', sen))
 	
+	def _pp_music(self):
+		if self.FSM[u'music'] == True:
+			print u'echo pause >> /tmp/mfifo'.encode('utf8')
+			os.system(u'echo pause >> /tmp/mfifo'.encode('utf8'))
+
 	def _command(self, sen):
 		cmd = sen[0]
 		arg = sen[1]
