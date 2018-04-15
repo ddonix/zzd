@@ -24,7 +24,7 @@ entry_zzd = None
 autoplay = True
 
 def voicePress(evt):
-	os.system('amixer set Master 60%')
+	os.system('amixer set Master 70%')
 	thread.start_new_thread(voice.start_record, ())
 	return
 

@@ -139,28 +139,33 @@ class zzdcore1:
 			else:
 				thread.start_new_thread( mplayer_thread, ("mplayer播放歌曲", self, arg))
 		elif cmd == u'暂停':
-			if self.FSM[u'music'] == True and self.FSM[u'pause'] == False:
-				assert os.path.exists('/tmp/mfifo')
-				f = open('/tmp/mfifo','w+')
-				f.write('pausing pause\n')
-				f.close()
-				self.FSM[u'pause'] = True
-				print 'TTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT'
+			if self.FSM[u'music'] == False:
+				return (False, u'没有歌曲在播放')
+			if self.FSM[u'pause'] == True:
+				return (False, u'播放已经暂停')
+			assert os.path.exists('/tmp/mfifo')
+			f = open('/tmp/mfifo','w+')
+			f.write('pausing pause\n')
+			f.close()
+			self.FSM[u'pause'] = True
 		elif cmd == u'继续':
-			if self.FSM[u'music'] == True and self.FSM[u'pause'] == True:
-				assert os.path.exists('/tmp/mfifo')
-				f = open('/tmp/mfifo','w+')
-				f.write('pausing pause\n')
-				f.close()
-				self.FSM[u'pause'] = False
-				print 'JJJJJJJJJJJJJJJJJJJJJJJJJJJJ'
+			if self.FSM[u'music'] == False:
+				return (False, u'没有歌曲在播放')
+			if self.FSM[u'pause'] == False:
+				return (False, u'正在播放')
+			assert os.path.exists('/tmp/mfifo')
+			f = open('/tmp/mfifo','w+')
+			f.write('pausing pause\n')
+			f.close()
+			self.FSM[u'pause'] = False
 		elif cmd == u'停止':
-			if self.FSM[u'music'] == True:
-				f = open('/tmp/mfifo','w+')
-				f.write('stop\n')
-				f.close()
-				self.FSM[u'musci'] = False
-				self.FSM[u'pause'] = False
+			if self.FSM[u'music'] == False:
+				return (False, u'没有歌曲在播放')
+			f = open('/tmp/mfifo','w+')
+			f.write('stop\n')
+			f.close()
+			self.FSM[u'musci'] = False
+			self.FSM[u'pause'] = False
 		else:
 			return (False, u'不识别的命令:%s'%cmd)
 		return (True, u'好的')
