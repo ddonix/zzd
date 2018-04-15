@@ -2,26 +2,25 @@
 # -*- coding: UTF-8 -*-
 import sqlite3
 import copy
-import os
 
 class database: 
-	_gset_all = {}
-	_spbase_all = {}
-	_table_vocable = {u' '}
+	_gset_all = {}				#所有集合
+	_spbase_all = {}			#所有语句
+	_table_vocable = {u' '}		#所有字符
 	
-	_identifyDict = {}
-	_defineDict = {}
-	_gset_key = {}
-	_keyword_zzd = {}
-	_mend_add = {}
-	_mend_replace = {}
+	_identifyDict = {}			#身份认证
+	_defineDict = {}			#定义
+	_gset_key = {}				#关键集合
+	_keyword_zzd = {}			#关键语句
+	_mend_add = {}				#增加修复集合
+	_mend_replace = {}			#替换修复集合
 	
 	@classmethod
 	def gs(cls, gram):
 		try:
 			return cls._gset_all[gram]
 		except:
-			print gram
+			print(gram)
 			raise NameError
 
 	@classmethod
@@ -29,7 +28,7 @@ class database:
 		try:
 			return cls._spbase_all[s[0]][s]
 		except:
-			ipdb.set_trace()
+			print s
 			raise NameError
 	
 	@classmethod
@@ -67,11 +66,6 @@ class database:
 		else:
 			cls._spbase_all[sp.s[0]][sp.s] = sp
 	
-	@classmethod
-	def addv(cls, s):
-		for v in s:
-			cls._table_vocable.add(v)
-
 	@classmethod
 	def gsinit(cls):
 		try:
@@ -141,8 +135,8 @@ class database:
 		for v in cursor:
 			assert len(v[0]) == 1
 			sp = seph(v[0])
-			database.addsp(sp)
-			database.addv(v[0][0])
+			cls.addsp(sp)
+			cls._table_vocable.add(v[0][0])
 			for g in v[1:]:
 				if not (g == '' or g == None):
 					database.gs(g).addsp(sp)
@@ -820,9 +814,6 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
-	os.system('rm /tmp/mfifo -rf')
-	os.system('mkfifo /tmp/mfifo')
-	print os.path.exists('/tmp/mfifo')
 
 if __name__ == '__main__':
 	main()

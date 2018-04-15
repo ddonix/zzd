@@ -4,6 +4,7 @@ import os
 import sys
 import thread
 import db
+import time
 import zzd_math
 
 #init:初始化。
@@ -91,8 +92,6 @@ class zzdcore1:
 			self.friend.name = db.database._identifyDict[sen[u'id']]
 			return (True, u'%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name))
 		return (False, u'认证失败。')
-		
-		
 				
 	def _math(self, sen):
 		eq = sen
@@ -121,24 +120,23 @@ class zzdcore1:
 			return (False, self._sorry(u'define', sen))
 	
 	def _command(self, sen):
-		cmd = sen[0]
-		arg = sen[1]
-		exe = sen[2]
-		print cmd
-		print arg
-		print exe
-		if exe != None:
-			os.system(exe)
-		elif cmd == u'播放':
-			if arg == None:
-				return (False, u'我不知道播放什么歌曲')
+		exe = db.database._keyword_zzd[sen[u'zzd命令']][1]
+		if not (exe == '' or exe == None):
+			cmd = sen[u'zzd命令']
+			arg = sen[u'命令参数']
+			return (True, u'好的')
+		if u'zzd播放命令' in sen:
+			if not u'命令参数' in sen:
+				return (False, u'播放什么歌曲?')
+			arg = sen[u'命令参数']
 			if self.FSM[u'music'] == True:
 				assert os.path.exists('/tmp/mfifo')
-				
-				self.FSM[u'musci'] = False
-			else:
-				thread.start_new_thread( mplayer_thread, ("mplayer播放歌曲", self, arg))
-		elif cmd == u'暂停':
+				f = open('/tmp/mfifo','w+')
+				f.write('quit\n')
+				f.close()
+				time.sleep(2)
+			thread.start_new_thread( mplayer_thread, ("mplayer播放歌曲", self, arg))
+		elif u'zzd暂停命令' in sen:
 			if self.FSM[u'music'] == False:
 				return (False, u'没有歌曲在播放')
 			if self.FSM[u'pause'] == True:
@@ -148,7 +146,7 @@ class zzdcore1:
 			f.write('pausing pause\n')
 			f.close()
 			self.FSM[u'pause'] = True
-		elif cmd == u'继续':
+		elif u'zzd继续命令' in  sen:
 			if self.FSM[u'music'] == False:
 				return (False, u'没有歌曲在播放')
 			if self.FSM[u'pause'] == False:
@@ -158,7 +156,7 @@ class zzdcore1:
 			f.write('pausing pause\n')
 			f.close()
 			self.FSM[u'pause'] = False
-		elif cmd == u'停止':
+		elif u'zzd停止命令' in sen:
 			if self.FSM[u'music'] == False:
 				return (False, u'没有歌曲在播放')
 			f = open('/tmp/mfifo','w+')
@@ -166,8 +164,12 @@ class zzdcore1:
 			f.close()
 			self.FSM[u'musci'] = False
 			self.FSM[u'pause'] = False
-		elif cmd == u'再见' or cmd == u'拜拜':
-			return (True, cmd)
+		elif u'zzd再见命令' in sen:
+			if self.FSM[u'music'] == True:
+				f = open('/tmp/mfifo','w+')
+				f.write('stop\n')
+				f.close()
+			return (True, sen[u'zzd再见命令'])
 		else:
 			return (False, u'不识别的命令:%s'%cmd)
 		return (True, u'好的')
@@ -229,29 +231,8 @@ class zzdcore1:
 			return (u'none', u'命令语法不对','')
 		else:
 			assert u'zzd命令' in sp[2]
-			cmd = sp[2][u'zzd命令']
-			print u'执行命令：%s'%cmd
-			if u'命令参数' in sp[2]:
-				arg = sp[2][u'命令参数']
-				print u'命令参数：%s'%arg
-			else:
-				arg = None
-				print u'无参数'
+			return (u'command', sp[2], sp[0].s)
 			
-			assert cmd in db.database._keyword_zzd
-			exe = db.database._keyword_zzd[cmd][1]
-			if exe == '' or exe == None:
-				print u'内建命令'
-				res = None
-			else:
-				res = ''
-				try:
-					exec(exe)
-				except:
-					return (u'none', u'不识别的命令:%s'%exe, sp[0].s)
-				print res
-			return (u'command', (cmd, arg, res),sp[0].s)
-	
 	def _solve_system(self, phrases):
 		for ph in phrases:
 			print ph.s
