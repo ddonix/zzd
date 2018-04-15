@@ -118,7 +118,7 @@ class zzdcore1:
 		print com
 		pid = os.fork()
 		if pid == 0:
-			os.system(com)
+			#os.system(com)
 			sys.exit()
 		else:
 			return (True, u'好的')
@@ -131,7 +131,7 @@ class zzdcore1:
 	
 	def _trans_2_1(self, waa):
 		phrases = db.fenci(waa, False)
-		keyword = [x for x in phrases if x.be(u'zzd关键字')]
+		keyword = [x for x in phrases if x.s in db.database._keyword_zzd]
 		bit = {u'verify':0,u'math':0,u'define':0,u'command':0,u'system':0}
 		for k in keyword:
 			assert k.s in db.database._keyword_zzd
@@ -180,13 +180,20 @@ class zzdcore1:
 			return (u'none', u'命令语法不对','')
 		else:
 			assert u'命令确认' in sp[2]
-			assert u'命令参数' in sp[2]
-			print sp[2][u'命令确认']
-			print sp[2][u'命令参数']
-			assert sp[2][u'命令确认'][0:2] in db.database._keyword_zzd
-			exe = db.database._keyword_zzd[sp[2][u'命令确认'][0:2]][1]
-			arg = sp[2][u'命令参数']
-			print exe
+			if u'命令参数' in sp[2]:
+				print sp[2][u'命令确认']
+				print sp[2][u'命令参数']
+				assert sp[2][u'命令确认'][0:2] in db.database._keyword_zzd
+				exe = db.database._keyword_zzd[sp[2][u'命令确认'][0:2]][1]
+				arg = sp[2][u'命令参数']
+				print exe
+			else:
+				print 'FFFFFFFFFFF'+sp[2][u'命令确认']
+				#assert sp[2][u'命令确认'][0:2] in db.database._keyword_zzd
+				#exe = db.database._keyword_zzd[sp[2][u'命令确认'][0:2]][1]
+				#arg = sp[2][u'命令参数']
+				#print exe
+				
 			res = ''
 			try:
 				exec(exe)
@@ -253,6 +260,17 @@ def main():
 	print sp[2]
 	for s in sp[2]:
 		print s,sp[2][s]
+	
+	a = u'小白播放歌曲一瞬间'
+	phs = db.fenci(a, False)
+	g = db.database.gs(u'命令语句')
+	sp = g._fensp(phs,True)
+	print sp[0].s
+	print sp[1]
+	print sp[2]
+	for s in sp[2]:
+		print s,sp[2][s]
+
 
 
 if __name__ == '__main__':
