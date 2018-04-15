@@ -201,9 +201,6 @@ class database:
 				print keyword[0]
 				raise NameError
 
-		for sp in cls._keyword_zzd:
-			print 'keyword  '+sp
-	
 		try:
 			cursor = conn.execute("select * from verify")
 		except:
@@ -235,7 +232,7 @@ class database:
 	@classmethod
 	def datacheck(cls, mend):
 		for gram in cls._gset_all:
-			cls.checkgs(gram, mend)
+			cls.checkgs(gram, False, mend)
 			print ''
 	
 	@classmethod
