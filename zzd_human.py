@@ -13,11 +13,11 @@ class human(zzd_unity.unity):
 		print('human init')
 	
 	def input(self, sour, waa):
-		raise NotImplementedError
+		if waa == u'再见' or waa == '拜拜':
+			print('sys.exit()')
 	
 	def output(self, dest, waa):
 		dest.input(self, waa)
-		return None
 
 def main():
 	print('zzd_human')

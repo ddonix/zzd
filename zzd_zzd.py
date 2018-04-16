@@ -11,8 +11,8 @@ import time
 class zzd(zzd_unity.unity):
 	def __init__(self, show):
 		zzd_unity.unity.__init__(self)
-		self.show = show
 		self.core = zzd_core1.zzdcore1()
+		self.show = show
 	
 	@classmethod
 	def init(cls):
@@ -20,26 +20,23 @@ class zzd(zzd_unity.unity):
 	
 	def input(self, sour, waa):
 		self.core.input(sour,waa)
+	
+	def output(self, dest, waa):
+		print(waa[0][0])
+		print(waa[0][1])
+		print(waa[1])
+		self.show(waa[0][1], waa[1])
+		dest.input(self, dest, waa[1])
 
 	def work(self):
-		while True:
+		working = True
+		while working:
 			print('zzd working')
-			time.sleep(1)
+			waa = getoutput(self)
+			self.output(self.core.friend, waa)
+			if waa[0][1] == u'再见' or waa[0][1] == '拜拜':
+				working = False
 
-	def echo(self, sour, waa_in):
-		waa = self._trans_free_2(waa_in)
-		waa_out = self.core.inputs(sour, waa)
-		waa_out = self._trans_2_free(waa_out)
-		print(waa_out[0][0])
-		print(waa_out[0][1])
-		print(waa_out[1])
-		self.show(waa_out[0][1], waa_out[1])
-		if waa_out[0][0] == True and (waa_out[0][1] == u'再见' or waa_out[0][1] == '拜拜'):
-			sys.exit()
-		return waa_out
-
-	def _trans_free_2(self, waa):
-		return waa
-	
-	def _trans_2_free(self, waa):
+	def getoutput(self):
+		waa = self.core.inputs(sour, waa)
 		return waa
