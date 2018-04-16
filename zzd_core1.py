@@ -14,8 +14,9 @@ class zzdcore1:
 		global play_event
 		self.name = db.database._identifyDict['299792458']
 		self.friend = None
+		self.desire = {'input':[]}						#欲望：大凡物不得其平则鸣
+		
 		self.waain = []
-		self.waaout = []
 		self.outsemaphore = threading.Semaphore(1)
 		
 		#有限状态机Finite-state machine
@@ -38,24 +39,22 @@ class zzdcore1:
 	
 	#human主进程调用
 	def input(self, sour, waa):
-		record = (waa, {'time':time.time()})
-		waaout = self.inputs(sour, waa)
-		record[1]['output'] = waaout
+		record = {'waa':waa, 'sour':sour, 'time':time.time()}
 		self.waain.append(record)
-		
-		self.outsemaphore.acquire()
-		self.waaout.append(waaout)
-		self.outsemaphore.release()
+		self.desire['input'].append(record)
 	
 	def getoutput(self):
-		if self.waaout == []:
+		assert 'input' in self.desire
+		waaout = None
+		if self.desire['input'] != []:
+			d = self.desire['input'].pop(0)
+			waaout=self.inputs(d['sour'], d['waa'])
+			print(waaout[0], waaout[1])
+		if waaout == None:
 			t = time.localtime(time.time())
 			if t.tm_sec == 0:
 				return ('该休息了','')
 			return None
-		self.outsemaphore.acquire()
-		waaout = self.waaout.pop(0) 
-		self.outsemaphore.release()
 		return waaout
 	
 	def output(self, dest, waa):
