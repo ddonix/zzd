@@ -2,6 +2,7 @@
 import zzd_unity
 import xlrd
 import sqlite3
+import sys
 
 class human(zzd_unity.unity):
 	def __init__(self, name):
@@ -13,8 +14,9 @@ class human(zzd_unity.unity):
 		print('human init')
 	
 	def input(self, sour, waa):
-		if waa == u'再见' or waa == '拜拜':
+		if waa == u'再见！' or waa == '拜拜！':
 			print('sys.exit()')
+			sys.exit()
 	
 	def output(self, dest, waa):
 		dest.input(self, waa)
