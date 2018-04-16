@@ -1,14 +1,13 @@
 #!/usr/bin/python3 -B
 
 import tkinter as tk           # 导入 Tkinter 库
-from PIL import Image
 import voice
-import _thread 
 import db
 import os
 import zzd_human
 import zzd_zzd
-import time 
+import threading
+import time
 
 xhh = None
 zhd = None
@@ -76,8 +75,22 @@ def human_entry():
 def return_event(evt):
 	human_entry()
 
+
+semaphore_init = None
+
+class zhdthread(threading.Thread):
+	def __init__(self,name):
+		super().__init__()
+		self.name = name
+
+	def run(self):
+		global zhd, semaphore_init
+		zhd = zzd_zzd.zzd(show=zhdShow)
+		semaphore_init.release()
+		print('zhd_thread running ...')
+
 def main():
-	global xhh,zhd
+	global xhh,zhd, semaphore_init
 	global entry_human, entry_zzd
 	
 	global input_layer1,output_layer1
@@ -88,7 +101,12 @@ def main():
 	zzd_zzd.zzd.init()
 	
 	xhh = zzd_human.human('nobody')
-	zhd = zzd_zzd.zzd(show=zhdShow)
+	
+	semaphore_init = threading.BoundedSemaphore()
+	zhdt = zhdthread('thread')
+	zhdt.start()
+	semaphore_init.acquire()
+	assert zhd != None
 	
 	voice.voiceInit()
 	
