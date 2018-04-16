@@ -39,13 +39,17 @@ class zzdcore1:
 		record[1]['output'] = waaout
 		self.waain.append(record)
 		
+		self.outsemaphore.acquire()
 		self.waaout.append(waaout)
 		self.outsemaphore.release()
 	
 	def getoutput(self):
-		if waaout == []:
+		if self.waaout == []:
 			return None
-		return self.waaout.pop(0)
+		self.outsemaphore.acquire()
+		waaout = self.waaout.pop(0) 
+		self.outsemaphore.release()
+		return waaout
 	
 	def output(self, dest, waa):
 		raise NotImplementedError

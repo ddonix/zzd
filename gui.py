@@ -83,7 +83,7 @@ def delete_windows():
 		zhd.master = False
 	
 	while xhh or zhd:
-		pass
+		time.sleep(1)
 	master.destroy()
 	return
 
@@ -141,7 +141,7 @@ def main():
 	xhh_running.wait()
 	assert xhh != None
 	
-	zhd_semaphore = threading.Semaphore(0)
+	zhd_semaphore = threading.Semaphore(1)
 	zhd_running = threading.Event()
 	zhd_running.clear()
 	
