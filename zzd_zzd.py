@@ -5,6 +5,7 @@ import zzd_core1
 import sys
 import time
 
+#除input函数运行在xhh线程，其他函数运行在zhd线程.
 class zzd(zzd_unity.unity):
 	def __init__(self, show):
 		zzd_unity.unity.__init__(self)
@@ -18,7 +19,7 @@ class zzd(zzd_unity.unity):
 	def init(cls):
 		zzd_core1.zzdcore1.init()
 	
-	#human主进程调用
+	#运行在xhh线程
 	def input(self, sour, waa):
 		self.core.input(sour,waa)
 	

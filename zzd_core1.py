@@ -49,6 +49,9 @@ class zzdcore1:
 	
 	def getoutput(self):
 		if self.waaout == []:
+			t = time.localtime(time.time())
+			if t.tm_sec == 0:
+				return ((True, '该休息了'),'')
 			return None
 		self.outsemaphore.acquire()
 		waaout = self.waaout.pop(0) 
