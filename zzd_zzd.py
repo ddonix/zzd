@@ -24,11 +24,10 @@ class zzd(zzd_unity.unity):
 		self.core.input(sour,waa)
 	
 	def output(self, dest, waa):
-		print(waa[0][0])
-		print(waa[0][1])
-		print(waa[1])
-		self.show(waa[0][1], waa[1])
-		dest.input(self, waa[1])
+		print('waa[0]',waa[0])
+		print('waa[1]',waa[1])
+		self.show(waa[0], waa[1])
+		dest.input(self, waa[0])
 
 	def work(self):
 		while self.working and self.root:
@@ -38,7 +37,7 @@ class zzd(zzd_unity.unity):
 				time.sleep(1)
 			else:
 				self.output(self.core.friend, waa)
-				if waa[0][1] == u'再见' or waa[0][1] == '拜拜':
+				if waa[0] == u'再见！' or waa[0] == '拜拜！':
 					self.working = False
 
 def main():

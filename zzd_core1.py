@@ -51,7 +51,7 @@ class zzdcore1:
 		if self.waaout == []:
 			t = time.localtime(time.time())
 			if t.tm_sec == 0:
-				return ((True, '该休息了'),'')
+				return ('该休息了','')
 			return None
 		self.outsemaphore.acquire()
 		waaout = self.waaout.pop(0) 
@@ -62,11 +62,11 @@ class zzdcore1:
 		raise NotImplementedError
 	
 	def inputs(self, friend, waa):
-		(head,sen,form) = self._trans_2_1(waa)
 		self.friend = friend
+		(head,sen,form) = self._trans_2_1(waa)
 		if head == 'none':
 			outs = sen
-			return ((False, outs),form)
+			return (outs, form)
 
 		if self.FSM['verify'] == False:
 			if head == 'verify':
@@ -74,21 +74,21 @@ class zzdcore1:
 				if res[0]:
 					self.FSM['verify'] = True
 					self.FSM['work'] = True
-				return (res,form)
+				return (res[1], form)
 			else:
 				outs = '对不起，您需要先进行身份认证!'
-				return ((False,outs),form)
+				return (outs, form)
 		else:
 			if head == 'verify':
 				outs = '您已经认证过身份了。服务多人功能正在开发中，请耐心等待。'
-				return ((False,outs),form) 
+				return (outs, form) 
 		
 		if self.FSM['work'] == True:
 			assert head in zzdcore1.inWaaClass
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
-			return (outs,form)
+			return (outs[1],form)
 		outs = '对不起，我懵了!'
-		return ((False,outs),form)
+		return (outs, form)
 	
 	def _verify(self, sen):
 		assert self.FSM['verify'] == False
@@ -164,7 +164,7 @@ class zzdcore1:
 		elif 'zzd再见命令' in sen:
 			if self.FSM['music'] == True:
 				os.system('echo quit >> /tmp/mfifo')
-			return (True, sen['zzd再见命令'])
+			return (True, sen['zzd再见命令']+'！')
 		else:
 			return (False, '不识别的命令:%s'%cmd)
 		return (True, '好的')
