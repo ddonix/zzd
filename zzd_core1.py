@@ -6,25 +6,15 @@ import db
 import time
 import zzd_math
 
-#init:初始化。
-#stand：完成一次交互，等待下一次交互。没有预期。
-#wait:期待human的回应。有预期。
-#initiative:主动状态，主动发起对话。
-STATE = ('init', 'stand', 'wait', 'initiative')
-
-#work:工作模式
-#game:娱乐模式
-#train:训练模式
-#debug:调试模式
-MODE = ('work', 'train', 'debug')
-
 class zzdcore1:
 	inWaaClass = {}		#输入语句类型
 
-	def __init__(self):
-		self.waa = []
+	def __init__(self, semaphore):
 		self.name = db.database._identifyDict['299792458']
 		self.friend = None
+		self.waain = []
+		self.waaout = []
+		self.outsemaphore = semaphore
 		
 		#有限状态机Finite-state machine
 		self.FSM = {'verify':False, 'work':False, 'music':False, 'pause':False} 
@@ -42,9 +32,20 @@ class zzdcore1:
 		zzdcore1.inWaaClass['system'] = [zzdcore1._system, zzdcore1._solve_system]			#system
 		zzdcore1.inWaaClass['other'] = [zzdcore1._other, zzdcore1._solve_other]			#other
 	
+	#human主进程调用
 	def input(self, sour, waa):
-		record = [waa, {'time':time.time()}]
-		self.waa.append(record)
+		record = (waa, {'time':time.time()})
+		waaout = self.inputs(sour, waa)
+		record[1]['output'] = waaout
+		self.waain.append(record)
+		
+		self.waaout.append(waaout)
+		self.outsemaphore.release()
+	
+	def getoutput(self):
+		self.outsemaphore.acquire()
+		waaout=self.waaout.pop(0)
+		return waaout
 	
 	def output(self, dest, waa):
 		raise NotImplementedError
@@ -53,7 +54,6 @@ class zzdcore1:
 		(head,sen,form) = self._trans_2_1(waa)
 		if head == 'none':
 			outs = sen
-			self.sentence.append([waa,(head,sen),outs])
 			return ((False, outs),form)
 
 		if self.FSM['verify'] == False:
@@ -65,11 +65,9 @@ class zzdcore1:
 					self.FSM['work'] = True
 				else:
 					self.friend = None
-				self.sentence.append([waa,(head,sen),res])
 				return (res,form)
 			else:
 				outs = '对不起，您需要先进行身份认证!'
-				self.sentence.append([waa,(head,sen),outs])
 				return ((False,outs),form)
 		else:
 			if head == 'verify':
@@ -80,7 +78,6 @@ class zzdcore1:
 			assert head in zzdcore1.inWaaClass
 			assert friend == self.friend
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
-			self.sentence.append([waa,(head,sen),outs])
 			return (outs,form)
 		outs = '对不起，我懵了!'
 		return ((False,outs),form)

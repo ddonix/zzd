@@ -18,7 +18,7 @@ input_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = False
+autoplay = True
 
 def voicePress(evt):
 	os.system('amixer set Master 70%')
@@ -74,8 +74,8 @@ def human_entry():
 def return_event(evt):
 	human_entry()
 
-
 zhd_running = None
+zhd_semaphore = None
 
 class zhdthread(threading.Thread):
 	def __init__(self,name):
@@ -83,14 +83,14 @@ class zhdthread(threading.Thread):
 		self.name = name
 
 	def run(self):
-		global zhd, zhd_running
-		zhd = zzd_zzd.zzd(show=zhdShow)
+		global zhd, zhd_running, zhd_semaphore
+		zhd = zzd_zzd.zzd(show=zhdShow, semaphore=zhd_semaphore)
 		zhd_running.set()
 		zhd.work()
 		print('zhd_thread running ...')
 
 def main():
-	global xhh,zhd, zhd_running
+	global xhh,zhd, zhd_running, zhd_semaphore
 	global entry_human, entry_zzd
 	
 	global input_layer1
@@ -103,10 +103,11 @@ def main():
 	
 	xhh = zzd_human.human('nobody')
 	
-	semaphore_init = threading.Semaphore(0)
-	zhdt = zhdthread('thread')
+	zhd_semaphore = threading.Semaphore(0)
 	zhd_running = threading.Event()
 	zhd_running.clear()
+	
+	zhdt = zhdthread('thread')
 	zhdt.start()
 	zhd_running.wait()
 	assert zhd != None

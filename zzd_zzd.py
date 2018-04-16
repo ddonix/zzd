@@ -9,15 +9,16 @@ import time
 #0:核心语言：暂时没有定义，留待以后扩展
 
 class zzd(zzd_unity.unity):
-	def __init__(self, show):
+	def __init__(self, show, semaphore):
 		zzd_unity.unity.__init__(self)
-		self.core = zzd_core1.zzdcore1()
+		self.core = zzd_core1.zzdcore1(semaphore)
 		self.show = show
 	
 	@classmethod
 	def init(cls):
 		zzd_core1.zzdcore1.init()
 	
+	#human主进程调用
 	def input(self, sour, waa):
 		self.core.input(sour,waa)
 	
@@ -26,17 +27,14 @@ class zzd(zzd_unity.unity):
 		print(waa[0][1])
 		print(waa[1])
 		self.show(waa[0][1], waa[1])
-		dest.input(self, dest, waa[1])
+		dest.input(self, waa[1])
 
 	def work(self):
 		working = True
 		while working:
 			print('zzd working')
-			waa = getoutput(self)
+			waa = self.core.getoutput()
+			assert waa != None
 			self.output(self.core.friend, waa)
 			if waa[0][1] == u'再见' or waa[0][1] == '拜拜':
 				working = False
-
-	def getoutput(self):
-		waa = self.core.inputs(sour, waa)
-		return waa
