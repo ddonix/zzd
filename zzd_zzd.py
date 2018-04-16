@@ -12,7 +12,7 @@ class zzd(zzd_unity.unity):
 		self.show = show
 		
 		self.working = True
-		self.master = True
+		self.root = True
 	
 	@classmethod
 	def init(cls):
@@ -30,7 +30,7 @@ class zzd(zzd_unity.unity):
 		dest.input(self, waa[1])
 
 	def work(self):
-		while self.working and self.master:
+		while self.working and self.root:
 			print('zzd working',time.time())
 			waa = self.core.getoutput()
 			if waa == None:

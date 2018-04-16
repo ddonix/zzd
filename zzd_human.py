@@ -10,13 +10,13 @@ class human(zzd_unity.unity):
 		zzd_unity.unity.__init__(self)
 		self.name = name
 		self.working = True
-		self.master = True
+		self.root = True
     
 	@classmethod
 	def init(cls):
 		print('human init')
 
-	# master调用
+	# root调用
 	def input(self, sour, waa):
 		if waa == u'再见！' or waa == '拜拜！':
 			self.working = False
@@ -25,7 +25,7 @@ class human(zzd_unity.unity):
 		dest.input(self, waa)
 	
 	def work(self):
-		while self.working and self.master:
+		while self.working and self.root:
 			print('xhh working',time.time())
 			time.sleep(1)
 

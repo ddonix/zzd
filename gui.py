@@ -8,7 +8,6 @@ import sys
 import zzd_human
 import zzd_zzd
 import threading
-import time
 import signal
 
 
@@ -18,7 +17,9 @@ entry_human = None
 entry_zzd = None
 	
 autoplay = True
-master = None
+root = None
+
+#主进程ident
 rootpid = 0
 
 def voicePress(evt):
@@ -43,7 +44,7 @@ def voiceRelease(evt):
 def zhdShow(waa, form=''):
 	global autoplay
 	
-	if master == None:
+	if root == None:
 		return
 	input_layer1.delete(0,'end')
 	if form != '':
@@ -81,24 +82,23 @@ def return_event(evt):
 
 
 def gameoversignal(signum,frame):
-	global master
-	master.destroy()
+	global root
+	sys.exit()
 
 xhht = None
 zhdt = None
-master = None
+root = None
+
 def delete_windows():
-	global master, xhht, zhdt
-	print('master destroy')
-	
+	global root, xhht, zhdt
 	if zhd:
-		zhd.master = False
+		zhd.root = False
 	if xhh:
-		xhh.master = False
+		xhh.root = False
 	
 	zhdt.join()
 	xhht.join()
-	master.destroy()
+	sys.exit()
 	return
 
 zhd = None
@@ -110,7 +110,7 @@ class zhdthread(threading.Thread):
 		self.name = name
 
 	def run(self):
-		global zhd, zhd_running,master
+		global zhd, zhd_running, root
 		print('zhd_thread start')
 		zhd = zzd_zzd.zzd(show=zhdShow)
 		zhd_running.set()
@@ -127,8 +127,8 @@ class xhhthread(threading.Thread):
 		self.name = name
 
 	def run(self):
-		global xhh, xhh_running,master
-		global master
+		global xhh, xhh_running, root
+		global root
 		print('xhh_thread start')
 		xhh = zzd_human.human('nobody')
 		xhh_running.set()
@@ -138,7 +138,7 @@ class xhhthread(threading.Thread):
 		os.kill(rootpid, signal.SIGUSR1)
 
 def main():
-	global master,rootpid
+	global root,rootpid
 	global xhht, xhh, xhh_running
 	global zhdt, zhd, zhd_running
 	
@@ -168,35 +168,35 @@ def main():
 	zhd_running.wait()
 	assert zhd != None
 	
-	master = tk.Tk()
-	master.geometry('640x480+20+20')
-	master.protocol("WM_DELETE_WINDOW", delete_windows)
-	master.bind("<Return>",return_event)
+	root = tk.Tk()
+	root.geometry('640x480+20+20')
+	root.protocol("WM_DELETE_WINDOW", delete_windows)
+	root.bind("<Return>",return_event)
 	
-	entry_human = tk.Entry(master)
+	entry_human = tk.Entry(root)
 	entry_human.place(x=95, y=40, width=400, height=20)
-	input_layer1 = tk.Entry(master)
+	input_layer1 = tk.Entry(root)
 	input_layer1.place(x=95, y=60, width=400, height=20)
-	tk.Label(master,text = "entry_human").place(x=5, y=40, width=90, height=20)
-	tk.Label(master,text = "input_layer1").place(x=5, y=60, width=90, height=20)
+	tk.Label(root,text = "entry_human").place(x=5, y=40, width=90, height=20)
+	tk.Label(root,text = "input_layer1").place(x=5, y=60, width=90, height=20)
 	
-	entry_zzd = tk.Entry(master)
+	entry_zzd = tk.Entry(root)
 	entry_zzd.place(x=95, y=150, width=400, height=20)
-	tk.Label(master,text = "entry_zzd").place(x=5, y=150, width=90, height=20)
+	tk.Label(root,text = "entry_zzd").place(x=5, y=150, width=90, height=20)
 	
-	tk.Button(master, text = "确定", command = human_entry).place(x=500,y=40, width=60, height=20)
+	tk.Button(root, text = "确定", command = human_entry).place(x=500,y=40, width=60, height=20)
 	
-	vinputButton = tk.Button(master, text = "按住说话")
+	vinputButton = tk.Button(root, text = "按住说话")
 	vinputButton.place(x=560,y=40, width=60, height=20)
 	vinputButton.bind("<ButtonPress>", voicePress)
 	vinputButton.bind("<ButtonRelease>", voiceRelease)
 	
-	voutButton = tk.Button(master, text = "播放")
+	voutButton = tk.Button(root, text = "播放")
 	voutButton.place(x=560,y=150, width=60, height=20)
 	voutButton.bind("<ButtonPress>", voicePlay)
 
 	entry_human.focus_set()
-	master.mainloop()
+	root.mainloop()
 
 if __name__ == '__main__':
 	main()
