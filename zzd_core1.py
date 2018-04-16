@@ -1,15 +1,17 @@
 #!/usr/bin/python3 -B
 import os 
 import sys
-import _thread
+import threading
 import db
 import time
 import zzd_math
 
+play_event = None
 class zzdcore1:
 	inWaaClass = {}		#输入语句类型
 
 	def __init__(self, semaphore):
+		global play_event
 		self.name = db.database._identifyDict['299792458']
 		self.friend = None
 		self.waain = []
@@ -18,6 +20,8 @@ class zzdcore1:
 		
 		#有限状态机Finite-state machine
 		self.FSM = {'verify':False, 'work':False, 'music':False, 'pause':False} 
+		play_event = threading.Event()
+		play_event.set()
 	
 	@classmethod
 	def init(cls):
@@ -56,19 +60,17 @@ class zzdcore1:
 	
 	def inputs(self, friend, waa):
 		(head,sen,form) = self._trans_2_1(waa)
+		self.friend = friend
 		if head == 'none':
 			outs = sen
 			return ((False, outs),form)
 
 		if self.FSM['verify'] == False:
 			if head == 'verify':
-				self.friend = friend
 				res = self._verify(sen)
 				if res[0]:
 					self.FSM['verify'] = True
 					self.FSM['work'] = True
-				else:
-					self.friend = None
 				return (res,form)
 			else:
 				outs = '对不起，您需要先进行身份认证!'
@@ -80,7 +82,6 @@ class zzdcore1:
 		
 		if self.FSM['work'] == True:
 			assert head in zzdcore1.inWaaClass
-			assert friend == self.friend
 			outs = zzdcore1.inWaaClass[head][0](self, sen)
 			return (outs,form)
 		outs = '对不起，我懵了!'
@@ -120,6 +121,7 @@ class zzdcore1:
 			return (False, self._sorry('define', sen))
 	
 	def _command(self, sen):
+		global play_event
 		exe = db.database._keyword_zzd[sen['zzd命令']][1]
 		if not (exe == '' or exe == None):
 			cmd = sen['zzd命令']
@@ -128,23 +130,19 @@ class zzdcore1:
 		if 'zzd播放命令' in sen:
 			if not '命令参数' in sen:
 				return (False, '播放什么歌曲?')
-			arg = sen['命令参数']
 			if self.FSM['music'] == True:
-				assert os.path.exists('/tmp/mfifo')
-				f = open('/tmp/mfifo','w+')
-				f.write('quit\n')
-				f.close()
-				time.sleep(2)
-			thread.start_new_thread( mplayer_thread, ("mplayer播放歌曲", self, arg))
+				os.system('echo quit >> /tmp/mfifo')
+			arg = sen['命令参数']
+			play_event.wait()
+			t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
+			t.start()
 		elif 'zzd暂停命令' in sen:
 			if self.FSM['music'] == False:
 				return (False, '没有歌曲在播放')
 			if self.FSM['pause'] == True:
 				return (False, '播放已经暂停')
 			assert os.path.exists('/tmp/mfifo')
-			f = open('/tmp/mfifo','w+')
-			f.write('pausing pause\n')
-			f.close()
+			os.system('echo pause >> /tmp/mfifo')
 			self.FSM['pause'] = True
 		elif 'zzd继续命令' in  sen:
 			if self.FSM['music'] == False:
@@ -152,23 +150,17 @@ class zzdcore1:
 			if self.FSM['pause'] == False:
 				return (False, '正在播放')
 			assert os.path.exists('/tmp/mfifo')
-			f = open('/tmp/mfifo','w+')
-			f.write('pausing pause\n')
-			f.close()
+			os.system('echo pause >> /tmp/mfifo')
 			self.FSM['pause'] = False
 		elif 'zzd停止命令' in sen:
 			if self.FSM['music'] == False:
 				return (False, '没有歌曲在播放')
-			f = open('/tmp/mfifo','w+')
-			f.write('stop\n')
-			f.close()
+			os.system('echo quit >> /tmp/mfifo')
 			self.FSM['musci'] = False
 			self.FSM['pause'] = False
 		elif 'zzd再见命令' in sen:
 			if self.FSM['music'] == True:
-				f = open('/tmp/mfifo','w+')
-				f.write('stop\n')
-				f.close()
+				os.system('echo quit >> /tmp/mfifo')
 			return (True, sen['zzd再见命令'])
 		else:
 			return (False, '不识别的命令:%s'%cmd)
@@ -291,13 +283,15 @@ def main():
 		print(s,sp[2][s])
 	
 	#播放线程
-def mplayer_thread( threadName, core1, arg):
-	print('开始播放')
-	cmd = 'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg[1:-1]
-	cmd = cmd.encode('utf8')
+
+def mplayer_thread(core1, arg):
+	global play_event
+	play_event.clear()
+	
+	print('播放 %s.mp3'%arg)
+	cmd = 'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg
 	os.system('rm /tmp/mfifo -rf')
 	os.system('mkfifo /tmp/mfifo')
-	print(cmd)
 	core1.FSM['music'] = True
 	core1.FSM['pause'] = False
 	os.system(cmd)
@@ -305,6 +299,7 @@ def mplayer_thread( threadName, core1, arg):
 	core1.FSM['pause'] = False
 	print('播放完毕')
 	
+	play_event.set()
 	
 if __name__ == '__main__':
 	main()

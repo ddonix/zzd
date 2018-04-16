@@ -16,11 +16,13 @@ input_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = False
+autoplay = True
+master = None
 
 def voicePress(evt):
 	os.system('amixer set Master 70%')
-	thread.start_new_thread(voice.start_record, ())
+	recordthread = threading.Thread(target=voice.start_record, args=())
+	recordthread.start()
 	return
 
 def voiceRelease(evt):
@@ -39,6 +41,8 @@ def voiceRelease(evt):
 def zhdShow(waa, form=''):
 	global autoplay
 	
+	if master == None:
+		return
 	input_layer1.delete(0,'end')
 	if form != '':
 		input_layer1.insert(0, form)
@@ -49,6 +53,7 @@ def zhdShow(waa, form=''):
 	entry_zzd.update()
 	if autoplay:
 		voice.txt2voice(waa)
+	return
 	
 def voicePlay(evt):
 	global entry_zzd
@@ -81,9 +86,6 @@ def delete_windows():
 		xhh.master = False
 	if zhd:
 		zhd.master = False
-	
-	while xhh or zhd:
-		time.sleep(1)
 	master.destroy()
 	return
 

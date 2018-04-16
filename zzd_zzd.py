@@ -31,7 +31,7 @@ class zzd(zzd_unity.unity):
 
 	def work(self):
 		while self.working and self.master:
-			print('zzd working')
+			print('zzd working',time.time())
 			waa = self.core.getoutput()
 			if waa == None:
 				time.sleep(1)

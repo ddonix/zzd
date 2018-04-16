@@ -26,7 +26,7 @@ class human(zzd_unity.unity):
 	
 	def work(self):
 		while self.working and self.master:
-			print('xhh working')
+			print('xhh working',time.time())
 			time.sleep(1)
 
 def main():
