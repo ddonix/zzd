@@ -14,7 +14,6 @@ zhd = None
 
 
 input_layer1 = None
-output_layer1 = None
 
 entry_human = None
 entry_zzd = None
@@ -63,7 +62,7 @@ def enterSen(waa):
 		if not db.database.legal(item):
 			zhdShow('对不起，我不认识\"%s\"这个字符。'%item)
 			return
-	xhh.act(zhd, waa)
+	xhh.output(zhd, waa)
 
 def human_entry():
 	global entry_human
@@ -76,7 +75,7 @@ def return_event(evt):
 	human_entry()
 
 
-semaphore_init = None
+zhd_running = None
 
 class zhdthread(threading.Thread):
 	def __init__(self,name):
@@ -84,35 +83,36 @@ class zhdthread(threading.Thread):
 		self.name = name
 
 	def run(self):
-		global zhd, semaphore_init
+		global zhd, zhd_running
 		zhd = zzd_zzd.zzd(show=zhdShow)
-		semaphore_init.release()
+		zhd_running.set()
+		zhd.work()
 		print('zhd_thread running ...')
 
 def main():
-	global xhh,zhd, semaphore_init
+	global xhh,zhd, zhd_running
 	global entry_human, entry_zzd
 	
-	global input_layer1,output_layer1
+	global input_layer1
 	global entry_human,entry_zzd
 	global autoplay
 
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
+	voice.voiceInit()
 	
 	xhh = zzd_human.human('nobody')
 	
-	semaphore_init = threading.BoundedSemaphore()
+	semaphore_init = threading.Semaphore(0)
 	zhdt = zhdthread('thread')
+	zhd_running = threading.Event()
+	zhd_running.clear()
 	zhdt.start()
-	semaphore_init.acquire()
+	zhd_running.wait()
 	assert zhd != None
-	
-	voice.voiceInit()
 	
 	master = tk.Tk()
 	master.geometry('640x480+20+20')
-	
 	master.bind("<Return>",return_event)
 	
 	entry_human = tk.Entry(master)
@@ -122,11 +122,8 @@ def main():
 	tk.Label(master,text = "entry_human").place(x=5, y=40, width=90, height=20)
 	tk.Label(master,text = "input_layer1").place(x=5, y=60, width=90, height=20)
 	
-	output_layer1 = tk.Entry(master)
-	output_layer1.place(x=95, y=130, width=400, height=20)
 	entry_zzd = tk.Entry(master)
 	entry_zzd.place(x=95, y=150, width=400, height=20)
-	tk.Label(master,text = "output_layer1").place(x=5, y=130, width=90, height=20)
 	tk.Label(master,text = "entry_zzd").place(x=5, y=150, width=90, height=20)
 	
 	tk.Button(master, text = "确定", command = human_entry).place(x=500,y=40, width=60, height=20)

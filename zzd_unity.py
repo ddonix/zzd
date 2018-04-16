@@ -4,11 +4,11 @@ class unity:
 	def __init__(self):
 		self.core = None
 	
-	def act(self, dest, waa_out):
+	def input(self, dest, waa):
 		raise NotImplementedError
 	
-	def echo(self, sour, waa_in):
+	def output(self, sour, waa):
 		raise NotImplementedError
     
-	def forword(self, dest, waa_out):
+	def forword(self, dest, waa):
 		raise NotImplementedError

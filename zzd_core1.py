@@ -22,11 +22,10 @@ class zzdcore1:
 	inWaaClass = {}		#输入语句类型
 
 	def __init__(self):
-		self.sentence = []
+		self.waa = []
 		self.name = db.database._identifyDict['299792458']
 		self.friend = None
-		self.cursen = None
-		self.expect = []
+		
 		#有限状态机Finite-state machine
 		self.FSM = {'verify':False, 'work':False, 'music':False, 'pause':False} 
 	
@@ -43,12 +42,13 @@ class zzdcore1:
 		zzdcore1.inWaaClass['system'] = [zzdcore1._system, zzdcore1._solve_system]			#system
 		zzdcore1.inWaaClass['other'] = [zzdcore1._other, zzdcore1._solve_other]			#other
 	
+	def input(self, sour, waa):
+		record = [waa, {'time':time.time()}]
+		self.waa.append(record)
 	
-	@classmethod
-	def verifydatabase(cls):
-		pass
-		
-				
+	def output(self, dest, waa):
+		raise NotImplementedError
+	
 	def inputs(self, friend, waa):
 		(head,sen,form) = self._trans_2_1(waa)
 		if head == 'none':
@@ -277,7 +277,6 @@ class zzdcore1:
 def main():
 	print('zzd_core1')
 	zzdcore1.init()
-	zzdcore1.verifydatabase()
 	core1 = zzdcore1()
 	
 	a = '再见'

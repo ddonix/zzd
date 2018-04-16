@@ -1,6 +1,7 @@
 import zzd_unity
 import zzd_core1
 import sys
+import time
 #语音的层级
 #free:自由表达的语言，有各种风格，例如幽默、严肃、简练、罗嗦.例如：一加一是不是比二大呢？(这里的呢字在表义上是多余的)
 #2:规范汉语，汉语的规范表达。例如：1+1大于2，是吗？
@@ -16,7 +17,15 @@ class zzd(zzd_unity.unity):
 	@classmethod
 	def init(cls):
 		zzd_core1.zzdcore1.init()
-		
+	
+	def input(self, sour, waa):
+		self.core.input(sour,waa)
+
+	def work(self):
+		while True:
+			print('zzd working')
+			time.sleep(1)
+
 	def echo(self, sour, waa_in):
 		waa = self._trans_free_2(waa_in)
 		waa_out = self.core.inputs(sour, waa)
@@ -29,12 +38,6 @@ class zzd(zzd_unity.unity):
 			sys.exit()
 		return waa_out
 
-	def act(self, dest, waa_out):
-		return None
-	
-	def forword(self, dest, waa_out):
-		return None
-	
 	def _trans_free_2(self, waa):
 		return waa
 	

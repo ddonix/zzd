@@ -6,23 +6,18 @@ import sqlite3
 class human(zzd_unity.unity):
 	def __init__(self, name):
 		zzd_unity.unity.__init__(self)
-		self.waalist = []
 		self.name = name
     
 	@classmethod
 	def init(cls):
 		print('human init')
-
-	def act(self, dest, waa_out):
-		res = dest.echo(self, waa_out)
-		self.waalist.append([waa_out, res])
-		return None
 	
-	def echo(self, sour, waa_in):
+	def input(self, sour, waa):
 		raise NotImplementedError
-    
-	def forword(self, dest, waa_out):
-		return waa_out
+	
+	def output(self, dest, waa):
+		dest.input(self, waa)
+		return None
 
 def main():
 	print('zzd_human')
