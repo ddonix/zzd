@@ -4,11 +4,12 @@ import tkinter as tk           # 导入 Tkinter 库
 import voice
 import db
 import os
+import sys
 import zzd_human
 import zzd_zzd
 import threading
 import time
-
+import signal
 
 
 input_layer1 = None
@@ -18,6 +19,7 @@ entry_zzd = None
 	
 autoplay = True
 master = None
+rootpid = 0
 
 def voicePress(evt):
 	os.system('amixer set Master 70%')
@@ -77,21 +79,30 @@ def human_entry():
 def return_event(evt):
 	human_entry()
 
+
+def gameoversignal(signum,frame):
+	global master
+	master.destroy()
+
+xhht = None
+zhdt = None
 master = None
 def delete_windows():
-	global master, xhh, zhd
+	global master, xhht, zhdt
 	print('master destroy')
 	
-	if xhh:
-		xhh.master = False
 	if zhd:
 		zhd.master = False
+	if xhh:
+		xhh.master = False
+	
+	zhdt.join()
+	xhht.join()
 	master.destroy()
 	return
 
 zhd = None
 zhd_running = None
-zhd_semaphore = None
 
 class zhdthread(threading.Thread):
 	def __init__(self,name):
@@ -99,38 +110,44 @@ class zhdthread(threading.Thread):
 		self.name = name
 
 	def run(self):
-		global zhd, zhd_running, zhd_semaphore
-		print('zhd_thread running ...')
-		
-		zhd = zzd_zzd.zzd(show=zhdShow, semaphore=zhd_semaphore)
+		global zhd, zhd_running,master
+		print('zhd_thread start')
+		zhd = zzd_zzd.zzd(show=zhdShow)
 		zhd_running.set()
 		zhd.work()
 		zhd = None
+		print('zhd_thread over')
 
 xhh = None
 xhh_running = None
+
 class xhhthread(threading.Thread):
 	def __init__(self,name):
 		super().__init__()
 		self.name = name
 
 	def run(self):
-		global xhh, xhh_running
-		print('xhh_thread running ...')
-		
+		global xhh, xhh_running,master
+		global master
+		print('xhh_thread start')
 		xhh = zzd_human.human('nobody')
 		xhh_running.set()
 		xhh.work()
 		xhh = None
+		print('xhh_thread over')
+		os.kill(rootpid, signal.SIGUSR1)
 
 def main():
-	global master
-	global xhh, xhh_running
-	global zhd, zhd_running, zhd_semaphore
+	global master,rootpid
+	global xhht, xhh, xhh_running
+	global zhdt, zhd, zhd_running
 	
 	global entry_human, entry_zzd
 	global input_layer1
 	global entry_human,entry_zzd
+	
+	rootpid = os.getpid()
+	signal.signal(signal.SIGUSR1, gameoversignal)
 
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
@@ -143,7 +160,6 @@ def main():
 	xhh_running.wait()
 	assert xhh != None
 	
-	zhd_semaphore = threading.Semaphore(1)
 	zhd_running = threading.Event()
 	zhd_running.clear()
 	
@@ -151,7 +167,6 @@ def main():
 	zhdt.start()
 	zhd_running.wait()
 	assert zhd != None
-
 	
 	master = tk.Tk()
 	master.geometry('640x480+20+20')

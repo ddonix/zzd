@@ -6,9 +6,9 @@ import sys
 import time
 
 class zzd(zzd_unity.unity):
-	def __init__(self, show, semaphore):
+	def __init__(self, show):
 		zzd_unity.unity.__init__(self)
-		self.core = zzd_core1.zzdcore1(semaphore)
+		self.core = zzd_core1.zzdcore1()
 		self.show = show
 		
 		self.working = True

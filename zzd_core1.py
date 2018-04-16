@@ -10,13 +10,13 @@ play_event = None
 class zzdcore1:
 	inWaaClass = {}		#输入语句类型
 
-	def __init__(self, semaphore):
+	def __init__(self):
 		global play_event
 		self.name = db.database._identifyDict['299792458']
 		self.friend = None
 		self.waain = []
 		self.waaout = []
-		self.outsemaphore = semaphore
+		self.outsemaphore = threading.Semaphore(1)
 		
 		#有限状态机Finite-state machine
 		self.FSM = {'verify':False, 'work':False, 'music':False, 'pause':False} 
