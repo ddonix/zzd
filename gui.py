@@ -72,6 +72,21 @@ def human_entry():
 def return_event(evt):
 	human_entry()
 
+master = None
+def delete_windows():
+	global master, xhh, zhd
+	print('master destroy')
+	
+	if xhh:
+		xhh.master = False
+	if zhd:
+		zhd.master = False
+	
+	while xhh or zhd:
+		pass
+	master.destroy()
+	return
+
 zhd = None
 zhd_running = None
 zhd_semaphore = None
@@ -88,6 +103,7 @@ class zhdthread(threading.Thread):
 		zhd = zzd_zzd.zzd(show=zhdShow, semaphore=zhd_semaphore)
 		zhd_running.set()
 		zhd.work()
+		zhd = None
 
 xhh = None
 xhh_running = None
@@ -102,15 +118,17 @@ class xhhthread(threading.Thread):
 		
 		xhh = zzd_human.human('nobody')
 		xhh_running.set()
+		xhh.work()
+		xhh = None
 
 def main():
+	global master
 	global xhh, xhh_running
 	global zhd, zhd_running, zhd_semaphore
-	global entry_human, entry_zzd
 	
+	global entry_human, entry_zzd
 	global input_layer1
 	global entry_human,entry_zzd
-	global autoplay
 
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
@@ -131,9 +149,11 @@ def main():
 	zhdt.start()
 	zhd_running.wait()
 	assert zhd != None
+
 	
 	master = tk.Tk()
 	master.geometry('640x480+20+20')
+	master.protocol("WM_DELETE_WINDOW", delete_windows)
 	master.bind("<Return>",return_event)
 	
 	entry_human = tk.Entry(master)

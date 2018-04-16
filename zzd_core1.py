@@ -43,9 +43,9 @@ class zzdcore1:
 		self.outsemaphore.release()
 	
 	def getoutput(self):
-		self.outsemaphore.acquire()
-		waaout=self.waaout.pop(0)
-		return waaout
+		if waaout == []:
+			return None
+		return self.waaout.pop(0)
 	
 	def output(self, dest, waa):
 		raise NotImplementedError
