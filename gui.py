@@ -1,10 +1,9 @@
-#!/usr/bin/python -B
-# -*- coding: UTF-8 -*-
+#!/usr/bin/python3 -B
 
-import Tkinter as tk           # 导入 Tkinter 库
+import tkinter as tk           # 导入 Tkinter 库
 from PIL import Image
 import voice
-import thread 
+import _thread 
 import db
 import os
 import zzd_human
@@ -21,7 +20,7 @@ output_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = True
+autoplay = False
 
 def voicePress(evt):
 	os.system('amixer set Master 70%')
@@ -35,7 +34,7 @@ def voiceRelease(evt):
 	waa = voice.voice2txt()
 	if waa == None:
 		#这里的处置是情况外的，不进行学习.
-		zhdShow(u'对不起，没有听清，请重复。')
+		zhdShow('对不起，没有听清，请重复。')
 		return
 	entry_human.delete(0,'end')
 	entry_human.insert(0, waa)
@@ -63,14 +62,14 @@ def voicePlay(evt):
 def enterSen(waa):
 	for item in waa:
 		if not db.database.legal(item):
-			zhdShow(u'对不起，我不认识\"%s\"这个字符。'%item)
+			zhdShow('对不起，我不认识\"%s\"这个字符。'%item)
 			return
 	xhh.act(zhd, waa)
 
 def human_entry():
 	global entry_human
 	waa = entry_human.get()
-	if waa == u'':
+	if waa == '':
 		return
 	enterSen(waa)
 
@@ -88,7 +87,7 @@ def main():
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
 	
-	xhh = zzd_human.human(u'nobody')
+	xhh = zzd_human.human('nobody')
 	zhd = zzd_zzd.zzd(show=zhdShow)
 	
 	voice.voiceInit()

@@ -1,32 +1,31 @@
-#!/usr/bin/python -B
-# -*- coding: UTF-8 -*-
-dict0={u'0':0,u'1':1,u'2':2, u'3':3,u'4':4, u'5':5, u'6':6, u'7':7, u'8':8,u'9':9, u'+':10, u'-':11}
-dict1={u'零':0,u'一':1,u'二':2, u'三':3,u'四':4, u'五':5, u'六':6, u'七':7, u'八':8,u'九':9}
-dict2={u'十':10,u'百':100,u'千':1000,u'万':10000}
+#!/usr/bin/python3 -B
+dict0={'0':0,'1':1,'2':2, '3':3,'4':4, '5':5, '6':6, '7':7, '8':8,'9':9, '+':10, '-':11}
+dict1={'零':0,'一':1,'二':2, '三':3,'四':4, '五':5, '六':6, '七':7, '八':8,'九':9}
+dict2={'十':10,'百':100,'千':1000,'万':10000}
 
 def transNumber(data):
 	if dict0.get(data[0]):		#12,-123,+123
 		return int(data)
-	if data[0] == u'负':
+	if data[0] == '负':
 		sign = -1
 		data = data[1:]
-	elif data[0] == u'正':
+	elif data[0] == '正':
 		sign = 1
 		data = data[1:]
 	else:
 		sign = 1
 	
 	if len(data) == 1:			#一，二，十
-		return (10 if data[0] == u'十' else dict1[data[0]])*sign
+		return (10 if data[0] == '十' else dict1[data[0]])*sign
 		
-	if data[0] == u'十':		#十五,十六
+	if data[0] == '十':		#十五,十六
 		res = 10+dict1[data[1]]
 		return res*sign
 		
 	if not dict2.get(data[1]):	#五六八,二四
-		res = u''
+		res = ''
 		for d in data:
-			res += unicode(dict1[d])
+			res += str(dict1[d])
 		return int(res)*sign
 	
 	res = 0						#三百二十，四百五十六
@@ -42,62 +41,62 @@ def transNumber(data):
 
 def c2math(phrases):
 	res = []
-	tran1 = {u'加':u'+',u'加上':'+', u'减':u'-',u'减去':u'-',u'乘以':u'*', u'除以':u'/', u'大于':u'>',u'小于':u'<',u'等于':u'==',u'大于等于':'>=',u'小于等于':u'<=', u'不等于':u'!='}
-	tran2 = {u'乘':'*',u'除':u'/'}
+	tran1 = {'加':'+','加上':'+', '减':'-','减去':'-','乘以':'*', '除以':'/', '大于':'>','小于':'<','等于':'==','大于等于':'>=','小于等于':'<=', '不等于':'!='}
+	tran2 = {'乘':'*','除':'/'}
 	x = False
 	rv = False
 	for ph in phrases:
-		if ph.be(u'汉语变量'):
+		if ph.be('汉语变量'):
 			x = True
 			break
 	for i,ph in enumerate(phrases):
-		if ph.be(u'汉语数'):
+		if ph.be('汉语数'):
 			if not rv:
-				res.append(unicode(transNumber(ph.s)))
+				res.append(str(transNumber(ph.s)))
 			else:
 				t = res[-2]
-				res[-2] = unicode(transNumber(ph.s))
+				res[-2] = str(transNumber(ph.s))
 				res.append(t)
-		if ph.be(u'数'):
+		if ph.be('数'):
 			if not rv:
 				res.append(ph.s)
 			else:
 				t = res[-2]
 				res[-2] = transNumber(ph.s)
 				res.append(t)
-		if ph.be(u'汉语变量'):
+		if ph.be('汉语变量'):
 			if not rv:
-				res.append(u'x')
+				res.append('x')
 			else:
 				t = res[-2]
-				res[-2] = u'x'
+				res[-2] = 'x'
 				res.append(t)
 				
-		if ph.be(u'汉语运算符'):
+		if ph.be('汉语运算符'):
 			if ph.s in tran1:
 				rv = False
 				res.append(tran1[ph.s])
 			else:
 				rv = True
-				print ph.s
+				print(ph.s)
 				res.append(tran2[ph.s])
-		if ph.be(u'汉语赋值符'):
+		if ph.be('汉语赋值符'):
 			if x:
-				res.append(u'=')
+				res.append('=')
 			else:
-				res.append(u'==')
-	return u''.join(res)
+				res.append('==')
+	return ''.join(res)
 
 def main():
 	print('zzd_math')
 	grammar.gsetinit()
 	grammar.spinit()
 
-	phrases = grammar._fenci(u'十加上三十等于几', False)
+	phrases = grammar._fenci('十加上三十等于几', False)
 	for p in phrases:
-		print p.s
+		print(p.s)
 	res = c2math(phrases)
-	print res
+	print(res)
 
 if __name__ == '__main__':
 	main()

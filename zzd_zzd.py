@@ -1,4 +1,3 @@
-# -*- coding:utf-8 -*- 
 import zzd_unity
 import zzd_core1
 import sys
@@ -22,9 +21,9 @@ class zzd(zzd_unity.unity):
 		waa = self._trans_free_2(waa_in)
 		waa_out = self.core.inputs(sour, waa)
 		waa_out = self._trans_2_free(waa_out)
-		print waa_out[0][0]
-		print waa_out[0][1]
-		print waa_out[1]
+		print(waa_out[0][0])
+		print(waa_out[0][1])
+		print(waa_out[1])
 		self.show(waa_out[0][1], waa_out[1])
 		if waa_out[0][0] == True and (waa_out[0][1] == u'再见' or waa_out[0][1] == '拜拜'):
 			sys.exit()

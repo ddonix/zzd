@@ -1,12 +1,11 @@
-#!/usr/bin/python -B
-# -*- coding: UTF-8 -*-
+#!/usr/bin/python3 -B
 import sqlite3
 import copy
 
 class database: 
 	_gset_all = {}				#所有集合
 	_spbase_all = {}			#所有语句
-	_table_vocable = {u' '}		#所有字符
+	_table_vocable = {' '}		#所有字符
 	
 	_identifyDict = {}			#身份认证
 	_defineDict = {}			#定义
@@ -28,7 +27,7 @@ class database:
 		try:
 			return cls._spbase_all[s[0]][s]
 		except:
-			print s
+			print(s)
 			raise NameError
 	
 	@classmethod
@@ -48,7 +47,7 @@ class database:
 	def legal(cls, s):
 		for v in s:
 			if not v in cls._table_vocable:
-				print u'%s中有非法字符%s'%(s,v)
+				print('%s中有非法字符%s'%(s,v))
 				return False
 		return True
 	
@@ -85,25 +84,25 @@ class database:
 			for g in v[0][1:]:
 				if g == '' or g == None or cls.gsin(g):
 					continue
-				if g[0] == u'(' and g[-1] == u')':
+				if g[0] == '(' and g[-1] == ')':
 					continue
-				if not (g[0] == u'[' and g[-1] == u']'):
+				if not (g[0] == '[' and g[-1] == ']'):
 					break
-				if not u'|' in g:
-					gsp = g[1:-1].split(u' ')
+				if not '|' in g:
+					gsp = g[1:-1].split(' ')
 					skip2 = True
 					for gg in gsp:
-						if gg == '' or gg == u'...' or cls.gsin(gg):
+						if gg == '' or gg == '...' or cls.gsin(gg):
 							continue
-						if gg[0] == u'w' and cls.gsin(gg[1:]):
+						if gg[0] == 'w' and cls.gsin(gg[1:]):
 							continue
-						if gg[0] == u'(' or gg[-1] == u')':
+						if gg[0] == '(' or gg[-1] == ')':
 							continue
 						break
 					else:
 						skip2 = False
 					if skip2:
-						print v[0][0]+u' 依赖 '+g
+						print(v[0][0]+' 依赖 '+g)
 						break
 				else:
 					gsp = g[1:-1].split('|')
@@ -114,7 +113,7 @@ class database:
 					else:
 						skip2 = False
 					if skip2:
-						print v[0][0]+u' 依赖 '+gg
+						print(v[0][0]+' 依赖 '+gg)
 						break
 			else:
 				gram = gset.prevgram(v[0][1:])
@@ -158,8 +157,8 @@ class database:
 		
 		#补充()类集合元素集
 		for gram in database._gset_all:
-			if gram[0] == u'(' and gram[-1] == u')':
-				item = gram[1:-1].split(u' ')
+			if gram[0] == '(' and gram[-1] == ')':
+				item = gram[1:-1].split(' ')
 				for sp in item:
 					assert database.spin(sp)
 					database.gs(gram).addsp(database.sp(sp))
@@ -189,16 +188,16 @@ class database:
 				for sp in cls._gset_all[keyword[0]].sp:
 					cls._keyword_zzd[sp.s] = keyword[1:]
 					
-			elif keyword[0][0] == u'(' and keyword[0][-1] == u')':
+			elif keyword[0][0] == '(' and keyword[0][-1] == ')':
 				cls._gset_key[keyword[0]] = keyword[1:]
 				gs = gset(keyword[0],[])
-				item = keyword[0][1:-1].split(u' ')
+				item = keyword[0][1:-1].split(' ')
 				for sp in item:
 					assert database.spin(sp)
 					gs.addsp(database.sp(sp))
 					cls._keyword_zzd[sp] = keyword[1:]
 			else:
-				print keyword[0]
+				print(keyword[0])
 				raise NameError
 
 		try:
@@ -233,35 +232,35 @@ class database:
 	def datacheck(cls, mend):
 		for gram in cls._gset_all:
 			cls.checkgs(gram, False, mend)
-			print ''
+			print('')
 	
 	@classmethod
 	def checkgs(cls, gram, recursion, mend):
 		assert database.gsin(gram)
 		#检查gs的sp与子集的sp是否有重合
 		gs = database.gs(gram)
-		print gs
-		print u'检查集合 %s：'%gs.name
-		print u'1.实例信息'
-		print gs
+		print(gs)
+		print('检查集合 %s：'%gs.name)
+		print('1.实例信息')
+		print(gs)
 		
-		print u'2.子集'
+		print('2.子集')
 		if gs.child == []:
-			print u'没有子集'
+			print('没有子集')
 		else:
-			print u'包含以下子集'
+			print('包含以下子集')
 			for ch in gs.child:
-				print ch.name
+				print(ch.name)
 
-		print u'3.元素'
+		print('3.元素')
 		if len(gs.sp) == 0:
-			print u'没有元素'
+			print('没有元素')
 		else:
-			print u'包含以下元素'
+			print('包含以下元素')
 			for sp in gs.sp:
-				print sp.s
+				print(sp.s)
 		
-		print u'4. sp集合中元素是否属于子集'
+		print('4. sp集合中元素是否属于子集')
 		for sp in gs.sp:
 			for ch in gs.child[1:]:
 				if ch.contain(sp):
@@ -274,44 +273,44 @@ class database:
 		if recursion:
 			for ch in gs.child:
 				cls.checkgs(ch.name, True, mend)
-		print(u'check success................................')
+		print('check success................................')
 
 class gset:
 	def __init__(self, name, child):
-		self.name = unicode(name)
+		self.name = name
 		database.addgs(self)
 		
 		self.sp = set()		#明确表示的元素集合
 		self.plot = {}		#明确的划分;要有名字：比如人按性别分为男人和女人
 
-		if name[0] == u'[' and name[-1] == u']':
+		if name[0] == '[' and name[-1] == ']':
 			assert child == []
-			name = name[1:-1].split(u' ')
+			name = name[1:-1].split(' ')
 			for gram in name:
-				if gram[0] == u'(' and gram[-1] == u')':
+				if gram[0] == '(' and gram[-1] == ')':
 					gset(gram, [])
 		
 		self.child = []		#子集
 		for ch in child:
-			if ch == u'' or ch == None:
+			if ch == '' or ch == None:
 				continue
 			if database.gsin(ch):
 				ch = database.gs(ch)
 				self.child.append(ch)
-			elif ch[0] == u'(' and ch[-1] == u')':
+			elif ch[0] == '(' and ch[-1] == ')':
 				ch = gset(ch, [])
 				self.child.append(ch)
 			else:
-				assert ch[0] == u'[' and ch[-1] == u']'
-				if not u'|' in ch:
+				assert ch[0] == '[' and ch[-1] == ']'
+				if not '|' in ch:
 					ch = gset(ch, [])
 					self.child.append(ch)
 				else:
-					plots = ch[1:-1].split(u'|')
+					plots = ch[1:-1].split('|')
 					plot = set()
 					for p in plots[1:]:
 						assert database.gsin(p)
-						ch = gset(u'[%s|%s]'%(plots[0],p),[])
+						ch = gset('[%s|%s]'%(plots[0],p),[])
 						self.child.append(ch)
 						plot.add(ch)
 					self.plot[plots[0]]=plot
@@ -327,19 +326,19 @@ class gset:
 	def _prevgram(cls, gram):
 		if gram == '' or gram == None:
 			return []
-		if not (gram[0] == u'[' and gram[-1] == u']'):
+		if not (gram[0] == '[' and gram[-1] == ']'):
 			return [gram]
-		gram = gram[1:-1].split(u' ')
+		gram = gram[1:-1].split(' ')
 		tmp = []
 		cls.__prevgram(gram,tmp)
 		tmp.sort(key=lambda x:len(x))
 		
 		res = []
 		for t in tmp:
-			r = u'[%s'%t[0]
+			r = '[%s'%t[0]
 			for s in t[1:]:
 				r += ' %s'%s
-			r += u']'
+			r += ']'
 			res.append(r)
 		return res
 	
@@ -350,14 +349,14 @@ class gset:
 		if gram[0] == '' or gram[0] == None:
 			return
 		if len(gram) == 1:
-			if gram[0][0] == u'w':
+			if gram[0][0] == 'w':
 				res.append([])
 				res.append([gram[0][1:]])
 			else:
 				res.append([gram[0]])
 			return
 		cls.__prevgram(gram[1:], res)
-		if gram[0][0] == u'w':
+		if gram[0][0] == 'w':
 			res2 = []
 			for g in res:
 				ag = copy.deepcopy(g)
@@ -400,8 +399,8 @@ class gset:
 	#只处理基本集合。没有子集，不依赖任何别的集合。例如，句号，感叹号，阿拉伯数字,基本汉字
 	def fensp_1(self, phrases, mend):
 		assert self.child == []
-		assert self.name[0] != u'(' and self.name[0] != u')'
-		assert self.name[0] != u'[' and self.name[0] != u']'
+		assert self.name[0] != '(' and self.name[0] != ')'
+		assert self.name[0] != '[' and self.name[0] != ']'
 		if phrases != [] and phrases[0] in self.sp:
 			return (phrases[0], phrases[1:], {self.name:phrases[0].s})
 		else:
@@ -420,7 +419,7 @@ class gset:
 	#只处理()集合。没有子集，不依赖任何别的集合。例如(, o ?)
 	def fensp_2(self, phrases, mend):
 		assert self.child == []
-		assert self.name[0] == u'(' and self.name[-1] == u')'
+		assert self.name[0] == '(' and self.name[-1] == ')'
 		if phrases != [] and phrases[0] in self.sp:
 			return (phrases[0], phrases[1:], {self.name:phrases[0].s})
 		else:
@@ -440,18 +439,18 @@ class gset:
 	#只处理[]集合。没有子集,但是要递归。例如[主语 谓语 句号] [上引号 ... 下引号] [认证命令 (身份)]
 	def fensp_3(self, phrases, mend):
 		assert self.child == []
-		assert self.name[0] == u'[' and self.name[-1] == u']'
-		frame = self.name[1:-1].split(u' ')
+		assert self.name[0] == '[' and self.name[-1] == ']'
+		frame = self.name[1:-1].split(' ')
 		if phrases == []:
 			return None
 		ress = []
 		key = {}
 		for i, gram in enumerate(frame):
-			assert not (gram == '' or gram == u' ')
+			assert not (gram == '' or gram == ' ')
 			if database.gsin(gram):
 				g = database.gs(gram)
 				if g.child == []:
-					if gram[0] == u'(' and gram[-1] == u')':
+					if gram[0] == '(' and gram[-1] == ')':
 						res = g.fensp_2(phrases, mend)
 					else:
 						res = g.fensp_1(phrases, mend)
@@ -465,7 +464,7 @@ class gset:
 					key[k] = res[2][k]
 				ress.append(res)
 				phrases = res[1]
-			elif gram == u'...':
+			elif gram == '...':
 				if i < len(frame)-1:
 					while not (phrases[0].be(frame[i+1])):
 						ress.append((phrases[0], phrases[1:], {}))
@@ -481,7 +480,7 @@ class gset:
 						if phrases == []:
 							break
 			else:
-				print gram
+				print(gram)
 				raise TypeError
 			sps = []
 			for res in ress:
@@ -502,22 +501,22 @@ class gset:
 					return res
 			return None
 		else:
-			if self.name[0] == '(' and self.name[-1] == u')':
+			if self.name[0] == '(' and self.name[-1] == ')':
 				return self.fensp_2(phrases, mend)
-			elif self.name[0] == '[' and self.name[-1] == u']':
+			elif self.name[0] == '[' and self.name[-1] == ']':
 				return self.fensp_3(phrases, mend)
 			else:
 				return self.fensp_1(phrases, mend)
 
 class seph:
 	def __init__(self, s):
-		if type(s) == unicode:
+		if type(s) == str:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
 			self.gs = {}
 			self.attr = {}
 		elif type(s) == list and isinstance(s[0], seph):
-			self.s = u''			#sting
+			self.s = ''			#sting
 			d = []
 			self.gs = {}
 			self.attr = {}
@@ -570,7 +569,7 @@ class seph:
 	
 	def _getattr(self, gram, name):
 		assert self.be(gram)
-		return u'男'
+		return '男'
 
 	def be(self, gram):
 		gs = database.gs(gram)
@@ -581,19 +580,19 @@ class seph:
 def fenci(waa, point):
 	phrases = []
 	con = False
-	znumber =  u'0123456789'
-	cnumber =  u'零一二三四五六七八九十百千万亿'
-	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	znumber =  '0123456789'
+	cnumber =  '零一二三四五六七八九十百千万亿'
+	zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	
 class seph:
 	def __init__(self, s):
-		if type(s) == unicode:
+		if type(s) == str:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
 			self.gs = {}
 			self.attr = {}
 		elif type(s) == list and isinstance(s[0], seph):
-			self.s = u''			#sting
+			self.s = ''			#sting
 			d = []
 			self.gs = {}
 			self.attr = {}
@@ -610,13 +609,13 @@ class seph:
 	
 class seph:
 	def __init__(self, s):
-		if type(s) == unicode:
+		if type(s) == str:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
 			self.gs = {}
 			self.attr = {}
 		elif type(s) == list and isinstance(s[0], seph):
-			self.s = u''			#sting
+			self.s = ''			#sting
 			d = []
 			self.gs = {}
 			self.attr = {}
@@ -669,7 +668,7 @@ class seph:
 	
 	def _getattr(self, gram, name):
 		assert self.be(gram)
-		return u'男'
+		return '男'
 
 	def be(self, gram):
 		gs = database.gs(gram)
@@ -680,19 +679,19 @@ class seph:
 def fenci(waa, point):
 	phrases = []
 	con = False
-	znumber =  u'0123456789'
-	cnumber =  u'零一二三四五六七八九十百千万亿'
-	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	znumber =  '0123456789'
+	cnumber =  '零一二三四五六七八九十百千万亿'
+	zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 	
 class seph:
 	def __init__(self, s):
-		if type(s) == unicode:
+		if type(s) == str:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
 			self.gs = {}
 			self.attr = {}
 		elif type(s) == list and isinstance(s[0], seph):
-			self.s = u''			#sting
+			self.s = ''			#sting
 			d = []
 			self.gs = {}
 			self.attr = {}
@@ -744,7 +743,7 @@ class seph:
 		
 	def _getattr(self, gram, name):
 		assert self.be(gram)
-		return u'男'
+		return '男'
 
 	def be(self, gram):
 		gs = database.gs(gram)
@@ -755,44 +754,44 @@ class seph:
 def fenci(waa, point):
 	phrases = []
 	con = False
-	znumber =  u'0123456789'
-	cnumber =  u'零一二三四五六七八九十百千万亿'
-	zstr = u'0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	zpoint = u'，。,.！!？?'
+	znumber =  '0123456789'
+	cnumber =  '零一二三四五六七八九十百千万亿'
+	zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+	zpoint = '，。,.！!？?'
 	if not database.legal(waa):
 		raise
 	while waa != '':
-		if waa[0] == u' ':
+		if waa[0] == ' ':
 			waa = waa[1:]
 		elif waa[0] in znumber:
 			s = waa[0]
 			waa = waa[1:]
-			while waa != u'' and waa[0] in znumber:
+			while waa != '' and waa[0] in znumber:
 				s += waa[0]
 				waa = waa[1:]
-			sp = seph(unicode(s))
-			database.gs(u'数').addsp(sp)
+			sp = seph(s)
+			database.gs('数').addsp(sp)
 			phrases.append(sp)
 		elif waa[0] in cnumber:
 			s = waa[0]
 			waa = waa[1:]
-			while waa != u'' and waa[0] in cnumber:
+			while waa != '' and waa[0] in cnumber:
 				s += waa[0]
 				waa = waa[1:]
-			sp = seph(unicode(s))
-			database.gs(u'汉语数').addsp(sp)
+			sp = seph(s)
+			database.gs('汉语数').addsp(sp)
 			phrases.append(sp)
 		elif waa[0] in zstr[10:]:
 			s = waa[0]
 			waa = waa[1:]
-			while waa != u'' and waa[0] in zstr:
+			while waa != '' and waa[0] in zstr:
 				s += waa[0]
 				waa = waa[1:]
-			sp = seph(unicode(s))
-			database.gs(u'字符串').addsp(sp)
+			sp = seph(s)
+			database.gs('字符串').addsp(sp)
 			phrases.append(sp)
-		elif waa[0:2] == u'!=':
-			phrases.append(database.sp(u'!='))
+		elif waa[0:2] == '!=':
+			phrases.append(database.sp('!='))
 			waa = waa[2:]
 		elif waa[0] in zpoint:
 			if point:

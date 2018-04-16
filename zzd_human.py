@@ -1,5 +1,4 @@
-#!/usr/bin/python 
-# -*- coding:utf-8 -*- 
+#!/usr/bin/python3 -B
 import zzd_unity
 import xlrd
 import sqlite3
@@ -12,7 +11,7 @@ class human(zzd_unity.unity):
     
 	@classmethod
 	def init(cls):
-		print 'human init'
+		print('human init')
 
 	def act(self, dest, waa_out):
 		res = dest.echo(self, waa_out)
