@@ -1,6 +1,4 @@
 #!/usr/bin/python3 -B
-import os 
-import sys
 import threading
 import db
 import time
@@ -32,7 +30,6 @@ class zzd():
 		self.desire['input'] = [zzd.desire_input, False, []]
 		self.desire['time'] = [zzd.desire_time, False, []]
 		self.desire['math'] = [zzd.desire_math, False, []]
-		self.desire['command'] = [zzd.desire_command, False, []]
 		self.desire['think'] = [zzd.desire_think, False, []]
 		
 	@classmethod
@@ -66,12 +63,21 @@ class zzd():
 	def live(self):
 		while self.FSM['work'] and self.root:
 			#print('zhd working',time.time())
-			d = self.getdesire()
+			d = self.get_desire()
 			if d:
 				d[0](self, d)
 			time.sleep(0.1)
+	
+	def add_desire(self, name, arg):
+		self.desire[name][1] = True
+		self.desire[name][2].append(arg)
+	
+	def add_output(self, out, form):
+		self.desire['output'][1] = True
+		self.desire['output'][2].append((out, form))
+	
 
-	def getdesire(self):
+	def get_desire(self):
 		if not self.desire:
 			return None
 		if self.desire['output'][1]:
@@ -112,30 +118,6 @@ class zzd():
 		else:
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
-	def _command(self, sen):
-		exe = db.database._keyword_zzd[sen['zzd命令']][1]
-		if not (exe == '' or exe == None):
-			cmd = sen['zzd命令']
-			arg = sen['命令参数']
-			return (True, '好的')
-		if 'zzd播放命令' in sen:
-			if not '命令参数' in sen:
-				arg = ''
-			else:
-				arg = sen['命令参数']
-			return (True, self.player.play(arg))
-		elif 'zzd暂停命令' in sen:
-			return (True, self.player.pause())
-		elif 'zzd继续命令' in  sen:
-			return (True, self.player.con())
-		elif 'zzd停止命令' in sen:
-			return (True, self.player.stop())
-		elif 'zzd再见命令' in sen:
-			self.player.stop()
-			return (True, sen['zzd再见命令']+'！')
-		else:
-			return (False, '不识别的命令:%s'%cmd)
-
 	def _solve_verify(self, phrases):
 		sp = db.database.gs('认证语句')._fensp(phrases, True)
 		if sp == None:
@@ -210,24 +192,6 @@ class zzd():
 	def _solve_other(self, phrases):
 		return None
 
-	def _sorry(self, head, sen):
-		if head == 'define':
-			return '对不起，我没有%s的定义。请进入训练模式，添加定义。'%sen
-		elif head == 'math':
-			return '对不起，我无法计算%s。请检查表达式。'%sen
-		elif head == 'command':
-			return '对不起，我无法执行\"%s\"。请检查命令。'%sen
-		else:
-			return '对不起，我无法处理\"%s\"。'%sen
-
-	def add_desire(self, name, arg):
-		self.desire[name][1] = True
-		self.desire[name][2].append(arg)
-	
-	def add_output(self, out, form):
-		self.desire['output'][1] = True
-		self.desire['output'][2].append((out, form))
-	
 	def desire_output(self, desire):
 		assert desire[2]
 		waaout = desire[2].pop(0)
@@ -295,12 +259,6 @@ class zzd():
 				self.add_output('错误数学表达式', '')
 		self.add_output(val, eq)
 	
-	def desire_command(self, desire):
-		assert desire[2]
-		eq = desire[2].pop(0)
-		if not desire[2]:
-			desire[1] = False
-		
 def main():
 	print('zzd_zzd')
 	zzd.init()
