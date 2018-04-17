@@ -493,7 +493,7 @@ class gset:
 	def _fensp(self, phrases, mend):
 		if self.child != []:
 			ress = []
-			for i in range(-1,-len(self.child)-1, -1):
+			for i in range(len(self.child)-1, -1, -1):
 				res = self.child[i]._fensp(phrases, mend)
 				if res:
 					res[2][self.name] = res[0].s

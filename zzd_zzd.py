@@ -111,13 +111,6 @@ class zzd():
 		else:
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
-	def _define(self, sen):
-		if sen in db.database._defineDict:
-			explain = db.database._defineDict[sen]
-			return (True, sen+'是'+explain+'。')
-		else:
-			return (False, self._sorry('define', sen))
-	
 	def _command(self, sen):
 		exe = db.database._keyword_zzd[sen['zzd命令']][1]
 		if not (exe == '' or exe == None):
@@ -305,16 +298,6 @@ class zzd():
 				self.add_desire('output',('错误数学表达式', ''))
 		self.add_desire('output',(val, eq))
 	
-	def desire_define(self, desire):
-		assert desire[2]
-		eq = desire[2].pop(0)
-		if not desire[2]:
-			desire[1] = False
-		
-def main():
-	print('zzd_zzd')
-	zzd.init()
-
 def main():
 	print('zzd_zzd')
 	zzd.init()
