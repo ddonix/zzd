@@ -73,9 +73,16 @@ class zzd():
 	def getdesire(self):
 		if not self.desire:
 			return None
-		for d in self.desire:
-			if self.desire[d][1]:
-				return self.desire[d]
+		if self.desire['output'][1]:
+			return self.desire['output']
+		if self.desire['input'][1]:
+			return self.desire['input']
+		if self.desire['verify'][1]:
+			return self.desire['verify']
+		if self.desire['time'][1]:
+			return self.desire['time']
+		if self.desire['think'][1]:
+			return self.desire['think']
 		return None
 	
 	def desire_input(self, desire):
@@ -91,18 +98,15 @@ class zzd():
 		if head == 'none':
 			outs = sen
 			self.add_desire('output', (outs, form))
-		if self.FSM['verify'] == False:
+		elif self.FSM['verify'] == False:
 			if head == 'verify':
 				self.desire['verify'][1] = True
 				self.desire['verify'][2][1] = sen['id']
 			else:
 				self.add_desire('output', ('对不起，您需要先进行身份认证!', form))
-				self.add_desire('output',(outs, form))
-		else:
-			if head == 'verify':
+		elif head == 'verify':
 				self.add_desire('output', ('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', form))
-		
-		if self.FSM['work'] == True:
+		elif self.FSM['work'] == True:
 			assert head in zzd.inWaaClass
 			outs = zzd.inWaaClass[head][0](self, sen)
 			self.add_desire('output',(outs[1],form))
@@ -288,7 +292,7 @@ class zzd():
 				self.add_desire('output', ('再见！',''))
 		else:
 			if desire[2][1] in db.database._identifyDict:
-				self.friend.name = db.database._identifyDict[sen['id']]
+				self.friend.name = db.database._identifyDict[desire[2][1]]
 				self.FSM['verify'] = True
 				self.add_desire('output', ('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name),''))
 			else:
@@ -313,7 +317,7 @@ class zzd():
 			desire[1] = False
 
 def main():
-	print('zzd_1')
+	print('zzd_zzd')
 	zzd.init()
 	zhd = zzd(None)
 	

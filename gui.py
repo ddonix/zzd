@@ -42,8 +42,7 @@ def voiceRelease(evt):
 	enterSen(waa)
 
 def zhdShow(waa, form=''):
-	global autoplay
-	
+	global autoplay,root
 	if root == None:
 		return
 	input_layer1.delete(0,'end')
@@ -90,14 +89,15 @@ zhdt = None
 root = None
 
 def delete_windows():
-	global root, xhht, zhdt
+	global zhd, zhdt, xhh, xhht
 	if zhd:
 		zhd.root = False
 	if xhh:
 		xhh.root = False
-	
-	zhdt.join()
-	xhht.join()
+	if zhdt:
+		zhdt.join()
+	if xhht:
+		xhht.join()
 	sys.exit()
 	return
 
@@ -138,13 +138,11 @@ class xhhthread(threading.Thread):
 		os.kill(rootpid, signal.SIGUSR1)
 
 def main():
-	global root,rootpid
-	global xhht, xhh, xhh_running
-	global zhdt, zhd, zhd_running
 	
 	global entry_human, entry_zzd
 	global input_layer1
 	global entry_human,entry_zzd
+	global root
 	
 	root = tk.Tk()
 	root.geometry('640x480+20+20')
@@ -156,7 +154,7 @@ def main():
 	input_layer1 = tk.Entry(root)
 	input_layer1.place(x=95, y=60, width=400, height=20)
 	tk.Label(root,text = "entry_human").place(x=5, y=40, width=90, height=20)
-	tk.Label(root,text = "input_layer1").place(x=5, y=60, width=90, height=20)
+	tk.Label(root,text = "entry_fix").place(x=5, y=60, width=90, height=20)
 	
 	entry_zzd = tk.Entry(root)
 	entry_zzd.place(x=95, y=150, width=400, height=20)
@@ -174,12 +172,20 @@ def main():
 	voutButton.bind("<ButtonPress>", voicePlay)
 	entry_human.focus_set()
 	
-	zzd_human.human.init()
-	zzd_zzd.zzd.init()
-	voice.voiceInit()
 	
 	rootpid = os.getpid()
 	signal.signal(signal.SIGUSR1, gameoversignal)
+	root.after(1000,xhh_zhd)
+	root.mainloop()
+
+def xhh_zhd():
+	global root,rootpid
+	global xhht, xhh, xhh_running
+	global zhdt, zhd, zhd_running
+	
+	zzd_human.human.init()
+	zzd_zzd.zzd.init()
+	voice.voiceInit()
 	
 	xhh_running = threading.Event()
 	xhh_running.clear()
@@ -195,7 +201,6 @@ def main():
 	zhdt.start()
 	zhd_running.wait()
 	assert zhd != None
-	root.mainloop()
-
+	
 if __name__ == '__main__':
 	main()
