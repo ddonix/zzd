@@ -7,13 +7,11 @@ import time
 import zmath
 import play
 
-play_event = None
 #除input函数运行在xhh线程，其他函数运行在zhd线程.
 class zzd():
 	inWaaClass = {}		#输入语句类型
 	
 	def __init__(self, show, friend):
-		global play_event
 		assert show and friend
 		self.show = show
 		self.friend = friend
@@ -57,8 +55,8 @@ class zzd():
 	
 	def output(self, dest, waa):
 		print('waa[0]',waa[0])
-		self.show(waa[0], waa[1])
 		print('waa[1]',waa[1])
+		self.show(waa[0], waa[1])
 		dest.input(self, waa[0])
 
 	def live(self):
@@ -141,7 +139,6 @@ class zzd():
 			return (False, self._sorry('define', sen))
 	
 	def _command(self, sen):
-		global play_event
 		exe = db.database._keyword_zzd[sen['zzd命令']][1]
 		if not (exe == '' or exe == None):
 			cmd = sen['zzd命令']
@@ -283,7 +280,7 @@ class zzd():
 				de[2] -= 1
 				out = '您好，我是小白，请认证身份！'
 			else:
-				out = '您没有认证成功，小白要休息了。再见！'
+				out = '您没有正确认证，小白要休息了。再见！'
 		else:
 			if de[3] in db.database._identifyDict:
 				self.friend.name = db.database._identifyDict[sen['id']]
@@ -307,25 +304,6 @@ def main():
 	print(sp[2])
 	for s in sp[2]:
 		print(s,sp[2][s])
-	
-	#播放线程
-
-def mplayer_thread(core, arg):
-	global play_event
-	play_event.clear()
-	
-	print('播放 %s.mp3'%arg)
-	cmd = 'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg
-	os.system('rm /tmp/mfifo -rf')
-	os.system('mkfifo /tmp/mfifo')
-	core.FSM['music'] = True
-	core.FSM['pause'] = False
-	os.system(cmd)
-	core.FSM['music'] = False
-	core.FSM['pause'] = False
-	print('播放完毕')
-	
-	play_event.set()
 	
 if __name__ == '__main__':
 	main()
