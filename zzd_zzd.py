@@ -26,7 +26,6 @@ class zzd():
 		#大凡物不得其平则鸣
 		self.desire = {}
 		self.desire['verify'] = [zzd.desire_verify, True, [3,'']]		#提醒3次认证身份，每20秒提醒一次。
-		self.desire['output'] = [zzd.desire_output, False, []]
 		self.desire['input'] = [zzd.desire_input, False, []]
 		self.desire['time'] = [zzd.desire_time, False, []]
 		self.desire['math'] = [zzd.desire_math, False, []]
@@ -60,10 +59,13 @@ class zzd():
 			dest.input(self, waa[0])
 		if waa[0] == '再见！' or waa[0] == '拜拜！':
 			self.FSM['work'] = False
+	
+	def say(self, out, form):
+		self.output(self.friend, (out, form))
 
 	def live(self):
 		while self.FSM['work'] and self.root:
-			#print('zhd working',time.time())
+			print('zhd working',time.time())
 			d = self.get_desire()
 			if d:
 				d[0](self, d)
@@ -73,14 +75,10 @@ class zzd():
 		self.desire[name][1] = True
 		self.desire[name][2].append(arg)
 	
-	def add_output(self, out, form):
-		self.output(self.friend, (out, form))
 	
 	def get_desire(self):
 		if not self.desire:
 			return None
-		if self.desire['output'][1]:
-			return self.desire['output']
 		if self.desire['input'][1]:
 			return self.desire['input']
 		if self.desire['verify'][1]:
@@ -120,11 +118,11 @@ class zzd():
 	def _solve_verify(self, phrases):
 		sp = db.database.gs('认证语句')._fensp(phrases, True)
 		if sp == None:
-			self.add_output('认证语法不对', '')
+			self.say('认证语法不对', '')
 		else:
-			self.add_output('', sp[0].s)
+			self.say('', sp[0].s)
 			if self.FSM['verify'] == True:
-				self.add_output('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', '')
+				self.say('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', '')
 			else:
 				self.desire['verify'][1] = True
 				self.desire['verify'][2][1] = sp[2]['数']
@@ -132,7 +130,7 @@ class zzd():
 	def _solve_math(self, phrases):
 		sp = db.database.gs('数学语句')._fensp(phrases, True)
 		if not sp:
-			self.add_output('数学语法不对','')
+			self.say('数学语法不对','')
 		else:
 			if '数学判断' in sp[2] or '数学方程' in sp[2]:
 				self.add_desire('math',sp[0].s)
@@ -141,25 +139,25 @@ class zzd():
 				if sen:
 					self.add_desire('math',sen)
 				else:
-					self.add_output('数学语法错误', '')
+					self.say('数学语法错误', '')
 	
 	def _solve_define(self, phrases):
 		sp = db.database.gs('定义语句')._fensp(phrases, True)
 		if sp == None:
-			self.add_output('定义语法错误','')
+			self.say('定义语法错误','')
 		else:
 			assert '定义词' in sp[2]
 			sen = sp[2]['定义词']
 			if sen in db.database._defineDict:
 				explain = db.database._defineDict[sen]
-				self.add_output('%s是%s'%(sen,explain), sp[0].s)
+				self.say('%s是%s'%(sen,explain), sp[0].s)
 			else:
-				self.add_output('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0].s)
+				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0].s)
 	
 	def _solve_command(self, phrases):
 		sp = db.database.gs('命令语句')._fensp(phrases, True)
 		if sp == None:
-			self.add_output('命令语法不对','')
+			self.say('命令语法不对','')
 		else:
 			assert 'zzd命令' in sp[2]
 			exe = db.database._keyword_zzd[sp[2]['zzd命令']][1]
@@ -185,9 +183,9 @@ class zzd():
 					out = '%s！'%sp[2]['zzd再见命令']
 				else:
 					out = '不识别的内置命令'
-				self.add_output(out, sp[0].s)
+				self.say(out, sp[0].s)
 			else:
-				self.add_output('还在开发中', sp[0].s)
+				self.say('还在开发中', sp[0].s)
 
 	def _solve_system(self, phrases):
 		return None
@@ -195,13 +193,6 @@ class zzd():
 	def _solve_other(self, phrases):
 		ipdb.set_trace()
 		return None
-
-	def desire_output(self, desire):
-		assert desire[2]
-		waaout = desire[2].pop(0)
-		self.output(self.friend, waaout)
-		if not desire[2]:
-			desire[1] = False
 
 	def desire_verify(self, desire):
 		if self.FSM['verify'] == True:
@@ -211,18 +202,18 @@ class zzd():
 		if desire[2][1] == '':
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
-				self.add_output('您好，我是小白，请认证身份！','')
+				self.say('您好，我是小白，请认证身份！','')
 				self.add_desire('time', (desire, True, time.time()+20))
 			else:
-				self.add_output('您没有及时认证，小白要休息了。','')
-				self.add_output('再见！','')
+				self.say('您没有及时认证，小白要休息了。','')
+				self.say('再见！','')
 		else:
 			if desire[2][1] in db.database._identifyDict:
 				self.friend.name = db.database._identifyDict[desire[2][1]]
 				self.FSM['verify'] = True
-				self.add_output('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name),'')
+				self.say('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name),'')
 			else:
-				self.add_output('认证失败。','')
+				self.say('认证失败。','')
 				if desire[2][0] > 0:
 					desire[2][1] == ''
 					desire[2][0] -= 1
@@ -256,15 +247,15 @@ class zzd():
 				val = int(-c.real/c.imag)
 				val = str(val)
 			except:
-				self.add_output('错误数学表达式', '')
+				self.say('错误数学表达式', '')
 		else:
 			try:
 				val = eval(eq)
 				val = '对' if type(val) == bool and val else val
 				val = '错' if type(val) == bool and not val else val
 			except:
-				self.add_output('错误数学表达式', '')
-		self.add_output(val, eq)
+				self.say('错误数学表达式', '')
+		self.say(val, eq)
 	
 def main():
 	print('zzd_zzd')
