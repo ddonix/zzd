@@ -51,11 +51,9 @@ class zzd():
 	
 	#运行在xhh线程
 	def input(self, sour, waa):
-		record = {'waa':waa, 'sour':sour, 'time':time.time()}
+		record = {'waa':waa, 'sour':sour, 'time':time.time(),'out':None}
 		self.waain.append(record)
-		
-		self.desire['input'].append(record)
-		self.desire['input'][1] = True
+		self.add_desire('input',record)
 	
 	def output(self, dest, waa):
 		print('waa[0]',waa[0])
@@ -81,9 +79,18 @@ class zzd():
 			if self.desire[d][1]:
 				return self.desire[d]
 		return None
+	
+	def desire_input(self, desire):
+		assert desire[2]
+		waain = desire[2].pop(0)
+		waaout = self.inputs(waain['sour'], waain['waa'])
+		waain['out'] = waaout
+		self.add_desire('output',waaout)
+		if not desire[2]:
+			desire[1] = False
 
 	def inputs(self, friend, waa):
-		self.friend = friend
+		assert self.friend == friend
 		(head,sen,form) = self._trans_2_1(waa)
 		if head == 'none':
 			outs = sen
@@ -267,9 +274,6 @@ class zzd():
 			return '对不起，我无法执行\"'+sen+'\"。请检查命令。'
 		else:
 			return '对不起，我无法处理\"'+sen+'\"。'
-	
-	def desire_input(self, desire):
-		pass
 	
 
 	def desire_output(self, desire):
