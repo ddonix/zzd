@@ -5,6 +5,7 @@ import wave
 import os
 from pyaudio import PyAudio,paInt16
 from aip import AipSpeech
+import subprocess
 
 recordflag = False
 stoped = False
@@ -157,3 +158,12 @@ def txt2voice(txt):
 		with open('output2.mp3', 'wb') as f:
 			f.write(result)
 		os.system('play output2.mp3')
+
+def main():
+	print('void')
+	voiceInit()
+	a = subprocess.check_output(["date", "+%H:%M:%S"])
+	txt2voice(a)
+
+if __name__ == '__main__':
+	main()

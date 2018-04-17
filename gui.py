@@ -110,11 +110,11 @@ class zhdthread(threading.Thread):
 		self.name = name
 
 	def run(self):
-		global zhd, zhd_running, root
+		global zhd, zhd_running, root, xhh
 		print('zhd_thread start')
-		zhd = zzd_zzd.zzd(show=zhdShow)
+		zhd = zzd_zzd.zzd(show=zhdShow, friend=xhh)
 		zhd_running.set()
-		zhd.work()
+		zhd.live()
 		zhd = None
 		print('zhd_thread over')
 
@@ -132,7 +132,7 @@ class xhhthread(threading.Thread):
 		print('xhh_thread start')
 		xhh = zzd_human.human('nobody')
 		xhh_running.set()
-		xhh.work()
+		xhh.live()
 		xhh = None
 		print('xhh_thread over')
 		os.kill(rootpid, signal.SIGUSR1)
@@ -146,27 +146,6 @@ def main():
 	global input_layer1
 	global entry_human,entry_zzd
 	
-	rootpid = os.getpid()
-	signal.signal(signal.SIGUSR1, gameoversignal)
-
-	zzd_human.human.init()
-	zzd_zzd.zzd.init()
-	voice.voiceInit()
-	
-	xhh_running = threading.Event()
-	xhh_running.clear()
-	xhht = xhhthread('xhh_thread')
-	xhht.start()
-	xhh_running.wait()
-	assert xhh != None
-	
-	zhd_running = threading.Event()
-	zhd_running.clear()
-	
-	zhdt = zhdthread('zhd_thread')
-	zhdt.start()
-	zhd_running.wait()
-	assert zhd != None
 	
 	root = tk.Tk()
 	root.geometry('640x480+20+20')
@@ -194,8 +173,29 @@ def main():
 	voutButton = tk.Button(root, text = "播放")
 	voutButton.place(x=560,y=150, width=60, height=20)
 	voutButton.bind("<ButtonPress>", voicePlay)
-
 	entry_human.focus_set()
+	
+	zzd_human.human.init()
+	zzd_zzd.zzd.init()
+	voice.voiceInit()
+	
+	rootpid = os.getpid()
+	signal.signal(signal.SIGUSR1, gameoversignal)
+	
+	xhh_running = threading.Event()
+	xhh_running.clear()
+	xhht = xhhthread('xhh_thread')
+	xhht.start()
+	xhh_running.wait()
+	assert xhh != None
+	
+	zhd_running = threading.Event()
+	zhd_running.clear()
+	
+	zhdt = zhdthread('zhd_thread')
+	zhdt.start()
+	zhd_running.wait()
+	assert zhd != None
 	root.mainloop()
 
 if __name__ == '__main__':

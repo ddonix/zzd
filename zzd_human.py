@@ -1,5 +1,4 @@
 #!/usr/bin/python3 -B
-import zzd_unity
 import xlrd
 import sqlite3
 import sys
@@ -8,9 +7,8 @@ import time
 #output函数运行在root主进程
 #input函数运行在zhd线程
 #其他函数运行在xhh线程.
-class human(zzd_unity.unity):
+class human():
 	def __init__(self, name):
-		zzd_unity.unity.__init__(self)
 		self.name = name
 		self.working = True
 		self.root = True
@@ -30,7 +28,7 @@ class human(zzd_unity.unity):
 	def output(self, dest, waa):
 		dest.input(self, waa)
 	
-	def work(self):
+	def live(self):
 		while self.working and self.root:
 			print('xhh working',time.time())
 			time.sleep(1)

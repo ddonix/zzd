@@ -88,15 +88,7 @@ def c2math(phrases):
 	return ''.join(res)
 
 def main():
-	print('zzd_math')
-	grammar.gsetinit()
-	grammar.spinit()
-
-	phrases = grammar._fenci('十加上三十等于几', False)
-	for p in phrases:
-		print(p.s)
-	res = c2math(phrases)
-	print(res)
+	print('math')
 
 if __name__ == '__main__':
 	main()
