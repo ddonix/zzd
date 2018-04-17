@@ -6,6 +6,7 @@ import db
 import time
 import zzd_math
 import zzd_unity
+import play
 
 play_event = None
 #除input函数运行在xhh线程，其他函数运行在zhd线程.
@@ -27,11 +28,9 @@ class zzd(zzd_unity.unity):
 		self.waain = []
 		self.outsemaphore = threading.Semaphore(1)
 		
+		self.player = play.player()
 		#有限状态机Finite-state machine
-		self.FSM = {'verify':False, 'work':False, 'music':False, 'pause':False} 
-		play_event = threading.Event()
-		play_event.set()
-	
+		self.FSM = {'verify':False, 'work':False, 'play':self.player}
 	
 	@classmethod
 	def init(cls):
@@ -156,42 +155,21 @@ class zzd(zzd_unity.unity):
 			return (True, '好的')
 		if 'zzd播放命令' in sen:
 			if not '命令参数' in sen:
-				return (False, '播放什么歌曲?')
-			if self.FSM['music'] == True:
-				os.system('echo quit >> /tmp/mfifo')
-			arg = sen['命令参数']
-			play_event.wait()
-			t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
-			t.start()
+				arg = ''
+			else:
+				arg = sen['命令参数']
+			return (True, self.player.play(arg))
 		elif 'zzd暂停命令' in sen:
-			if self.FSM['music'] == False:
-				return (False, '没有歌曲在播放')
-			if self.FSM['pause'] == True:
-				return (False, '播放已经暂停')
-			assert os.path.exists('/tmp/mfifo')
-			os.system('echo pause >> /tmp/mfifo')
-			self.FSM['pause'] = True
+			return (True, self.player.pause())
 		elif 'zzd继续命令' in  sen:
-			if self.FSM['music'] == False:
-				return (False, '没有歌曲在播放')
-			if self.FSM['pause'] == False:
-				return (False, '正在播放')
-			assert os.path.exists('/tmp/mfifo')
-			os.system('echo pause >> /tmp/mfifo')
-			self.FSM['pause'] = False
+			return (True, self.player.con())
 		elif 'zzd停止命令' in sen:
-			if self.FSM['music'] == False:
-				return (False, '没有歌曲在播放')
-			os.system('echo quit >> /tmp/mfifo')
-			self.FSM['musci'] = False
-			self.FSM['pause'] = False
+			return (True, self.player.stop())
 		elif 'zzd再见命令' in sen:
-			if self.FSM['music'] == True:
-				os.system('echo quit >> /tmp/mfifo')
+			self.player.stop()
 			return (True, sen['zzd再见命令']+'！')
 		else:
 			return (False, '不识别的命令:%s'%cmd)
-		return (True, '好的')
 
 	def _system(self, phrases):
 		return self._sorry(('system', sen))
