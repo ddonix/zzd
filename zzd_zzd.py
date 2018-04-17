@@ -33,6 +33,7 @@ class zzd():
 		self.desire['verify'] = [zzd.desire_verify, True, [3]]		#提醒3次认证身份，每一分钟提醒一次。
 		self.desire['output'] = [zzd.desire_output, False, []]
 		self.desire['input'] = [zzd.desire_input, False, []]
+		self.desire['time'] = [zzd.desire_time, False, []]
 		self.desire['think'] = [zzd.desire_think, False, []]
 		
 	@classmethod
@@ -267,6 +268,7 @@ class zzd():
 	
 	def desire_input(self, desire):
 		pass
+	
 
 	def desire_output(self, desire):
 		assert desire[2]
@@ -282,6 +284,8 @@ class zzd():
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
 				out = '您好，我是小白，请认证身份！'
+				self.desire['time'][1] = True
+				self.desire['time'][2].append(desire, True, time.time()+60)
 			else:
 				out = '您没有及时认证，小白要休息了。再见！'
 			desire[1] = False
@@ -297,6 +301,16 @@ class zzd():
 	
 	def desire_think(self, desire):
 		return None
+	
+	def desire_time(self, desire):
+		assert desire[2]
+		job = desire[2].pop(0)
+		
+		if time.time() >= job[2]:
+			job[0][1] = job[1]
+		
+		if not desire[2]:
+			desire[1] = False
 
 def main():
 	print('zzd_1')
