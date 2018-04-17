@@ -6,138 +6,63 @@ import db
 import time
 import zzd_math
 
-play_event = None
-class zzdcore1:
-	inWaaClass = {}		#输入语句类型
+def mplayer_thread(core, arg):
+	global play_event
+	play_event.clear()
+	
+	print('播放 %s.mp3'%arg)
+	cmd = 'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg
+	os.system('rm /tmp/mfifo -rf')
+	os.system('mkfifo /tmp/mfifo')
+	core.FSM['music'] = True
+	core.FSM['pause'] = False
+	os.system(cmd)
+	core.FSM['music'] = False
+	core.FSM['pause'] = False
+	print('播放完毕')
+	
+	play_event.set()
+
+class player:
 
 	def __init__(self):
-		global play_event
-		self.name = db.database._identifyDict['299792458']
-		self.friend = None
-		self.desire = {'input':[]}						#欲望：大凡物不得其平则鸣
-		
-		self.waain = []
-		self.outsemaphore = threading.Semaphore(1)
-		
-		#有限状态机Finite-state machine
-		self.FSM = {'verify':False, 'work':False, 'music':False, 'pause':False} 
-		play_event = threading.Event()
-		play_event.set()
-	
-	@classmethod
-	def init(cls):
-		db.database.gsinit()
-		db.database.spinit()
-		db.database.coreinit()
-		
-		zzdcore1.inWaaClass['verify'] = [zzdcore1._verify, zzdcore1._solve_verify]			#verify
-		zzdcore1.inWaaClass['math'] = [zzdcore1._math, zzdcore1._solve_math]				#math
-		zzdcore1.inWaaClass['define'] = [zzdcore1._define, zzdcore1._solve_define]			#define
-		zzdcore1.inWaaClass['command'] = [zzdcore1._command, zzdcore1._solve_command]		#command
-		zzdcore1.inWaaClass['system'] = [zzdcore1._system, zzdcore1._solve_system]			#system
-		zzdcore1.inWaaClass['other'] = [zzdcore1._other, zzdcore1._solve_other]			#other
-	
-	#human主进程调用
-	def input(self, sour, waa):
-		record = {'waa':waa, 'sour':sour, 'time':time.time()}
-		self.waain.append(record)
-		self.desire['input'].append(record)
-	
-	def getoutput(self):
-		assert 'input' in self.desire
-		waaout = None
-		if self.desire['input'] != []:
-			d = self.desire['input'].pop(0)
-			waaout=self.inputs(d['sour'], d['waa'])
-			print(waaout[0], waaout[1])
-		if waaout == None:
-			t = time.localtime(time.time())
-			if t.tm_sec == 0:
-				return ('该休息了','')
-			return None
-		return waaout
-	
-	def output(self, dest, waa):
-		raise NotImplementedError
-	
-	def inputs(self, friend, waa):
-		self.friend = friend
-		(head,sen,form) = self._trans_2_1(waa)
-		if head == 'none':
-			outs = sen
-			return (outs, form)
+		self.event = threading.Event()
+		self.event.set()
+		self.FSM = {'music':False, 'pause':False}
+		self.thread = None
 
-		if self.FSM['verify'] == False:
-			if head == 'verify':
-				res = self._verify(sen)
-				if res[0]:
-					self.FSM['verify'] = True
-					self.FSM['work'] = True
-				return (res[1], form)
-			else:
-				outs = '对不起，您需要先进行身份认证!'
-				return (outs, form)
-		else:
-			if head == 'verify':
-				outs = '您已经认证过身份了。服务多人功能正在开发中，请耐心等待。'
-				return (outs, form) 
-		
-		if self.FSM['work'] == True:
-			assert head in zzdcore1.inWaaClass
-			outs = zzdcore1.inWaaClass[head][0](self, sen)
-			return (outs[1],form)
-		outs = '对不起，我懵了!'
-		return (outs, form)
+	def play(self, arg):
+		if self.FSM['music'] == True:
+			self.stop()
+		if arg == '' or arg == None:
+			return '播放什么歌曲?'
+		self.event.wait()
+		self.thread = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
+		self.thread.start()
+		return '好的'
 	
-	def _verify(self, sen):
-		assert self.FSM['verify'] == False
-		if sen['id'] in db.database._identifyDict:
-			self.friend.name = db.database._identifyDict[sen['id']]
-			return (True, '%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name))
-		return (False, '认证失败。')
-				
-	def _math(self, sen):
-		eq = sen
-		if eq.find('x') != -1:
-			eq1 = eq.replace("=","-(")+")"
-			try:
-				c = eval(eq1,{'x':1j})
-				val = int(-c.real/c.imag)
-				val = str(val)
-			except:
-				return (False, self._sorry('math', sen))
-		else:
-			try:
-				val = eval(eq)
-				val = '对' if type(val) == bool and val else val
-				val = '错' if type(val) == bool and not val else val
-			except:
-				return (False, self._sorry('math', sen))
-		return (True, val)
+	def stop(self):
+		pass
 	
-	def _define(self, sen):
-		if sen in db.database._defineDict:
-			explain = db.database._defineDict[sen]
-			return (True, sen+'是'+explain+'。')
-		else:
-			return (False, self._sorry('define', sen))
+	def pause(self):
+		if self.FSM['music'] == False:
+			return (False, '没有歌曲在播放')
+		if self.FSM['pause'] == True:
+			return (False, '播放已经暂停')
+		assert os.path.exists('/tmp/mfifo')
+		os.system('echo pause >> /tmp/mfifo')
+		pass
 	
+	def (self):
+		if self.FSM['music'] == False:
+			return (False, '没有歌曲在播放')
+		if self.FSM['pause'] == True:
+			return (False, '播放已经暂停')
+		assert os.path.exists('/tmp/mfifo')
+		os.system('echo pause >> /tmp/mfifo')
+
+
 	def _command(self, sen):
-		global play_event
-		exe = db.database._keyword_zzd[sen['zzd命令']][1]
-		if not (exe == '' or exe == None):
-			cmd = sen['zzd命令']
-			arg = sen['命令参数']
-			return (True, '好的')
-		if 'zzd播放命令' in sen:
-			if not '命令参数' in sen:
-				return (False, '播放什么歌曲?')
-			if self.FSM['music'] == True:
-				os.system('echo quit >> /tmp/mfifo')
-			arg = sen['命令参数']
-			play_event.wait()
-			t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
-			t.start()
 		elif 'zzd暂停命令' in sen:
 			if self.FSM['music'] == False:
 				return (False, '没有歌曲在播放')
@@ -286,22 +211,6 @@ def main():
 	
 	#播放线程
 
-def mplayer_thread(core1, arg):
-	global play_event
-	play_event.clear()
-	
-	print('播放 %s.mp3'%arg)
-	cmd = 'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg
-	os.system('rm /tmp/mfifo -rf')
-	os.system('mkfifo /tmp/mfifo')
-	core1.FSM['music'] = True
-	core1.FSM['pause'] = False
-	os.system(cmd)
-	core1.FSM['music'] = False
-	core1.FSM['pause'] = False
-	print('播放完毕')
-	
-	play_event.set()
 	
 if __name__ == '__main__':
 	main()
