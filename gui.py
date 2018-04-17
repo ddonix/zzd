@@ -45,16 +45,18 @@ def zhdShow(waa, form=''):
 	global autoplay,root
 	if root == None:
 		return
-	input_layer1.delete(0,'end')
-	if form != '':
-		input_layer1.insert(0, form)
-	input_layer1.update()
 	
-	entry_zzd.delete(0,'end')
-	entry_zzd.insert(0, waa)
-	entry_zzd.update()
-	if autoplay:
-		voice.txt2voice(waa)
+	if form:
+		input_layer1.delete(0,'end')
+		input_layer1.insert(0, form)
+		input_layer1.update()
+	
+	if waa:
+		entry_zzd.delete(0,'end')
+		entry_zzd.insert(0, waa)
+		entry_zzd.update()
+		if autoplay:
+			voice.txt2voice(waa)
 	return
 	
 def voicePlay(evt):

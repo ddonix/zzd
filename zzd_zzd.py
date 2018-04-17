@@ -6,11 +6,11 @@ import db
 import time
 import zmath
 import play
+import ipdb
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
 	inWaaClass = {}		#输入语句类型
-	
 	def __init__(self, show, friend):
 		assert show and friend
 		self.show = show
@@ -31,6 +31,7 @@ class zzd():
 		self.desire['output'] = [zzd.desire_output, False, []]
 		self.desire['input'] = [zzd.desire_input, False, []]
 		self.desire['time'] = [zzd.desire_time, False, []]
+		self.desire['math'] = [zzd.desire_math, False, []]
 		self.desire['think'] = [zzd.desire_think, False, []]
 		
 	@classmethod
@@ -39,12 +40,12 @@ class zzd():
 		db.database.spinit()
 		db.database.coreinit()
 		
-		cls.inWaaClass['verify'] = [None, zzd._solve_verify]			#verify
-		cls.inWaaClass['math'] = [zzd._math, zzd._solve_math]			#math
-		cls.inWaaClass['define'] = [zzd._define, zzd._solve_define]		#define
-		cls.inWaaClass['command'] = [zzd._command, zzd._solve_command]	#command
-		cls.inWaaClass['system'] = [zzd._system, zzd._solve_system]		#system
-		cls.inWaaClass['other'] = [zzd._other, zzd._solve_other]		#other
+		cls.inWaaClass['verify'] = zzd._solve_verify					#verify
+		cls.inWaaClass['math'] =  zzd._solve_math						#math
+		cls.inWaaClass['define'] = zzd._solve_define					#define
+		cls.inWaaClass['command'] = zzd._solve_command					#command
+		cls.inWaaClass['system'] = zzd._solve_system					#system
+		cls.inWaaClass['other'] = zzd._solve_other						#other
 	
 	#运行在root进程
 	def input(self, sour, waa):
@@ -56,14 +57,14 @@ class zzd():
 		print('waa[0]',waa[0])
 		print('waa[1]',waa[1])
 		self.show(waa[0], waa[1])
-		dest.input(self, waa[0])
-
+		if waa[0]:
+			dest.input(self, waa[0])
 		if waa[0] == '再见！' or waa[0] == '拜拜！':
 			self.FSM['work'] = False
 
 	def live(self):
 		while self.FSM['work'] and self.root:
-			print('zhd working',time.time())
+			#print('zhd working',time.time())
 			d = self.getdesire()
 			if d:
 				d[0](self, d)
@@ -78,6 +79,8 @@ class zzd():
 			return self.desire['input']
 		if self.desire['verify'][1]:
 			return self.desire['verify']
+		if self.desire['math'][1]:
+			return self.desire['math']
 		if self.desire['time'][1]:
 			return self.desire['time']
 		if self.desire['think'][1]:
@@ -93,44 +96,21 @@ class zzd():
 		waa = waain['waa']
 		assert self.friend == waain['sour']
 		
-		(head,sen,form) = self._trans_2_1(waa)
-		if head == 'none':
-			outs = sen
-			self.add_desire('output', (outs, form))
-		elif self.FSM['verify'] == False:
-			if head == 'verify':
-				self.desire['verify'][1] = True
-				self.desire['verify'][2][1] = sen
-			else:
-				self.add_desire('output', ('对不起，您需要先进行身份认证!', form))
-		elif head == 'verify':
-				self.add_desire('output', ('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', form))
-		elif self.FSM['work'] == True:
-			assert head in zzd.inWaaClass
-			outs = zzd.inWaaClass[head][0](self, sen)
-			self.add_desire('output',(outs[1],form))
+		phrases = db.fenci(waa, False)
+		keyword = [x for x in phrases if x.s in db.database._keyword_zzd]
+		bit = {'verify':0,'math':0,'define':0,'command':0,'system':0}
+		for k in keyword:
+			assert k.s in db.database._keyword_zzd
+			weight = db.database._keyword_zzd[k.s][0].split(' ')
+			for i in range(0,len(weight),2):
+				if weight[i] != '':
+					bit[weight[i]] += int(weight[i+1])
+		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
+		if bit[0][1] == 0:
+			zzd.inWaaClass['other'](self, phrases)
 		else:
-			self.add_desire('output',('对不起，我懵了!',form))
-	
-	def _math(self, sen):
-		eq = sen
-		if eq.find('x') != -1:
-			eq1 = eq.replace("=","-(")+")"
-			try:
-				c = eval(eq1,{'x':1j})
-				val = int(-c.real/c.imag)
-				val = str(val)
-			except:
-				return (False, self._sorry('math', sen))
-		else:
-			try:
-				val = eval(eq)
-				val = '对' if type(val) == bool and val else val
-				val = '错' if type(val) == bool and not val else val
-			except:
-				return (False, self._sorry('math', sen))
-		return (True, val)
-	
+			zzd.inWaaClass[bit[0][0]](self, phrases)
+		
 	def _define(self, sen):
 		if sen in db.database._defineDict:
 			explain = db.database._defineDict[sen]
@@ -162,56 +142,44 @@ class zzd():
 		else:
 			return (False, '不识别的命令:%s'%cmd)
 
-	def _system(self, phrases):
-		return self._sorry(('system', sen))
-	
-	def _other(self, phrases):
-		return self._sorry(('system', sen))
-	
-	def _trans_2_1(self, waa):
-		phrases = db.fenci(waa, False)
-		keyword = [x for x in phrases if x.s in db.database._keyword_zzd]
-		bit = {'verify':0,'math':0,'define':0,'command':0,'system':0}
-		for k in keyword:
-			assert k.s in db.database._keyword_zzd
-			weight = db.database._keyword_zzd[k.s][0].split(' ')
-			for i in range(0,len(weight),2):
-				if weight[i] != '':
-					bit[weight[i]] += int(weight[i+1])
-		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
-		if bit[0][1] == 0:
-			return zzd.inWaaClass['other'][1](self, phrases)
-		return zzd.inWaaClass[bit[0][0]][1](self, phrases)
-	
 	def _solve_verify(self, phrases):
 		sp = db.database.gs('认证语句')._fensp(phrases, True)
 		if sp == None:
-			return ('none', '认证语法不对', '')
+			self.add_desire('output',('认证语法不对', ''))
 		else:
-			assert '数' in sp[2]
-			return ('verify', sp[2]['数'], sp[0].s)
+			self.add_desire('output',('', sp[0].s))
+			if self.FSM['verify'] == True:
+				self.add_desire('output', ('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', ''))
+			else:
+				self.desire['verify'][1] = True
+				self.desire['verify'][2][1] = sp[2]['数']
 	
 	def _solve_math(self, phrases):
 		sp = db.database.gs('数学语句')._fensp(phrases, True)
-		if sp == None:
-			return ('none', '数学语法不对', '')
+		if not sp:
+			self.add_desire('output', ('数学语法不对',''))
 		else:
 			if '数学判断' in sp[2] or '数学方程' in sp[2]:
-				return ('math', sp[0].s, sp[0].s)
+				self.add_desire('math',sp[0].s)
 			else:
 				sen = zmath.c2math(phrases)
 				if sen:
-					return ('math', sen, sen)
+					self.add_desire('math',sen)
 				else:
-					return ('none', '数学语法错误%s'%sp[0].s, sp[0].s)
+					self.add_desire('output',('数学语法错误', ''))
 	
 	def _solve_define(self, phrases):
 		sp = db.database.gs('定义语句')._fensp(phrases, True)
 		if sp == None:
-			return ('none', '定义语法不对','')
+			self.add_desire('output', ('定义语法错误',''))
 		else:
 			assert '定义词' in sp[2]
-			return ('define', sp[2]['定义词'], sp[0].s)
+			sen = sp[2]['定义词']
+			if sen in db.database._defineDict:
+				explain = db.database._defineDict[sen]
+				self.add_desire('output', ('%s是%s'%(sen,explain), sp[0].s))
+			else:
+				self.add_desire('output', ('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0].s))
 	
 	def _solve_command(self, phrases):
 		sp = db.database.gs('命令语句')._fensp(phrases, True)
@@ -284,7 +252,7 @@ class zzd():
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
 				self.add_desire('output',('您好，我是小白，请认证身份！',''))
-				self.add_desire('time', (desire, True, time.time()+20))
+				#self.add_desire('time', (desire, True, time.time()+20))
 			else:
 				self.add_desire('output', ('您没有及时认证，小白要休息了。',''))
 				self.add_desire('output', ('再见！',''))
@@ -313,15 +281,48 @@ class zzd():
 		
 		if not desire[2]:
 			desire[1] = False
+	
+	def desire_math(self, desire):
+		assert desire[2]
+		eq = desire[2].pop(0)
+		if not desire[2]:
+			desire[1] = False
+		
+		if eq.find('x') != -1:
+			eq1 = eq.replace("=","-(")+")"
+			try:
+				c = eval(eq1,{'x':1j})
+				val = int(-c.real/c.imag)
+				val = str(val)
+			except:
+				self.add_desire('output',('错误数学表达式', ''))
+		else:
+			try:
+				val = eval(eq)
+				val = '对' if type(val) == bool and val else val
+				val = '错' if type(val) == bool and not val else val
+			except:
+				self.add_desire('output',('错误数学表达式', ''))
+		self.add_desire('output',(val, eq))
+	
+	def desire_define(self, desire):
+		assert desire[2]
+		eq = desire[2].pop(0)
+		if not desire[2]:
+			desire[1] = False
+		
+def main():
+	print('zzd_zzd')
+	zzd.init()
 
 def main():
 	print('zzd_zzd')
 	zzd.init()
-	zhd = zzd(None)
+	zhd = zzd(1, 1)
 	
-	a = '再见'
+	a = '1+1=x'
 	phs = db.fenci(a, False)
-	g = db.database.gs('命令语句')
+	g = db.database.gs('数学语句')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])
