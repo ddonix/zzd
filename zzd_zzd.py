@@ -74,10 +74,8 @@ class zzd():
 		self.desire[name][2].append(arg)
 	
 	def add_output(self, out, form):
-		self.desire['output'][1] = True
-		self.desire['output'][2].append((out, form))
+		self.output(self.friend, (out, form))
 	
-
 	def get_desire(self):
 		if not self.desire:
 			return None
