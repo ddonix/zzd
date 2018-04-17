@@ -30,9 +30,10 @@ class zzd():
 		
 		#大凡物不得其平则鸣
 		self.desire = {}
-		self.desire['verify'] = [zzd.desire_verify, True, 3]		#提醒3次认证身份，每一分钟提醒一次。
+		self.desire['verify'] = [zzd.desire_verify, True, [3]]		#提醒3次认证身份，每一分钟提醒一次。
 		self.desire['output'] = [zzd.desire_output, False, []]
-
+		self.desire['input'] = [zzd.desire_input, False, []]
+		self.desire['think'] = [zzd.desire_think, False, []]
 		
 	@classmethod
 	def init(cls):
@@ -41,17 +42,19 @@ class zzd():
 		db.database.coreinit()
 		
 		cls.inWaaClass['verify'] = [zzd._verify, zzd._solve_verify]		#verify
-		cls.inWaaClass['math'] = [zzd._math, zzd._solve_math]				#math
+		cls.inWaaClass['math'] = [zzd._math, zzd._solve_math]			#math
 		cls.inWaaClass['define'] = [zzd._define, zzd._solve_define]		#define
 		cls.inWaaClass['command'] = [zzd._command, zzd._solve_command]	#command
 		cls.inWaaClass['system'] = [zzd._system, zzd._solve_system]		#system
-		cls.inWaaClass['other'] = [zzd._other, zzd._solve_other]			#other
+		cls.inWaaClass['other'] = [zzd._other, zzd._solve_other]		#other
 	
 	#运行在xhh线程
 	def input(self, sour, waa):
 		record = {'waa':waa, 'sour':sour, 'time':time.time()}
 		self.waain.append(record)
+		
 		self.desire['input'].append(record)
+		self.desire['input'][1] = True
 	
 	def output(self, dest, waa):
 		print('waa[0]',waa[0])
@@ -262,34 +265,39 @@ class zzd():
 		else:
 			return '对不起，我无法处理\"'+sen+'\"。'
 	
-	def desire_output(self, de):
-		assert de[2]
-		waaout = de[2].pop(0)
-		self.output(self.friend, waaout)
-		if not de[2]:
-			de[1] = False
+	def desire_input(self, desire):
+		pass
 
-	def desire_verify(self, de):
+	def desire_output(self, desire):
+		assert desire[2]
+		waaout = desire[2].pop(0)
+		self.output(self.friend, waaout)
+		if not desire[2]:
+			desire[1] = False
+
+	def desire_verify(self, desire):
 		assert self.FSM['verify'] == False
-		de[1] = False
 		self.desire['output'][1] = True
-		
-		out = ''
-		if len(de) == 3:
-			if de[2] > 0:
-				de[2] -= 1
+		if len(desire[2]) == 1:
+			if desire[2][0] > 0:
+				desire[2][0] -= 1
 				out = '您好，我是小白，请认证身份！'
 			else:
-				out = '您没有正确认证，小白要休息了。再见！'
+				out = '您没有及时认证，小白要休息了。再见！'
+			desire[1] = False
 		else:
-			if de[3] in db.database._identifyDict:
+			if desire[2][1] in db.database._identifyDict:
 				self.friend.name = db.database._identifyDict[sen['id']]
 				self.FSM['verify'] = True
 				out = '%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name)
+				desire[1] = False
 			else:
 				out = '认证失败。'
 		self.desire['output'][2].append((out,''))
-				
+	
+	def desire_think(self, desire):
+		return None
+
 def main():
 	print('zzd_1')
 	zzd.init()
