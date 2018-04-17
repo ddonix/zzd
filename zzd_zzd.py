@@ -7,7 +7,7 @@ import time
 import zmath
 import play
 
-#除input函数运行在xhh线程，其他函数运行在zhd线程.
+#除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
 	inWaaClass = {}		#输入语句类型
 	
@@ -20,7 +20,6 @@ class zzd():
 		self.name = db.database._identifyDict['299792458']
 		
 		self.waain = []
-		self.outsemaphore = threading.Semaphore(1)
 		
 		self.player = play.player()
 		#有限状态机Finite-state machine
@@ -28,7 +27,7 @@ class zzd():
 		
 		#大凡物不得其平则鸣
 		self.desire = {}
-		self.desire['verify'] = [zzd.desire_verify, True, [3,'']]		#提醒3次认证身份，每15秒提醒一次。
+		self.desire['verify'] = [zzd.desire_verify, True, [3,'']]		#提醒3次认证身份，每20秒提醒一次。
 		self.desire['output'] = [zzd.desire_output, False, []]
 		self.desire['input'] = [zzd.desire_input, False, []]
 		self.desire['time'] = [zzd.desire_time, False, []]
@@ -47,7 +46,7 @@ class zzd():
 		cls.inWaaClass['system'] = [zzd._system, zzd._solve_system]		#system
 		cls.inWaaClass['other'] = [zzd._other, zzd._solve_other]		#other
 	
-	#运行在xhh线程
+	#运行在root进程
 	def input(self, sour, waa):
 		record = {'waa':waa, 'sour':sour, 'time':time.time()}
 		self.waain.append(record)
@@ -68,7 +67,7 @@ class zzd():
 			d = self.getdesire()
 			if d:
 				d[0](self, d)
-			time.sleep(1)
+			time.sleep(0.1)
 
 	def getdesire(self):
 		if not self.desire:
@@ -101,7 +100,7 @@ class zzd():
 		elif self.FSM['verify'] == False:
 			if head == 'verify':
 				self.desire['verify'][1] = True
-				self.desire['verify'][2][1] = sen['id']
+				self.desire['verify'][2][1] = sen
 			else:
 				self.add_desire('output', ('对不起，您需要先进行身份认证!', form))
 		elif head == 'verify':
@@ -190,7 +189,7 @@ class zzd():
 			return ('none', '认证语法不对', '')
 		else:
 			assert '数' in sp[2]
-			return ('verify', {'id':sp[2]['数']}, sp[0].s)
+			return ('verify', sp[2]['数'], sp[0].s)
 	
 	def _solve_math(self, phrases):
 		sp = db.database.gs('数学语句')._fensp(phrases, True)
@@ -255,13 +254,13 @@ class zzd():
 
 	def _sorry(self, head, sen):
 		if head == 'define':
-			return '对不起，我没有\"'+sen+'\"的定义。请进入训练模式，添加定义。'
+			return '对不起，我没有%s的定义。请进入训练模式，添加定义。'%sen
 		elif head == 'math':
-			return '对不起，我无法计算\"'+sen+'\"。请检查表达式。'
+			return '对不起，我无法计算%s。请检查表达式。'%sen
 		elif head == 'command':
-			return '对不起，我无法执行\"'+sen+'\"。请检查命令。'
+			return '对不起，我无法执行\"%s\"。请检查命令。'%sen
 		else:
-			return '对不起，我无法处理\"'+sen+'\"。'
+			return '对不起，我无法处理\"%s\"。'%sen
 	
 
 	def desire_output(self, desire):
@@ -284,9 +283,8 @@ class zzd():
 		if desire[2][1] == '':
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
-				
 				self.add_desire('output',('您好，我是小白，请认证身份！',''))
-				self.add_desire('time', (desire, True, time.time()+15))
+				self.add_desire('time', (desire, True, time.time()+20))
 			else:
 				self.add_desire('output', ('您没有及时认证，小白要休息了。',''))
 				self.add_desire('output', ('再见！',''))
