@@ -30,7 +30,7 @@ class zzd():
 		
 		#大凡物不得其平则鸣
 		self.desire = {}
-		self.desire['verify'] = [zzd.desire_verify, True, [3]]		#提醒3次认证身份，每一分钟提醒一次。
+		self.desire['verify'] = [zzd.desire_verify, True, [3,'']]		#提醒3次认证身份，每15秒提醒一次。
 		self.desire['output'] = [zzd.desire_output, False, []]
 		self.desire['input'] = [zzd.desire_input, False, []]
 		self.desire['time'] = [zzd.desire_time, False, []]
@@ -63,14 +63,16 @@ class zzd():
 		self.show(waa[0], waa[1])
 		dest.input(self, waa[0])
 
+		if waa[0] == '再见！' or waa[0] == '拜拜！':
+			self.working = False
+
 	def live(self):
 		while self.working and self.root:
 			print('zhd working',time.time())
 			d = self.getdesire()
 			if d:
 				d[0](self, d)
-			else:
-				time.sleep(1)
+			time.sleep(1)
 
 	def getdesire(self):
 		if not self.desire:
@@ -277,37 +279,48 @@ class zzd():
 		if not desire[2]:
 			desire[1] = False
 
+	def add_desire(self, name, arg):
+		self.desire[name][1] = True
+		self.desire[name][2].append(arg)
+
 	def desire_verify(self, desire):
-		assert self.FSM['verify'] == False
-		self.desire['output'][1] = True
-		if len(desire[2]) == 1:
+		if self.FSM['verify'] == True:
+			desire[1] = False
+			return
+		
+		desire[1] = False
+		if desire[2][1] == '':
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
-				out = '您好，我是小白，请认证身份！'
-				self.desire['time'][1] = True
-				self.desire['time'][2].append(desire, True, time.time()+60)
+				
+				self.add_desire('output',('您好，我是小白，请认证身份！',''))
+				self.add_desire('time', (desire, True, time.time()+15))
 			else:
-				out = '您没有及时认证，小白要休息了。再见！'
-			desire[1] = False
+				self.add_desire('output', ('您没有及时认证，小白要休息了。',''))
+				self.add_desire('output', ('再见！',''))
 		else:
 			if desire[2][1] in db.database._identifyDict:
 				self.friend.name = db.database._identifyDict[sen['id']]
 				self.FSM['verify'] = True
-				out = '%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name)
-				desire[1] = False
+				self.FSM['work'] = True
+				self.add_desire('output', ('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name),''))
 			else:
-				out = '认证失败。'
-		self.desire['output'][2].append((out,''))
+				self.add_desire('output', ('认证失败。',''))
+				if desire[2][0] > 0:
+					desire[2][1] == ''
+					desire[2][0] -= 1
+					self.add_desire('time', (desire, True, time.time()+30))
 	
 	def desire_think(self, desire):
 		return None
 	
 	def desire_time(self, desire):
 		assert desire[2]
-		job = desire[2].pop(0)
-		
-		if time.time() >= job[2]:
-			job[0][1] = job[1]
+
+		for i in range(len(desire[2])-1, -1, -1):
+			if time.time() >= desire[2][i][2]:
+				desire[2][i][0][1] = desire[2][i][1]
+				desire[2].pop(i)
 		
 		if not desire[2]:
 			desire[1] = False
