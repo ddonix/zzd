@@ -16,9 +16,7 @@ class zzd():
 		self.show = show
 		self.friend = friend
 		
-		self.working = True
 		self.root = True
-		
 		self.name = db.database._identifyDict['299792458']
 		
 		self.waain = []
@@ -26,7 +24,7 @@ class zzd():
 		
 		self.player = play.player()
 		#有限状态机Finite-state machine
-		self.FSM = {'verify':False, 'work':False, 'play':self.player}
+		self.FSM = {'verify':False, 'work':True, 'play':self.player}
 		
 		#大凡物不得其平则鸣
 		self.desire = {}
@@ -42,7 +40,7 @@ class zzd():
 		db.database.spinit()
 		db.database.coreinit()
 		
-		cls.inWaaClass['verify'] = [zzd._verify, zzd._solve_verify]		#verify
+		cls.inWaaClass['verify'] = [None, zzd._solve_verify]			#verify
 		cls.inWaaClass['math'] = [zzd._math, zzd._solve_math]			#math
 		cls.inWaaClass['define'] = [zzd._define, zzd._solve_define]		#define
 		cls.inWaaClass['command'] = [zzd._command, zzd._solve_command]	#command
@@ -51,7 +49,7 @@ class zzd():
 	
 	#运行在xhh线程
 	def input(self, sour, waa):
-		record = {'waa':waa, 'sour':sour, 'time':time.time(),'out':None}
+		record = {'waa':waa, 'sour':sour, 'time':time.time()}
 		self.waain.append(record)
 		self.add_desire('input',record)
 	
@@ -62,10 +60,10 @@ class zzd():
 		dest.input(self, waa[0])
 
 		if waa[0] == '再见！' or waa[0] == '拜拜！':
-			self.working = False
+			self.FSM['work'] = False
 
 	def live(self):
-		while self.working and self.root:
+		while self.FSM['work'] and self.root:
 			print('zhd working',time.time())
 			d = self.getdesire()
 			if d:
@@ -83,48 +81,34 @@ class zzd():
 	def desire_input(self, desire):
 		assert desire[2]
 		waain = desire[2].pop(0)
-		waaout = self.inputs(waain['sour'], waain['waa'])
-		waain['out'] = waaout
-		self.add_desire('output',waaout)
 		if not desire[2]:
 			desire[1] = False
-
-	def inputs(self, friend, waa):
-		assert self.friend == friend
+		
+		waa = waain['waa']
+		assert self.friend == waain['sour']
+		
 		(head,sen,form) = self._trans_2_1(waa)
 		if head == 'none':
 			outs = sen
-			return (outs, form)
-
+			self.add_desire('output', (outs, form))
 		if self.FSM['verify'] == False:
 			if head == 'verify':
-				res = self._verify(sen)
-				if res[0]:
-					self.FSM['verify'] = True
-					self.FSM['work'] = True
-				return (res[1], form)
+				self.desire['verify'][1] = True
+				self.desire['verify'][2][1] = sen['id']
 			else:
-				outs = '对不起，您需要先进行身份认证!'
-				return (outs, form)
+				self.add_desire('output', ('对不起，您需要先进行身份认证!', form))
+				self.add_desire('output',(outs, form))
 		else:
 			if head == 'verify':
-				outs = '您已经认证过身份了。服务多人功能正在开发中，请耐心等待。'
-				return (outs, form) 
+				self.add_desire('output', ('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', form))
 		
 		if self.FSM['work'] == True:
 			assert head in zzd.inWaaClass
 			outs = zzd.inWaaClass[head][0](self, sen)
-			return (outs[1],form)
-		outs = '对不起，我懵了!'
-		return (outs, form)
+			self.add_desire('output',(outs[1],form))
+		else:
+			self.add_desire('output',('对不起，我懵了!',form))
 	
-	def _verify(self, sen):
-		assert self.FSM['verify'] == False
-		if sen['id'] in db.database._identifyDict:
-			self.friend.name = db.database._identifyDict[sen['id']]
-			return (True, '%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name))
-		return (False, '认证失败。')
-				
 	def _math(self, sen):
 		eq = sen
 		if eq.find('x') != -1:
@@ -306,7 +290,6 @@ class zzd():
 			if desire[2][1] in db.database._identifyDict:
 				self.friend.name = db.database._identifyDict[sen['id']]
 				self.FSM['verify'] = True
-				self.FSM['work'] = True
 				self.add_desire('output', ('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name),''))
 			else:
 				self.add_desire('output', ('认证失败。',''))
