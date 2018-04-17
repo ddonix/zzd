@@ -30,6 +30,7 @@ class zzd():
 		self.desire['input'] = [zzd.desire_input, False, []]
 		self.desire['time'] = [zzd.desire_time, False, []]
 		self.desire['math'] = [zzd.desire_math, False, []]
+		self.desire['want'] = [zzd.desire_want, False, []]
 		self.desire['think'] = [zzd.desire_think, False, []]
 		
 	@classmethod
@@ -170,7 +171,11 @@ class zzd():
 				else:
 					arg = ''
 				if 'zzd播放命令' in sp[2]:
-					out = self.player.play(arg)
+					if arg == '':
+						self.add_desire('want', '命令参数')
+						out = '播放什么歌曲'
+					else:
+						out = self.player.play(arg)
 				elif 'zzd暂停命令' in sp[2]:
 					out = self.player.pause()
 				elif 'zzd继续命令' in  sp[2]:
@@ -190,6 +195,7 @@ class zzd():
 		return None
 	
 	def _solve_other(self, phrases):
+		ipdb.set_trace()
 		return None
 
 	def desire_output(self, desire):
@@ -225,6 +231,9 @@ class zzd():
 					self.add_desire('time', (desire, True, time.time()+20))
 	
 	def desire_think(self, desire):
+		return None
+	
+	def desire_want(self, desire):
 		return None
 	
 	def desire_time(self, desire):
