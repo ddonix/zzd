@@ -19,7 +19,7 @@ class zzd():
 		
 		self.waain = []
 		
-		self.player = play.player()
+		self.player = play.player(self)
 		#有限状态机Finite-state machine
 		self.FSM = {'verify':False, 'work':True, 'play':self.player}
 		
@@ -160,6 +160,7 @@ class zzd():
 			self.say('命令语法不对','')
 		else:
 			assert 'zzd命令' in sp[2]
+			self.say('', sp[0].s)
 			exe = db.database._keyword_zzd[sp[2]['zzd命令']][1]
 			if exe == '' or exe == None:
 				if '命令参数' in sp[2]:
@@ -167,11 +168,7 @@ class zzd():
 				else:
 					arg = ''
 				if 'zzd播放命令' in sp[2]:
-					if arg == '':
-						self.add_desire('want', '命令参数')
-						out = '播放什么歌曲'
-					else:
-						out = self.player.play(arg)
+					out = self.player.play(arg)
 				elif 'zzd暂停命令' in sp[2]:
 					out = self.player.pause()
 				elif 'zzd继续命令' in  sp[2]:
@@ -180,12 +177,11 @@ class zzd():
 					out = self.player.stop()
 				elif 'zzd再见命令' in sp[2]:
 					self.player.stop()
-					out = '%s！'%sp[2]['zzd再见命令']
+					self.say('%s！'%sp[2]['zzd再见命令'], '')
 				else:
-					out = '不识别的内置命令'
-				self.say(out, sp[0].s)
+					self.say('不识别的内置命令', '')
 			else:
-				self.say('还在开发中', sp[0].s)
+				self.say('还在开发中', '')
 
 	def _solve_system(self, phrases):
 		return None
