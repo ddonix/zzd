@@ -71,6 +71,8 @@ class database:
 			conn = sqlite3.connect('./data/grammar.db')
 			cursor = conn.execute("select * from gset_phrase")
 			v = cursor.fetchall()
+			cursor = conn.execute("select * from gset_set")
+			v.extend(cursor.fetchall())
 			cursor = conn.execute("select * from gset_sentence")
 			v.extend(cursor.fetchall())
 			conn.close()
