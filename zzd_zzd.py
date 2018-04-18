@@ -105,6 +105,8 @@ class zzd():
 		if bit[0][1] == 0:
 			self._solve_other(phrases)
 		else:
+			if 'ask' in self.FSM:
+				self.ask_event.set()
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
 	def _solve_verify(self, phrases):
@@ -116,9 +118,16 @@ class zzd():
 			if self.FSM['verify'] == True:
 				self.say('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', '')
 			else:
-				self.desire['verify'][1] = True
-				self.desire['verify'][2][1] = sp[2]['数']
-	
+				if '认证参数' in sp[2]:
+					self.desire['verify'][1] = True
+					self.desire['verify'][2][1] = sp[2]['认证参数']
+				else:
+					self.say('口令是什么？', '')
+					arg = self.ask('认证参数')
+					if arg:
+						self.desire['verify'][1] = True
+						self.desire['verify'][2][1] = arg
+
 	def _solve_math(self, phrases):
 		sp = db.database.gs('数学语句')._fensp(phrases, True)
 		if not sp:
@@ -196,6 +205,10 @@ class zzd():
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
 				self.say('您好，我是小白，请认证身份！','')
+				arg = self.ask('认证参数')
+				if arg:
+					self.desire['verify'][1] = True
+					self.desire['verify'][2][1] = arg
 				self.add_desire('time', (desire, True, time.time()+20))
 			else:
 				self.say('您没有及时认证，小白要休息了。','')
@@ -213,9 +226,6 @@ class zzd():
 					self.add_desire('time', (desire, True, time.time()+20))
 	
 	def desire_think(self, desire):
-		return None
-	
-	def desire_want(self, desire):
 		return None
 	
 	def desire_time(self, desire):

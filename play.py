@@ -61,7 +61,9 @@ class player:
 	
 	def stop(self, echo):
 		if self.FSM['music'] == False:
-			return self.zhd.say('没有歌曲在播放', '')
+			if echo:
+				self.zhd.say('没有歌曲在播放', '')
+			return
 		os.system('echo quit >> /tmp/mfifo')
 		self.FSM['musci'] = False
 		self.FSM['pause'] = False
