@@ -176,12 +176,17 @@ class zzd():
 				self.say('还在开发中', '')
 
 	def _solve_system(self, phrases):
-		return None
+		pass
 	
 	def _solve_other(self, phrases):
-		ipdb.set_trace()
-		return None
-
+		if 'ask' in self.FSM:
+			sp = db.database.gs(self.FSM['ask'][0])._fensp(phrases, True)
+			if sp:
+				self.FSM['ask'][1]=sp[0].s
+			self.ask_event.set()
+		else:
+			self.say('对不起，我还需要调教！','')
+				
 	def desire_verify(self, desire):
 		if self.FSM['verify'] == True:
 			desire[1] = False
