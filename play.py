@@ -2,6 +2,7 @@
 import os 
 import threading
 
+
 def mplayer_thread(core, arg):
 	core.event.clear()
 	
@@ -15,30 +16,32 @@ def mplayer_thread(core, arg):
 	core.FSM['music'] = False
 	core.FSM['pause'] = False
 	print('播放完毕')
-	
 	core.event.set()
 
 class player:
-
 	def __init__(self, zhd):
 		self.event = threading.Event()
 		self.event.set()
 		self.FSM = {'music':False, 'pause':False}
 		self.zhd = zhd
 
+	@classmethod
+	def init(cls):
+		pass
+
 	def play(self, arg):
 		if self.FSM['music'] == True:
 			self.stop()
 		if arg == '':
 			self.zhd.say('播放什么歌曲','')
-			arg = self.zhd.ask('命令参数')
-			print(arg,'fffffffffffff')
+			arg = self.zhd.ask('命令参数', )
 			if not arg:
 				return
-		self.event.wait()
-		t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
-		t.start()
-		self.zhd.say('好的','')
+			self.event.wait()
+			t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
+			t.start()
+			self.zhd.say('好的','')
+	
 	
 	def con(self):
 		if self.FSM['music'] == False:

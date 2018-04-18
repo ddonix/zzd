@@ -30,7 +30,6 @@ class zzd():
 		self.desire['input'] = [zzd.desire_input, False, []]
 		self.desire['time'] = [zzd.desire_time, False, []]
 		self.desire['math'] = [zzd.desire_math, False, []]
-		self.desire['want'] = [zzd.desire_want, False, []]
 		self.desire['think'] = [zzd.desire_think, False, []]
 	
 		self.ask_event = threading.Event()
@@ -41,13 +40,14 @@ class zzd():
 		db.database.gsinit()
 		db.database.spinit()
 		db.database.coreinit()
+		play.player.init()
 		
 		cls.inWaaClass['verify'] = zzd._solve_verify					#verify
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
 		cls.inWaaClass['define'] = zzd._solve_define					#define
 		cls.inWaaClass['command'] = zzd._solve_command					#command
 		cls.inWaaClass['system'] = zzd._solve_system					#system
-		cls.inWaaClass['other'] = zzd._solve_other						#other
+		
 	
 	#运行在root进程
 	def input(self, sour, waa):
@@ -68,29 +68,6 @@ class zzd():
 	def say(self, out, form):
 		self.output(self.friend, (out, form))
 
-	def ask(self, question):
-		self.FSM['ask']=[question,'']
-		self.ask_event.clear()
-		
-		self.FSM['ask'][1] = '“一瞬间”'
-		self.ask_event.set()
-		
-		self.ask_event.wait()
-		res = self.FSM.pop('ask')[1]
-		return res
-
-	def live(self):
-		while self.FSM['work'] and self.root:
-			#print('zhd working',time.time())
-			d = self.get_desire()
-			if d:
-				d[0](self, d)
-			time.sleep(0.1)
-	
-	def add_desire(self, name, arg):
-		self.desire[name][1] = True
-		self.desire[name][2].append(arg)
-	
 	
 	def get_desire(self):
 		if not self.desire:
@@ -127,7 +104,7 @@ class zzd():
 					bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
 		if bit[0][1] == 0:
-			zzd.inWaaClass['other'](self, phrases)
+			self._solve_other(phrases)
 		else:
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
@@ -269,6 +246,29 @@ class zzd():
 				self.say('错误数学表达式', '')
 		self.say(val, eq)
 	
+	def ask(self, question):
+		self.FSM['ask']=[question,'']
+		self.ask_event.clear()
+		self.ask_event.wait()
+		res = self.FSM.pop('ask')[1]
+		return res
+	
+	def live(self):
+		while self.FSM['work'] and self.root:
+			#print('zhd working',time.time())
+			d = self.get_desire()
+			if d:
+				t = threading.Thread(target=desire_thread, args=(self, d))
+				t.start()
+			time.sleep(0.1)
+				
+	def add_desire(self, name, arg):
+		self.desire[name][1] = True
+		self.desire[name][2].append(arg)
+	
+def desire_thread(core, d):
+	d[0](core,d)
+
 def main():
 	print('zzd_zzd')
 	zzd.init()
