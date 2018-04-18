@@ -4,7 +4,6 @@ import db
 import time
 import zmath
 import play
-import ipdb
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -45,9 +44,8 @@ class zzd():
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
 		cls.inWaaClass['define'] = zzd._solve_define					#define
 		cls.inWaaClass['command'] = zzd._solve_command					#command
-		cls.inWaaClass['system'] = zzd._solve_system					#system
+		cls.inWaaClass['set'] = zzd._solve_set							#set
 		
-	
 	#运行在root进程
 	def input(self, sour, waa):
 		record = {'waa':waa, 'sour':sour, 'id':self.id_waain, 'time':time.time()}
@@ -67,7 +65,6 @@ class zzd():
 	def say(self, out, form):
 		self.output(self.friend, (out, form))
 
-	
 	def get_desire(self):
 		if not self.desire:
 			return None
@@ -103,7 +100,12 @@ class zzd():
 					bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
 		if bit[0][1] == 0:
-			self._solve_other(phrases)
+			for ph in phrases:
+				if ph.be('集合'):
+					self._solve_set(phrases)
+					break
+			else:
+				self._solve_other(phrases)
 		else:
 			if 'ask' in self.FSM:
 				self.ask_event.set()
@@ -184,9 +186,25 @@ class zzd():
 			else:
 				self.say('还在开发中', '')
 
-	def _solve_system(self, phrases):
-		pass
-	
+	def _solve_set(self, phrases):
+		sp = db.database.gs('集合语句')._fensp(phrases, True)
+		if sp == None:
+			self.say('集合语法不对',' ')
+		else:
+			assert '集合' in sp[2]
+			assert '.' in sp[2]
+			print(sp[2]['.'])
+			print(sp[2]['集合'])
+			
+			ph = db.database.sp(sp[2]['.'])
+			if ph.be(sp[2]['集合']):
+				s = ''
+				for ph in phrases[0:-1]:
+					s += ph.s
+				self.say(s, sp[0].s)
+			else:
+				self.say('对不起，我不知道', sp[0].s)
+
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
 			sp = db.database.gs(self.FSM['ask'][0])._fensp(phrases, True)
@@ -287,9 +305,9 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '1+1=x'
+	a = '苏格拉底会死吗？'
 	phs = db.fenci(a, False)
-	g = db.database.gs('数学语句')
+	g = db.database.gs('集合语句')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])

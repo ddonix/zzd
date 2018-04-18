@@ -94,7 +94,7 @@ class database:
 					gsp = g[1:-1].split(' ')
 					skip2 = True
 					for gg in gsp:
-						if gg == '' or gg == '...' or cls.gsin(gg):
+						if gg == '' or gg == '.' or gg == '...' or cls.gsin(gg):
 							continue
 						if gg[0] == 'w' and cls.gsin(gg[1:]):
 							continue
@@ -275,7 +275,7 @@ class database:
 		if recursion:
 			for ch in gs.child:
 				cls.checkgs(ch.name, True, mend)
-		print('check success................................')
+		print('check success')
 
 class gset:
 	def __init__(self, name, child):
@@ -466,6 +466,12 @@ class gset:
 					key[k] = res[2][k]
 				ress.append(res)
 				phrases = res[1]
+			elif gram == '.':
+				if phrases == []:
+					break
+				ress.append((phrases[0], phrases[1:], {}))
+				key['.'] = phrases[0].s
+				phrases = phrases[1:]
 			elif gram == '...':
 				if i < len(frame)-1:
 					while not (phrases[0].be(frame[i+1])):
@@ -812,6 +818,10 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
+	s = '苏格拉底会死吗？'
+	phs = fenci(s,False)
+	for ph in phs:
+		print(ph.s,'|')
 
 if __name__ == '__main__':
 	main()
