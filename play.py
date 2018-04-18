@@ -27,12 +27,12 @@ class player:
 		self.zhd = zhd
 
 	def play(self, arg):
-		assert arg
 		if self.FSM['music'] == True:
 			self.stop()
 		if arg == '':
 			self.zhd.say('播放什么歌曲','')
 			arg = self.zhd.ask('命令参数')
+			print(arg,'fffffffffffff')
 			if not arg:
 				return
 		self.event.wait()

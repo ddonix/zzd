@@ -32,6 +32,9 @@ class zzd():
 		self.desire['math'] = [zzd.desire_math, False, []]
 		self.desire['want'] = [zzd.desire_want, False, []]
 		self.desire['think'] = [zzd.desire_think, False, []]
+	
+		self.ask_event = threading.Event()
+		self.ask_event.clear()
 		
 	@classmethod
 	def init(cls):
@@ -65,9 +68,20 @@ class zzd():
 	def say(self, out, form):
 		self.output(self.friend, (out, form))
 
+	def ask(self, question):
+		self.FSM['ask']=[question,'']
+		self.ask_event.clear()
+		
+		self.FSM['ask'][1] = '“一瞬间”'
+		self.ask_event.set()
+		
+		self.ask_event.wait()
+		res = self.FSM.pop('ask')[1]
+		return res
+
 	def live(self):
 		while self.FSM['work'] and self.root:
-			print('zhd working',time.time())
+			#print('zhd working',time.time())
 			d = self.get_desire()
 			if d:
 				d[0](self, d)
