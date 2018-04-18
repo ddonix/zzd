@@ -40,7 +40,6 @@ class zzd():
 		db.database.gsinit()
 		db.database.spinit()
 		db.database.coreinit()
-		play.player.init()
 		
 		cls.inWaaClass['verify'] = zzd._solve_verify					#verify
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
@@ -255,7 +254,6 @@ class zzd():
 	
 	def live(self):
 		while self.FSM['work'] and self.root:
-			#print('zhd working',time.time())
 			d = self.get_desire()
 			if d:
 				t = threading.Thread(target=desire_thread, args=(self, d))

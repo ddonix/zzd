@@ -25,10 +25,6 @@ class player:
 		self.FSM = {'music':False, 'pause':False}
 		self.zhd = zhd
 
-	@classmethod
-	def init(cls):
-		pass
-
 	def play(self, arg):
 		if self.FSM['music'] == True:
 			self.stop()
@@ -37,10 +33,10 @@ class player:
 			arg = self.zhd.ask('命令参数', )
 			if not arg:
 				return
-			self.event.wait()
-			t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
-			t.start()
-			self.zhd.say('好的','')
+		self.zhd.say('好的','')
+		self.event.wait()
+		t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
+		t.start()
 	
 	
 	def con(self):
