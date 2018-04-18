@@ -59,13 +59,14 @@ class player:
 		self.FSM['pause'] = True
 		self.zhd.say('好的','')
 	
-	def stop(self):
+	def stop(self, echo):
 		if self.FSM['music'] == False:
 			return self.zhd.say('没有歌曲在播放', '')
 		os.system('echo quit >> /tmp/mfifo')
 		self.FSM['musci'] = False
 		self.FSM['pause'] = False
-		self.zhd.say('好的','')
+		if echo:
+			self.zhd.say('好的','')
 
 def main():
 	print('play')

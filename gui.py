@@ -16,7 +16,7 @@ input_layer1 = None
 entry_human = None
 entry_zzd = None
 	
-autoplay = False
+autoplay = True
 root = None
 
 #主进程ident, 小涵涵进程结束后给root进程发消息，让主进程退出.

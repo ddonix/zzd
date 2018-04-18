@@ -166,9 +166,9 @@ class zzd():
 				elif 'zzd继续命令' in  sp[2]:
 					out = self.player.con()
 				elif 'zzd停止命令' in sp[2]:
-					out = self.player.stop()
+					out = self.player.stop(True)
 				elif 'zzd再见命令' in sp[2]:
-					self.player.stop()
+					self.player.stop(False)
 					self.say('%s！'%sp[2]['zzd再见命令'], '')
 				else:
 					self.say('不识别的内置命令', '')
