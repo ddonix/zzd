@@ -27,10 +27,9 @@ class player:
 		self.FSM = {'music':False, 'pause':False}
 
 	def play(self, arg):
+		assert arg
 		if self.FSM['music'] == True:
 			self.stop()
-		if arg == '' or arg == None:
-			return '播放什么歌曲?'
 		self.event.wait()
 		t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
 		t.start()
