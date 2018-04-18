@@ -18,6 +18,7 @@ class zzd():
 		self.name = db.database._identifyDict['299792458']
 		
 		self.waain = []
+		self.id_waain = 0
 		
 		self.player = play.player(self)
 		#有限状态机Finite-state machine
@@ -47,7 +48,8 @@ class zzd():
 	
 	#运行在root进程
 	def input(self, sour, waa):
-		record = {'waa':waa, 'sour':sour, 'time':time.time()}
+		record = {'waa':waa, 'sour':sour, 'id':self.id_waain, 'time':time.time()}
+		self.id_waain += 1
 		self.waain.append(record)
 		self.add_desire('input',record)
 	
