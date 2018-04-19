@@ -303,7 +303,6 @@ class zzd():
 		self.desire[name][2].append(arg)
 	
 def desire_thread(core, d):
-	print('...%s...'%threading.currentThread().name)
 	d[0](core,d)
 
 def main():

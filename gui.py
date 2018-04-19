@@ -86,24 +86,24 @@ def return_event(evt):
 
 def gameoversignal(signum,frame):
 	print('game over root.destroy')
-	if webt:
-		os.kill(webtid, signal.SIGTSTP)
-		webt.join()
+	if webp:
+		os.kill(webpid, signal.SIGTSTP)
+		webp.join()
 	root.destroy()
 	sys.exit()
 
 xhht = None
 zhdt = None
 root = None
-webt = None
+webp = None
 
 def exitZZD(evt):
-	global zhd, zhdt, xhh, xhht, webt, webtid
-	print(webt)
-	if webt:
-		print('os.kill webtread')
-		os.kill(webtid, signal.SIGTSTP)
-		webt.join()
+	global zhd, zhdt, xhh, xhht, webp, webpid
+	print(webp)
+	if webp:
+		print('os.kill webprocess')
+		os.kill(webpid, signal.SIGTSTP)
+		webp.join()
 	if zhd:
 		zhd.root = False
 	if xhh:
@@ -116,12 +116,12 @@ def exitZZD(evt):
 	root.destroy()
 
 def delete_windows():
-	global zhd, zhdt, xhh, xhht, webt, webtid
-	print(webt)
-	if webt:
-		print('os.kill webtread')
-		os.kill(webtid, signal.SIGTSTP)
-		webt.join()
+	global zhd, zhdt, xhh, xhht, webp, webpid
+	print(webp)
+	if webp:
+		print('os.kill webprocess')
+		os.kill(webpid, signal.SIGTSTP)
+		webp.join()
 	if zhd:
 		zhd.root = False
 	if xhh:
@@ -171,14 +171,14 @@ def weboversignal(signum,frame):
 	print('get SIGTSTP signal.')
 	sys.exit()
 
-webtid = 0
-def webthread_proc(port):
-		global webt, webtid, rootpid
-		webtid = os.getpid()
-		print('web_thread start.tid is %d, rootpid is %d.'%(webtid, rootpid))
+webpid = 0
+def webprocess_proc(port):
+		global webp, webpid, rootpid
+		webpid = os.getpid()
+		print('web_process start.pid is %d, rootpid is %d.'%(webpid, rootpid))
 		signal.signal(signal.SIGTSTP, weboversignal)
 		w.createserver()
-		print('web_thread over.')
+		print('web_process over.')
 
 def main():
 	global entry_human, entry_zzd
@@ -228,7 +228,7 @@ def xhh_zhd_web():
 	global root,rootpid
 	global xhht, xhh, xhh_running
 	global zhdt, zhd, zhd_running
-	global webt 
+	global webp 
 	
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
@@ -248,10 +248,10 @@ def xhh_zhd_web():
 	zhd_running.wait()
 	
 	if len(sys.argv) > 1 and sys.argv[1] == 'web':
-		webt = Process(target=webthread_proc, args=('8080',))
-		webt.start()
+		webp = Process(target=webprocess_proc, args=('8080',))
+		webp.start()
 	else:
-		webt = None
+		webp = None
 	print('create thread over.')
 	
 if __name__ == '__main__':
