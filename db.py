@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -B
 import sqlite3
 import copy
+import ipdb
 
 class database: 
 	_gset_all = {}				#所有集合
@@ -107,13 +108,21 @@ class database:
 						print(v[0][0]+' 依赖 '+g)
 						break
 				else:
-					gsp = g[1:-1].split('|')
 					skip2 = True
-					for gg in gsp:
-						if not (gg == '' or cls.gsin(gg)):
-							break
+					if g.find(':') == -1:
+						gsp = g[1:-1].split('|')
+						for gg in gsp:
+							if not (gg == '' or (gg[0]=='(' and gg[-1]==')') or cls.gsin(gg)):
+								break
+						else:
+							skip2 = False
 					else:
-						skip2 = False
+						gsp = g[g.find(':')+1:-1].split('|')
+						for gg in gsp:
+							if not (gg == '' or (gg[0]=='(' and gg[-1]==')') or cls.gsin('%s%s'%(gg,v[0][0]))):
+								break
+						else:
+							skip2 = False
 					if skip2:
 						print(v[0][0]+' 依赖 '+gg)
 						break
@@ -140,7 +149,8 @@ class database:
 			cls._table_vocable.add(v[0][0])
 			for g in v[1:]:
 				if not (g == '' or g == None):
-					database.gs(g).addsp(sp)
+					gs = database.gs(g)
+					gs.addsp(sp)
 		try:
 			cursor = conn.execute("select * from table_phrase")
 		except:
@@ -154,7 +164,8 @@ class database:
 			
 			for g in v[1:]:
 				if not (g == '' or g == None):
-					database.gs(g).addsp(sp)
+					gs = database.gs(g)
+					gs.addsp(sp)
 		conn.close()
 		
 		#补充()类集合元素集
@@ -233,15 +244,27 @@ class database:
 	@classmethod
 	def datacheck(cls, mend):
 		for gram in cls._gset_all:
-			cls.checkgs(gram, False, mend)
+			cls.checkgs(gram, False)
 			print('')
+
+	@classmethod
+	def checksp(cls, sp):
+		print('检查SP %s'%sp)
+		sp = cls.sp(sp)
+		print('1.实例信息')
+		print(sp)
+		if len(sp.gs) == 0:
+			print('2.不属于任何集合')
+		else:
+			print('2.属合下列集合:')
+			for gs in sp.gs:
+				print(gs)
 	
 	@classmethod
 	def checkgs(cls, gram, recursion, mend):
 		assert database.gsin(gram)
 		#检查gs的sp与子集的sp是否有重合
 		gs = database.gs(gram)
-		print(gs)
 		print('检查集合 %s：'%gs.name)
 		print('1.实例信息')
 		print(gs)
@@ -253,8 +276,16 @@ class database:
 			print('包含以下子集')
 			for ch in gs.child:
 				print(ch.name)
+		
+		print('3.父集')
+		if gs.father == []:
+			print('没有父集')
+		else:
+			print('包含于以下父集')
+			for fa in gs.father:
+				print(fa.name)
 
-		print('3.元素')
+		print('4.元素')
 		if len(gs.sp) == 0:
 			print('没有元素')
 		else:
@@ -262,16 +293,7 @@ class database:
 			for sp in gs.sp:
 				print(sp.s)
 		
-		print('4. sp集合中元素是否属于子集')
-		for sp in gs.sp:
-			for ch in gs.child[1:]:
-				if ch.contain(sp):
-					print('check error. %s in %s and %s'%(sp.s, gs.name, ch.name))
-					if mend:
-						raise TypeError
-					else:
-						raise TypeError
-		#检查gs的子集是否
+		#递归检查gs的子集
 		if recursion:
 			for ch in gs.child:
 				cls.checkgs(ch.name, True, mend)
@@ -281,41 +303,85 @@ class gset:
 	def __init__(self, name, child):
 		self.name = name
 		database.addgs(self)
+	
+		self.father = []	#父集
+		self.child = []		#子集
+		self.sp = set()		#元素集合，这个集合里的元素不属于任何子集.
+		self.plot = {}		#划分.分为命名划分和匿名划分
+							#命名划分：人划分为[性别:男|女],子集为男人，女人.
+							#匿名划分:自然数划分为[奇数|偶数],子集为奇数，偶数.
 		
-		self.sp = set()		#明确表示的元素集合
-		self.plot = {}		#明确的划分;要有名字：比如人按性别分为男人和女人
-
+		#形如[A (a) B]的集合，[]不允许递归.把包含的(a)型集合创建出来。
 		if name[0] == '[' and name[-1] == ']':
 			assert child == []
 			name = name[1:-1].split(' ')
 			for gram in name:
+				#（a b c）集合包含a b c三个元素,这种是匿名集合.
 				if gram[0] == '(' and gram[-1] == ')':
 					gset(gram, [])
 		
-		self.child = []		#子集
+		#形如(a b c)的集合，a b c是其元素。在初始化元素的时候，添加到集合里来，现在不能操作。
+		if name[0] == '(' and name[-1] == ')':
+			pass
+
 		for ch in child:
 			if ch == '' or ch == None:
 				continue
 			if database.gsin(ch):
 				ch = database.gs(ch)
-				self.child.append(ch)
+				if not ch in self.child:
+					self.child.append(ch)
+				if not self in ch.father:
+					ch.father.append(self)
 			elif ch[0] == '(' and ch[-1] == ')':
 				ch = gset(ch, [])
-				self.child.append(ch)
+				if not ch in self.child:
+					self.child.append(ch)
+				if not self in ch.father:
+					ch.father.append(self)
 			else:
 				assert ch[0] == '[' and ch[-1] == ']'
+				#[主语 谓语 宾语]
 				if not '|' in ch:
 					ch = gset(ch, [])
-					self.child.append(ch)
-				else:
-					plots = ch[1:-1].split('|')
-					plot = set()
-					for p in plots[1:]:
-						assert database.gsin(p)
-						ch = gset('[%s|%s]'%(plots[0],p),[])
+					if not ch in self.child:
 						self.child.append(ch)
-						plot.add(ch)
-					self.plot[plots[0]]=plot
+					if not self in ch.father:
+						ch.father.append(self)
+				else:
+					#[性别:男|女]
+					if ':' in ch:
+						name = ch[1:ch.find(':')]
+						plots = ch[ch.find(':')+1:-1].split('|')
+						plot = set()
+						for p in plots:
+							if p[0] == '(' and p[-1] == ')':
+								ch = gset(p,[])
+							else:
+								assert database.gsin('%s%s'%(p,self.name))
+								ch = database.gs('%s%s'%(p,self.name))
+							if not ch in self.child:
+								self.child.append(ch)
+							if not self in ch.father:
+								ch.father.append(self)
+							plot.add(ch)
+						self.plot[name]=plot
+					#[奇数|偶数]
+					else:
+						plots = ch[1:-1].split('|')
+						plot = set()
+						for p in plots:
+							if p[0] == '(' and p[-1] == ')':
+								ch = gset(p,[])
+							else:
+								assert database.gsin(p)
+								ch = database.gs(p)
+							if not ch in self.child:
+								self.child.append(ch)
+							if not self in ch.father:
+								ch.father.append(self)
+							plot.add(ch)
+						self.plot[ch]=plot
 	
 	@classmethod
 	def prevgram(cls, gram):
@@ -386,9 +452,15 @@ class gset:
 		self.sp.remove(sp)
 	
 	
-	def contain(self, sp):
+	def contain(self, sp):#苏格拉底是男人，是人。但是数据库中之记录苏格拉底是男人.
 		if not isinstance(sp, seph):
 			raise TypeError
+		res = []
+		if not self.child:
+			if sp in self.sp:
+				res.append(self)
+			return res
+		
 		if sp in self.sp:
 			return self
 		if self.child != []:
@@ -541,191 +613,7 @@ class seph:
 	def getattr(self, name):
 		return None
 
-	def addgs(self, gs):
-		assert isinstance(gs, gset)
-		assert not gs in self.gs
-		self.gs.add(gs)
-
-	def removegs(self, gs):
-		assert isinstance(gs, gset)
-		assert gs in self.gs
-		self.gs.remove(gs)
-
-	def _setattr(self, gram, name, value):
-		assert self.be(gram)
-		gs = database.gs(gram)
-		
-		if name in self.attr:
-			oldgs = database.gs(self.attr[name])
-			newgs = database.gs(value)
-			assert newgs in gs.plot[name]
-			oldgs.removesp(self)
-			newgs.addsp(self)
-			self.attr[name]=value
-			return True
-		
-		for p in gs.plot:
-			if p == name:
-				for v in gs.plot[p]:
-					if v.name == value:
-						gs.removesp(self)
-						v.addsp(self)
-						self.attr[name]=value
-						return True
-		return False
-		
 	
-	def _getattr(self, gram, name):
-		assert self.be(gram)
-		return '男'
-
-	def be(self, gram):
-		gs = database.gs(gram)
-		if gs.contain(self) != None:
-			return True
-		return False
-
-def fenci(waa, point):
-	phrases = []
-	con = False
-	znumber =  '0123456789'
-	cnumber =  '零一二三四五六七八九十百千万亿'
-	zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	
-class seph:
-	def __init__(self, s):
-		if type(s) == str:
-			self.s = s				#sting
-			self.d = (s)			#迪卡尔
-			self.gs = {}
-			self.attr = {}
-		elif type(s) == list and isinstance(s[0], seph):
-			self.s = ''			#sting
-			d = []
-			self.gs = {}
-			self.attr = {}
-			for sp in s:
-				self.s += sp.s
-				d.append(sp.d)
-			self.d = tuple(d)
-		else:
-			raise TypeError
-	
-	def setattr(self, name, value):
-		return None
-		return None
-	
-class seph:
-	def __init__(self, s):
-		if type(s) == str:
-			self.s = s				#sting
-			self.d = (s)			#迪卡尔
-			self.gs = {}
-			self.attr = {}
-		elif type(s) == list and isinstance(s[0], seph):
-			self.s = ''			#sting
-			d = []
-			self.gs = {}
-			self.attr = {}
-			for sp in s:
-				self.s += sp.s
-				d.append(sp.d)
-			self.d = tuple(d)
-		else:
-			raise TypeError
-	
-	def setattr(self, name, value):
-		return None
-
-	def getattr(self, name):
-		return None
-
-	def addgs(self, gs):
-		assert isinstance(gs, gset)
-		assert not gs in self.gs
-		self.gs.add(gs)
-
-	def removegs(self, gs):
-		assert isinstance(gs, gset)
-		assert gs in self.gs
-		self.gs.remove(gs)
-
-	def _setattr(self, gram, name, value):
-		assert self.be(gram)
-		gs = database.gs(gram)
-		
-		if name in self.attr:
-			oldgs = database.gs(self.attr[name])
-			newgs = database.gs(value)
-			assert newgs in gs.plot[name]
-			oldgs.removesp(self)
-			newgs.addsp(self)
-			self.attr[name]=value
-			return True
-		
-		for p in gs.plot:
-			if p == name:
-				for v in gs.plot[p]:
-					if v.name == value:
-						gs.removesp(self)
-						v.addsp(self)
-						self.attr[name]=value
-						return True
-		return False
-		
-	
-	def _getattr(self, gram, name):
-		assert self.be(gram)
-		return '男'
-
-	def be(self, gram):
-		gs = database.gs(gram)
-		if gs.contain(self) != None:
-			return True
-		return False
-
-def fenci(waa, point):
-	phrases = []
-	con = False
-	znumber =  '0123456789'
-	cnumber =  '零一二三四五六七八九十百千万亿'
-	zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	
-class seph:
-	def __init__(self, s):
-		if type(s) == str:
-			self.s = s				#sting
-			self.d = (s)			#迪卡尔
-			self.gs = {}
-			self.attr = {}
-		elif type(s) == list and isinstance(s[0], seph):
-			self.s = ''			#sting
-			d = []
-			self.gs = {}
-			self.attr = {}
-			for sp in s:
-				self.s += sp.s
-				d.append(sp.d)
-			self.d = tuple(d)
-		else:
-			raise TypeError
-	
-	def setattr(self, name, value):
-		return None
-
-	def getattr(self, name):
-		return None
-
-	def addgs(self, gs):
-		assert isinstance(gs, gset)
-		assert not gs in self.gs
-		self.gs.add(gs)
-
-	def removegs(self, gs):
-		assert isinstance(gs, gset)
-		assert gs in self.gs
-		self.gs.remove(gs)
-
 	def _setattr(self, gram, name, value):
 		assert self.be(gram)
 		gs = database.gs(gram)
@@ -818,10 +706,19 @@ def main():
 	database.gsinit()
 	database.spinit()
 	database.coreinit()
-	s = '苏格拉底会死吗？'
-	phs = fenci(s,False)
-	for ph in phs:
-		print(ph.s,'|')
+	database.checksp('苏格拉底')
 
 if __name__ == '__main__':
 	main()
+
+'''
+	def addgs(self, gs):
+		assert isinstance(gs, gset)
+		assert not gs in self.gs
+		self.gs.add(gs)
+
+	def removegs(self, gs):
+		assert isinstance(gs, gset)
+		assert gs in self.gs
+		self.gs.remove(gs)
+'''
