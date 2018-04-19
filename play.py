@@ -3,19 +3,22 @@ import os
 import threading
 
 
-def mplayer_thread(core, arg):
+def mplayer_thread(core):
 	core.event.clear()
-	
-	print('播放 %s.mp3'%arg)
-	cmd = 'mplayer -slave -input file=/tmp/mfifo ./music/%s.mp3'%arg
-	os.system('rm /tmp/mfifo -rf')
-	os.system('mkfifo /tmp/mfifo')
-	core.FSM['music'] = True
-	core.FSM['pause'] = False
-	os.system(cmd)
-	core.FSM['music'] = False
-	core.FSM['pause'] = False
-	print('播放完毕')
+	for filename in core.list:
+		if self.play == False:
+			break
+		print('播放 ./music/%s'%filename)
+		cmd = 'mplayer -slave -input file=/tmp/mfifo ./music/%s'%filename
+		print(cmd)
+		os.system('rm /tmp/mfifo -rf')
+		os.system('mkfifo /tmp/mfifo')
+		core.FSM['music'] = True
+		core.FSM['pause'] = False
+		os.system(cmd)
+		core.FSM['music'] = False
+		core.FSM['pause'] = False
+		print('播放完毕')
 	core.event.set()
 
 class player:
@@ -24,6 +27,8 @@ class player:
 		self.event.set()
 		self.FSM = {'music':False, 'pause':False}
 		self.zhd = zhd
+		self.list = []
+		self.play = False
 
 	def play(self, arg):
 		if self.FSM['music'] == True:
@@ -33,11 +38,15 @@ class player:
 			arg = self.zhd.ask('命令参数')
 			if not arg:
 				return
+		elif arg == '随便':
+			self.list = os.listdir('./music')
+		else:
+			self.list = ['%s.mp3'%arg[1:-1]]
+		self.play = True
 		self.zhd.say('好的','')
 		self.event.wait()
-		t = threading.Thread(target=mplayer_thread, args=(self, arg[1:-1]))
+		t = threading.Thread(target=mplayer_thread, args=(self,))
 		t.start()
-	
 	
 	def con(self):
 		if self.FSM['music'] == False:
@@ -59,11 +68,15 @@ class player:
 		self.FSM['pause'] = True
 		self.zhd.say('好的','')
 	
+	def next(self):
+		pass
+	
 	def stop(self, echo):
 		if self.FSM['music'] == False:
 			if echo:
 				self.zhd.say('没有歌曲在播放', '')
 			return
+		self.play = False
 		os.system('echo quit >> /tmp/mfifo')
 		self.FSM['musci'] = False
 		self.FSM['pause'] = False
