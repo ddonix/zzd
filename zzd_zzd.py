@@ -292,12 +292,18 @@ class zzd():
 				t = threading.Thread(target=desire_thread, args=(self, d))
 				t.start()
 			time.sleep(0.1)
+		if 'ask' in self.FSM:
+			self.ask_event.set()
+			while 'ask' in self.FSM:
+				time.sleep(1)
+				break
 				
 	def add_desire(self, name, arg):
 		self.desire[name][1] = True
 		self.desire[name][2].append(arg)
 	
 def desire_thread(core, d):
+	print('...%s...'%threading.currentThread().name)
 	d[0](core,d)
 
 def main():
