@@ -7,14 +7,8 @@ urls = ('/', 'index')
 app = web.application(urls, globals())
 
 myform = form.Form( 
-    form.Textbox("boe"), 
-    form.Textbox("bax", 
-        form.notnull,
-        form.regexp('\d+', 'Must be a digit'),
-        form.Validator('Must be more than 5', lambda x:int(x)>5)),
-    form.Textarea('moe'),
-    form.Checkbox('curly'), 
-    form.Dropdown('french', ['mustard', 'fries', 'wine'])) 
+    form.Textbox("human"), 
+    form.Textbox("zzd"))
 
 class index: 
     def GET(self): 
@@ -30,7 +24,7 @@ class index:
         else:
             # form.d.boe and form['boe'].value are equivalent ways of
             # extracting the validated arguments from the form.
-            return "Grrreat success! boe: %s, bax: %s" % (form.d.boe, form['bax'].value)
+            return "! human: %s, zzd: %s" % (form.d.human, form.d.zzd)
 
 if __name__=="__main__":
     web.internalerror = web.debugerror

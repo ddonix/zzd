@@ -7,7 +7,7 @@ def mplayer_thread(core, arg):
 	core.event.clear()
 	
 	print('播放 %s.mp3'%arg)
-	cmd = 'mplayer -slave -input file=/tmp/mfifo %s.mp3'%arg
+	cmd = 'mplayer -slave -input file=/tmp/mfifo ./music/%s.mp3'%arg
 	os.system('rm /tmp/mfifo -rf')
 	os.system('mkfifo /tmp/mfifo')
 	core.FSM['music'] = True

@@ -40,7 +40,7 @@ def stop_record():
 	global recordflag,stoped
 	recordflag = False
 	while not stoped:
-		save_wave_file('input2.pcm',my_buf)
+		save_wave_file('input.pcm',my_buf)
 
 """ 你的 APPID AK SK """
 APP_ID = '11025174'
@@ -62,7 +62,7 @@ def get_file_content(filePath):
 # 识别本地文件
 def voice2txt():
 	global client
-	res = client.asr(get_file_content('input2.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
+	res = client.asr(get_file_content('input.pcm'), 'pcm', 16000, {'dev_pid': '1536',})
 	txt = res.get(u'result')
 	if txt != None:
 		return txt[0]
@@ -155,9 +155,9 @@ def txt2voice(txt):
 	
 	result = client.synthesis(res, 'zh', 1, {'vol': 5,})
 	if not isinstance(result, dict):
-		with open('output2.mp3', 'wb') as f:
+		with open('output.mp3', 'wb') as f:
 			f.write(result)
-		os.system('play output2.mp3')
+		os.system('play output.mp3')
 
 def main():
 	print('void')
