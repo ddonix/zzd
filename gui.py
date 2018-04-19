@@ -10,7 +10,8 @@ import zzd_zzd
 import threading
 import signal
 import w
-from multiprocessing import Process
+import time
+#from multiprocessing import Process
 
 input_layer1 = None
 
@@ -88,8 +89,8 @@ def gameoversignal(signum,frame):
 
 xhht = None
 zhdt = None
-webt = None
 root = None
+webt = None
 
 def delete_windows():
 	global zhd, zhdt, xhh, xhht, webt, webtid
@@ -97,16 +98,14 @@ def delete_windows():
 	if webt:
 		print('os.kill webtread')
 		os.kill(webtid, signal.SIGTSTP)
+		webt.join()
 	if zhd:
 		zhd.root = False
 	if xhh:
 		xhh.root = False
-	if zhdt:
-		zhdt.join()
-	if xhht:
-		xhht.join()
-	sys.exit()
-	return
+	zhdt.join(1000)
+	xhht.join(1000)
+	root.destroy()
 
 zhd = None
 zhd_running = None
@@ -138,17 +137,17 @@ class xhhthread(threading.Thread):
 		xhh = zzd_human.human('nobody')
 		xhh_running.set()
 		xhh.live()
+		if xhh.root:
+			os.kill(rootpid, signal.SIGUSR1)
 		xhh = None
 		print('xhh_thread over.')
-		os.kill(rootpid, signal.SIGUSR1)
 
-
-webtid = 0
 
 def weboversignal(signum,frame):
 	print('get SIGTSTP signal.')
 	sys.exit()
 
+webtid = 0
 def webthread_proc(port):
 		global webt, webtid, rootpid
 		webtid = os.getpid()
@@ -220,8 +219,11 @@ def xhh_zhd_web():
 	zhdt.start()
 	zhd_running.wait()
 	
-	webt = Process(target=webthread_proc, args=('8080',))
-	webt.start()
+	if len(sys.argv) > 1 and sys.argv[1] == 'web':
+		webt = Process(target=webthread_proc, args=('8080',))
+		webt.start()
+	else:
+		webt = None
 	
 if __name__ == '__main__':
 	main()
