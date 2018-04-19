@@ -93,6 +93,10 @@ root = None
 
 def delete_windows():
 	global zhd, zhdt, xhh, xhht, webt, webtid
+	print(webt)
+	if webt:
+		print('os.kill webtread')
+		os.kill(webtid, signal.SIGTSTP)
 	if zhd:
 		zhd.root = False
 	if xhh:
@@ -101,11 +105,6 @@ def delete_windows():
 		zhdt.join()
 	if xhht:
 		xhht.join()
-	print(webt)
-	if webt:
-		print('os.kill webtread')
-		os.kill(webtid, signal.SIGTSTP)
-		webt.join()
 	sys.exit()
 	return
 
@@ -157,7 +156,6 @@ def webthread_proc(port):
 		signal.signal(signal.SIGTSTP, weboversignal)
 		w.createserver()
 		print('web_thread over.')
-		webt = None
 
 def main():
 	global entry_human, entry_zzd
