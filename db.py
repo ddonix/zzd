@@ -151,6 +151,7 @@ class database:
 				if not (g == '' or g == None):
 					gs = database.gs(g)
 					gs.addsp(sp)
+					sp.addgs(gs)
 		try:
 			cursor = conn.execute("select * from table_phrase")
 		except:
@@ -166,6 +167,7 @@ class database:
 				if not (g == '' or g == None):
 					gs = database.gs(g)
 					gs.addsp(sp)
+					sp.addgs(gs)
 		conn.close()
 		
 		#补充()类集合元素集
@@ -175,6 +177,7 @@ class database:
 				for sp in item:
 					assert database.spin(sp)
 					database.gs(gram).addsp(database.sp(sp))
+					database.sp(sp).addgs(database.gs(gram))
 				
 	@classmethod
 	def coreinit(cls):
@@ -257,8 +260,28 @@ class database:
 			print('2.不属于任何集合')
 		else:
 			print('2.属合下列集合:')
+			ancestor = []
 			for gs in sp.gs:
-				print(gs)
+				ancestor.extend(cls.getancestor(gs))
+			print(ancestor)
+	
+	@classmethod
+	def getancestor(cls, gs):
+		res = [gs]
+		res.extend(gs.father)
+		for fa in gs.father:
+			res.extend(cls.getancestor(fa))
+		res = list(set(res))
+		return res
+	
+	@classmethod
+	def getdescendant(cls, gs):
+		res = [gs]
+		res.extend(gs.child)
+		for ch in gs.child:
+			res.extend(cls.getdescendant(ch))
+		res = list(set(res))
+		return res
 	
 	@classmethod
 	def checkgs(cls, gram, recursion, mend):
@@ -303,7 +326,7 @@ class gset:
 	def __init__(self, name, child):
 		self.name = name
 		database.addgs(self)
-	
+		
 		self.father = []	#父集
 		self.child = []		#子集
 		self.sp = set()		#元素集合，这个集合里的元素不属于任何子集.
@@ -383,6 +406,24 @@ class gset:
 							plot.add(ch)
 						self.plot[ch]=plot
 	
+	#self包含other self >= other
+	def involved(self, other):
+		if self == other:
+			return True
+		for ch in self.child:
+			if ch.involved(other):
+				return True
+		return False
+	
+	#self包含于other  self <= other
+	def involved_in(self, other):
+		if self == other:
+			return True
+		for fa in self.father:
+			if fa.involved_in(other):
+				return True
+		return False
+
 	@classmethod
 	def prevgram(cls, gram):
 		res = []
@@ -450,7 +491,6 @@ class gset:
 		if sp not in self.sp:
 			raise TypeError
 		self.sp.remove(sp)
-	
 	
 	def contain(self, sp):#苏格拉底是男人，是人。但是数据库中之记录苏格拉底是男人.
 		if not isinstance(sp, seph):
@@ -593,13 +633,11 @@ class seph:
 		if type(s) == str:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
-			self.gs = {}
-			self.attr = {}
+			self.gs = []
 		elif type(s) == list and isinstance(s[0], seph):
 			self.s = ''			#sting
 			d = []
-			self.gs = {}
-			self.attr = {}
+			self.gs = []
 			for sp in s:
 				self.s += sp.s
 				d.append(sp.d)
@@ -607,39 +645,26 @@ class seph:
 		else:
 			raise TypeError
 	
-	def setattr(self, name, value):
-		return None
-
-	def getattr(self, name):
-		return None
-
-	
-	def _setattr(self, gram, name, value):
-		assert self.be(gram)
-		gs = database.gs(gram)
-		
-		if name in self.attr:
-			oldgs = database.gs(self.attr[name])
-			newgs = database.gs(value)
-			assert newgs in gs.plot[name]
-			oldgs.removesp(self)
-			newgs.addsp(self)
-			self.attr[name]=value
+	#返回False，说明这条信息是多余的。
+	#返回True, 说明这条信息是有用的。
+	def addgs(self, gs):
+		assert isinstance(gs, gset)
+		assert not gs in self.gs
+		for i in range(len(self.gs)-1,-1, -1):
+			#已知苏格拉底是男人，再说苏格拉底是人，信息量为0.
+			if self.gs[i].involved_in(gs):
+				return False
+			if gs.involved_in(self.gs[i]):
+				self.gs[i] = gs
+				return True
+		else:
+			self.gs.append(gs)
 			return True
-		
-		for p in gs.plot:
-			if p == name:
-				for v in gs.plot[p]:
-					if v.name == value:
-						gs.removesp(self)
-						v.addsp(self)
-						self.attr[name]=value
-						return True
-		return False
-		
-	def _getattr(self, gram, name):
-		assert self.be(gram)
-		return '男'
+	
+	def removegs(self, gs):
+		assert isinstance(gs, gset)
+		assert gs in self.gs
+		self.gs.remove(gs)
 
 	def be(self, gram):
 		gs = database.gs(gram)
@@ -712,13 +737,5 @@ if __name__ == '__main__':
 	main()
 
 '''
-	def addgs(self, gs):
-		assert isinstance(gs, gset)
-		assert not gs in self.gs
-		self.gs.add(gs)
 
-	def removegs(self, gs):
-		assert isinstance(gs, gset)
-		assert gs in self.gs
-		self.gs.remove(gs)
 '''
