@@ -11,7 +11,7 @@ import threading
 import signal
 import w
 import time
-#from multiprocessing import Process
+from multiprocessing import Process
 
 input_layer1 = None
 
@@ -98,30 +98,17 @@ root = None
 webp = None
 
 def exitZZD(evt):
-	global zhd, zhdt, xhh, xhht, webp, webpid
-	print(webp)
-	if webp:
-		print('os.kill webprocess')
-		os.kill(webpid, signal.SIGTSTP)
-		webp.join()
-	if zhd:
-		zhd.root = False
-	if xhh:
-		xhh.root = False
-	if zhdt:
-		zhdt.join()
-	if xhht:
-		xhht.join()
-	print('exitZZD root.destroy')
-	root.destroy()
+	pass
 
 def delete_windows():
 	global zhd, zhdt, xhh, xhht, webp, webpid
 	print(webp)
-	if webp:
+	if webp and webp.is_alive():
 		print('os.kill webprocess')
 		os.kill(webpid, signal.SIGTSTP)
-		webp.join()
+		while webp.is_alive():
+			print('wait...')
+			time.sleep(1)
 	if zhd:
 		zhd.root = False
 	if xhh:
