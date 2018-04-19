@@ -164,7 +164,7 @@ def webprocess_proc(port):
 		webpid = os.getpid()
 		print('web_process start.pid is %d, rootpid is %d.'%(webpid, rootpid))
 		signal.signal(signal.SIGTSTP, weboversignal)
-		w.createserver()
+		w.createwebserver()
 		print('web_process over.')
 
 def main():

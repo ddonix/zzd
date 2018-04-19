@@ -1,6 +1,5 @@
 import web
 from web import form
-import gui
 
 render = web.template.render('templates/')
 
@@ -34,5 +33,8 @@ def createwebserver():
 	return False
 
 if __name__=="__main__":
-	gui.main()
-	createwebserver()
+	gg = globals()
+	ggg = dict(gg)
+	for g in ggg:
+		print(g,ggg[g])
+#	createwebserver()
