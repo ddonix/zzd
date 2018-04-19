@@ -9,7 +9,6 @@ import zzd_human
 import zzd_zzd
 import threading
 import signal
-import w
 import time
 
 input_layer1 = None
