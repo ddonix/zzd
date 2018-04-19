@@ -11,7 +11,6 @@ import threading
 import signal
 import w
 import time
-#from multiprocessing import Process
 
 input_layer1 = None
 
@@ -57,6 +56,7 @@ def zhdShow(waa, form=''):
 		entry_zzd.delete(0,'end')
 		entry_zzd.insert(0, waa)
 		entry_zzd.update()
+		os.system('echo %s >> /tmp/zzdfifo'%waa)
 		if autoplay:
 			voice.txt2voice(waa)
 	return
@@ -85,26 +85,27 @@ def return_event(evt):
 
 
 def gameoversignal(signum,frame):
+	print('game over root.destroy')
+	root.destroy()
 	sys.exit()
 
 xhht = None
 zhdt = None
 root = None
-webt = None
+
+def exitZZD(evt):
+	pass
 
 def delete_windows():
-	global zhd, zhdt, xhh, xhht, webt, webtid
-	print(webt)
-	if webt:
-		print('os.kill webtread')
-		os.kill(webtid, signal.SIGTSTP)
-		webt.join()
+	global zhd, zhdt, xhh, xhht
 	if zhd:
 		zhd.root = False
 	if xhh:
 		xhh.root = False
-	zhdt.join(1000)
-	xhht.join(1000)
+	while threading.activeCount() > 1:
+		print('wait...')
+		time.sleep(1)
+	print('delete_windows root.destroy')
 	root.destroy()
 
 zhd = None
@@ -116,13 +117,12 @@ class zhdthread(threading.Thread):
 
 	def run(self):
 		global zhd, zhd_running, root, xhh
-		print('zhd_thread start.')
+		print('zhd_thread start. name is %s'%self.name)
 		zhd = zzd_zzd.zzd(show=zhdShow, friend=xhh)
 		zhd_running.set()
 		zhd.live()
 		zhd = None
 		print('zhd_thread over.')
-
 
 xhh = None
 xhh_running = None
@@ -133,7 +133,7 @@ class xhhthread(threading.Thread):
 
 	def run(self):
 		global xhh, xhh_running, root, rootpid
-		print('xhh_thread start.')
+		print('xhh_thread start.name is %s'%self.name)
 		xhh = zzd_human.human('nobody')
 		xhh_running.set()
 		xhh.live()
@@ -142,19 +142,6 @@ class xhhthread(threading.Thread):
 		xhh = None
 		print('xhh_thread over.')
 
-
-def weboversignal(signum,frame):
-	print('get SIGTSTP signal.')
-	sys.exit()
-
-webtid = 0
-def webthread_proc(port):
-		global webt, webtid, rootpid
-		webtid = os.getpid()
-		print('web_thread start.tid is %d, rootpid is %d.'%(webtid, rootpid))
-		signal.signal(signal.SIGTSTP, weboversignal)
-		w.createserver()
-		print('web_thread over.')
 
 def main():
 	global entry_human, entry_zzd
@@ -188,19 +175,22 @@ def main():
 	voutButton = tk.Button(root, text = "播放")
 	voutButton.place(x=560,y=150, width=60, height=20)
 	voutButton.bind("<ButtonPress>", voicePlay)
+	
+	exitButton = tk.Button(root, text = "退出")
+	exitButton.place(x=560,y=180, width=60, height=20)
+	exitButton.bind("<ButtonPress>", exitZZD)
 	entry_human.focus_set()
 	
 	
 	rootpid = os.getpid()
 	signal.signal(signal.SIGUSR1, gameoversignal)
-	root.after(1000,xhh_zhd_web)
+	root.after(1000, xhh_zhd)
 	root.mainloop()
 
-def xhh_zhd_web():
+def xhh_zhd():
 	global root,rootpid
 	global xhht, xhh, xhh_running
 	global zhdt, zhd, zhd_running
-	global webt 
 	
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
@@ -218,12 +208,7 @@ def xhh_zhd_web():
 	zhdt = zhdthread('zhd_thread')
 	zhdt.start()
 	zhd_running.wait()
-	
-	if len(sys.argv) > 1 and sys.argv[1] == 'web':
-		webt = Process(target=webthread_proc, args=('8080',))
-		webt.start()
-	else:
-		webt = None
+	print('create thread over.')
 	
 if __name__ == '__main__':
 	main()

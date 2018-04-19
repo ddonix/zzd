@@ -1,0 +1,17 @@
+__cached__ None
+myform <web.form.Form object at 0xf724dcac>
+web <module 'web' from '/home/pi/.local/lib/python3.5/site-packages/web/__init__.py'>
+createwebserver <function createwebserver at 0xf6b0e41c>
+__builtins__ <module 'builtins' (built-in)>
+__doc__ None
+index <class '__main__.index'>
+gg {'web': <module 'web' from '/home/pi/.local/lib/python3.5/site-packages/web/__init__.py'>, '__spec__': None, '__cached__': None, 'ggg': {'__cached__': None, 'myform': <web.form.Form object at 0xf724dcac>, 'web': <module 'web' from '/home/pi/.local/lib/python3.5/site-packages/web/__init__.py'>, 'createwebserver': <function createwebserver at 0xf6b0e41c>, '__builtins__': <module 'builtins' (built-in)>, '__doc__': None, 'index': <class '__main__.index'>, 'gg': {...}, '__name__': '__main__', '__package__': None, '__spec__': None, 'render': <web.template.Render object at 0xf6be25ac>, 'form': <module 'web.form' from '/home/pi/.local/lib/python3.5/site-packages/web/form.py'>, '__file__': 'w.py', 'urls': ('/', 'index'), '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0xf7278e0c>, 'app': <web.application.application object at 0xf6c36bac>}, 'createwebserver': <function createwebserver at 0xf6b0e41c>, 'render': <web.template.Render object at 0xf6be25ac>, 'myform': <web.form.Form object at 0xf724dcac>, 'form': <module 'web.form' from '/home/pi/.local/lib/python3.5/site-packages/web/form.py'>, '__package__': None, 'app': <web.application.application object at 0xf6c36bac>, '__builtins__': <module 'builtins' (built-in)>, '__doc__': None, '__file__': 'w.py', 'index': <class '__main__.index'>, 'urls': ('/', 'index'), 'gg': {...}, '__name__': '__main__', '__loader__': <_frozen_importlib_external.SourceFileLoader object at 0xf7278e0c>, 'g': 'gg'}
+__name__ __main__
+__package__ None
+__spec__ None
+render <web.template.Render object at 0xf6be25ac>
+form <module 'web.form' from '/home/pi/.local/lib/python3.5/site-packages/web/form.py'>
+__file__ w.py
+urls ('/', 'index')
+__loader__ <_frozen_importlib_external.SourceFileLoader object at 0xf7278e0c>
+app <web.application.application object at 0xf6c36bac>
