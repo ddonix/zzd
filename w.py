@@ -24,8 +24,7 @@ class index:
         else:
             # form.d.boe and form['boe'].value are equivalent ways of
             # extracting the validated arguments from the form.
-            return "! human: %s, zzd: %s" % (form.d.human, form.d.zzd)
-
+            return "human: %s, zzd: %s" %(form.d.human, form.d.zzd)
 
 def createserver():
 	try:
