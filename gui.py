@@ -10,7 +10,7 @@ import zzd_zzd
 import threading
 import signal
 import w
-
+from multiprocessing import Process
 
 input_layer1 = None
 
@@ -18,8 +18,8 @@ entry_human = None
 entry_zzd = None
 	
 autoplay = True
-root = None
 
+root = None
 #主进程ident, 小涵涵进程结束后给root进程发消息，让主进程退出.
 rootpid = 0
 
@@ -93,7 +93,7 @@ webt = None
 root = None
 
 def delete_windows():
-	global zhd, zhdt, xhh, xhht, webt, webpid
+	global zhd, zhdt, xhh, xhht, webt, webtid
 	if zhd:
 		zhd.root = False
 	if xhh:
@@ -103,14 +103,13 @@ def delete_windows():
 	if xhht:
 		xhht.join()
 	if webt:
-		os.kill(webpid, signal.SIGTSTP)
+		os.kill(webtid, signal.SIGTSTP)
 		webt.join()
 	sys.exit()
 	return
 
 zhd = None
 zhd_running = None
-
 class zhdthread(threading.Thread):
 	def __init__(self,name):
 		super().__init__()
@@ -118,52 +117,48 @@ class zhdthread(threading.Thread):
 
 	def run(self):
 		global zhd, zhd_running, root, xhh
-		print('zhd_thread start')
+		print('zhd_thread start.')
 		zhd = zzd_zzd.zzd(show=zhdShow, friend=xhh)
 		zhd_running.set()
 		zhd.live()
 		zhd = None
-		print('zhd_thread over')
+		print('zhd_thread over.')
+
 
 xhh = None
 xhh_running = None
-
 class xhhthread(threading.Thread):
 	def __init__(self,name):
 		super().__init__()
 		self.name = name
 
 	def run(self):
-		global xhh, xhh_running, root
-		print('xhh_thread start')
+		global xhh, xhh_running, root, rootpid
+		print('xhh_thread start.')
 		xhh = zzd_human.human('nobody')
 		xhh_running.set()
 		xhh.live()
 		xhh = None
-		print('xhh_thread over')
+		print('xhh_thread over.')
 		os.kill(rootpid, signal.SIGUSR1)
 
-web_running = None
-web_pid = 0
-class webthread(threading.Thread):
-	def __init__(self,name):
-		super().__init__()
-		self.name = name
 
-	def run(self):
-		global web_running, web_pid
-		webpid = os.getpid()
-		print('web_thread start.pid is %d', webpid)
+web_running = None
+webtid = 0
+def webthread_proc(port):
+		global webt, webtid, rootpid
+		webtid = os.getpid()
+		print('web_thread start.tid is %d, rootpid is %d.'%(webtid, rootpid))
 		web_running.set()
 		w.createserver()
 		print('web_thread over.')
+		webt = None
 
 def main():
-	
 	global entry_human, entry_zzd
 	global input_layer1
 	global entry_human,entry_zzd
-	global root
+	global root, rootpid
 	
 	root = tk.Tk()
 	root.geometry('640x480+20+20')
@@ -218,15 +213,13 @@ def xhh_zhd_web():
 	
 	zhd_running = threading.Event()
 	zhd_running.clear()
-	
 	zhdt = zhdthread('zhd_thread')
 	zhdt.start()
 	zhd_running.wait()
 	
 	web_running = threading.Event()
 	web_running.clear()
-	
-	webt = webthread('web_thread')
+	webt = Process(target=webthread_proc, args=('8080',))
 	webt.start()
 	web_running.wait()
 	
