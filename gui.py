@@ -11,7 +11,6 @@ import threading
 import signal
 import w
 import time
-from multiprocessing import Process
 
 input_layer1 = None
 
@@ -57,6 +56,7 @@ def zhdShow(waa, form=''):
 		entry_zzd.delete(0,'end')
 		entry_zzd.insert(0, waa)
 		entry_zzd.update()
+		os.system('echo %s >> /tmp/zzdfifo'%waa)
 		if autoplay:
 			voice.txt2voice(waa)
 	return
@@ -86,29 +86,18 @@ def return_event(evt):
 
 def gameoversignal(signum,frame):
 	print('game over root.destroy')
-	if webp:
-		os.kill(webpid, signal.SIGTSTP)
-		webp.join()
 	root.destroy()
 	sys.exit()
 
 xhht = None
 zhdt = None
 root = None
-webp = None
 
 def exitZZD(evt):
 	pass
 
 def delete_windows():
-	global zhd, zhdt, xhh, xhht, webp, webpid
-	print(webp)
-	if webp and webp.is_alive():
-		print('os.kill webprocess')
-		os.kill(webpid, signal.SIGTSTP)
-		while webp.is_alive():
-			print('wait...')
-			time.sleep(1)
+	global zhd, zhdt, xhh, xhht
 	if zhd:
 		zhd.root = False
 	if xhh:
@@ -154,19 +143,6 @@ class xhhthread(threading.Thread):
 		print('xhh_thread over.')
 
 
-def weboversignal(signum,frame):
-	print('get SIGTSTP signal.')
-	sys.exit()
-
-webpid = 0
-def webprocess_proc(port):
-		global webp, webpid, rootpid
-		webpid = os.getpid()
-		print('web_process start.pid is %d, rootpid is %d.'%(webpid, rootpid))
-		signal.signal(signal.SIGTSTP, weboversignal)
-		w.createwebserver()
-		print('web_process over.')
-
 def main():
 	global entry_human, entry_zzd
 	global input_layer1
@@ -208,14 +184,13 @@ def main():
 	
 	rootpid = os.getpid()
 	signal.signal(signal.SIGUSR1, gameoversignal)
-	root.after(1000, xhh_zhd_web)
+	root.after(1000, xhh_zhd)
 	root.mainloop()
 
-def xhh_zhd_web():
+def xhh_zhd():
 	global root,rootpid
 	global xhht, xhh, xhh_running
 	global zhdt, zhd, zhd_running
-	global webp 
 	
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
@@ -233,12 +208,6 @@ def xhh_zhd_web():
 	zhdt = zhdthread('zhd_thread')
 	zhdt.start()
 	zhd_running.wait()
-	
-	if len(sys.argv) > 1 and sys.argv[1] == 'web':
-		webp = Process(target=webprocess_proc, args=('8080',))
-		webp.start()
-	else:
-		webp = None
 	print('create thread over.')
 	
 if __name__ == '__main__':
