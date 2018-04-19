@@ -26,6 +26,10 @@ class index:
             # extracting the validated arguments from the form.
             return "! human: %s, zzd: %s" % (form.d.human, form.d.zzd)
 
+def createserver():
+    web.internalerror = web.debugerror
+    app.run()
+	
 if __name__=="__main__":
     web.internalerror = web.debugerror
     app.run()

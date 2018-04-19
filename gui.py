@@ -9,6 +9,7 @@ import zzd_human
 import zzd_zzd
 import threading
 import signal
+import w
 
 
 input_layer1 = None
@@ -88,10 +89,11 @@ def gameoversignal(signum,frame):
 
 xhht = None
 zhdt = None
+webt = None
 root = None
 
 def delete_windows():
-	global zhd, zhdt, xhh, xhht
+	global zhd, zhdt, xhh, xhht, webt, webpid
 	if zhd:
 		zhd.root = False
 	if xhh:
@@ -100,6 +102,9 @@ def delete_windows():
 		zhdt.join()
 	if xhht:
 		xhht.join()
+	if webt:
+		os.kill(webpid, signal.SIGTSTP)
+		webt.join()
 	sys.exit()
 	return
 
@@ -130,7 +135,6 @@ class xhhthread(threading.Thread):
 
 	def run(self):
 		global xhh, xhh_running, root
-		global root
 		print('xhh_thread start')
 		xhh = zzd_human.human('nobody')
 		xhh_running.set()
@@ -138,6 +142,21 @@ class xhhthread(threading.Thread):
 		xhh = None
 		print('xhh_thread over')
 		os.kill(rootpid, signal.SIGUSR1)
+
+web_running = None
+web_pid = 0
+class webthread(threading.Thread):
+	def __init__(self,name):
+		super().__init__()
+		self.name = name
+
+	def run(self):
+		global web_running, web_pid
+		webpid = os.getpid()
+		print('web_thread start.pid is %d', webpid)
+		web_running.set()
+		w.createserver()
+		print('web_thread over.')
 
 def main():
 	
@@ -177,13 +196,14 @@ def main():
 	
 	rootpid = os.getpid()
 	signal.signal(signal.SIGUSR1, gameoversignal)
-	root.after(1000,xhh_zhd)
+	root.after(1000,xhh_zhd_web)
 	root.mainloop()
 
-def xhh_zhd():
+def xhh_zhd_web():
 	global root,rootpid
 	global xhht, xhh, xhh_running
 	global zhdt, zhd, zhd_running
+	global webt, web_running
 	
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
@@ -202,7 +222,13 @@ def xhh_zhd():
 	zhdt = zhdthread('zhd_thread')
 	zhdt.start()
 	zhd_running.wait()
-	assert zhd != None
+	
+	web_running = threading.Event()
+	web_running.clear()
+	
+	webt = webthread('web_thread')
+	webt.start()
+	web_running.wait()
 	
 if __name__ == '__main__':
 	main()
