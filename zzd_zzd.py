@@ -312,7 +312,7 @@ def main():
 	
 	a = '苏格拉底会死吗？'
 	phs = db.fenci(a, False)
-	g = gdata.gs('集合语句')
+	g = gdata.getgs('集合语句')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])

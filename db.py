@@ -209,8 +209,9 @@ def coreinit():
 		cursor = conn.execute("select * from verify")
 	except:
 		raise TypeError
-
-		_identifyDict[guest[0]] = guest[1]
+	for guest in cursor:
+		gdata._identifyDict[guest[0]] = guest[1]
+		print(guest[0],guest[1])
 		
 	try:
 		cursor = conn.execute("select * from mend_add")
