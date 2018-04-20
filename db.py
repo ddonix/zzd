@@ -227,22 +227,33 @@ def coreinit():
 			rep.add(m)
 			gdata._mend_replace[m]=rep
 	conn.close()
-	
+
 #增加元素a属于集合A这条信息。
 #原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人，否则抛出异常
-#原则：2.不能重复。苏格拉底原先是男人，现在不能是人，否则返回False.
-def add_information_1(a, A):
-	assert gdata.spin(a) and gdata.gsin(A)
-	sp = gdata.getsp(a)
-	gs = gdata.getgs(A)
+#原则：2.不能无用。苏格拉底原先是男人，现在不能是人，否则返回False.
+def add_information_1(sp_a, gs_A):
+	assert gdata.spin(sp_a) and gdata.gsin(gs_A)
+	sp = gdata.getsp(sp_a)
+	gs = gdata.getgs(gs_A)
 	return _add_information_1(sp, gs)
-	
+
 def _add_information_1(sp, gs):
 	assert isinstance(sp, element.seph) and isinstance(gs, sets.gset)
-	descendant = get_descendant(gs)
-	for gs in descendant:
-		if gs in sp.gs:
+	for g in sp.gs:
+		#判断是否无用
+		if sets.gset.involved_in(g, gs):
 			return False
+		#判断是否矛盾
+		if sets.gset.conflict(g, gs):
+			return False
+	#判断是否要删除无用信息。原先苏格拉底是人，现在是男人，删掉苏格拉底是人.
+	for g in sp.gs:
+		#判断是否删除
+		if sets.gset.involved_in(gs, g):
+			g._removesp(sp)
+			sp._removegs(g)
+	gs._addsp(sp)
+	sp._addgs(gs)
 	return True
 	
 def add_information_2(gs_A, gs_B):#集合A包含于集合B
