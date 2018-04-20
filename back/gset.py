@@ -4,7 +4,7 @@ import copy
 import gdata
 
 class gset:
-	def __init__(self, name):
+	def __init__(self, name, child):
 		self.name = name
 		gdata.addgs(self)
 		
@@ -17,31 +17,81 @@ class gset:
 		
 		#形如[A (a) B]的集合，[]不允许递归.把包含的(a)型集合创建出来。
 		if name[0] == '[' and name[-1] == ']':
+			assert child == []
 			name = name[1:-1].split(' ')
 			for gram in name:
 				#（a b c）集合包含a b c三个元素,这种是匿名集合.
 				if gram[0] == '(' and gram[-1] == ')':
-					gset(gram)
-	
-	#是否矛盾。如果A与B的交集为空集，返回True.
-	#交集不为空或者无法判断是否为空，返回False.
-	@classmethod
-	def conflict(cls, gs_A, gs_B):
-		if not gs_A.father or not gs_B.father:
-			return False
-		if gs_A.father == gs_B.father:
-			father = fs_A.father
-			for plot in father.plot:
-				if fs_A in father[plot] and fs_B in father[plot]:
-					return True
-		for fa in gs_A.father:
-			if cls.conflict(fa, gs_B):
-				return True
-		for fa in gs_B.father:
-			if cls.conflict(gs_A, fa):
-				return True
-		return False
+					gset(gram, [])
 		
+		#形如(a b c)的集合，a b c是其元素。在初始化元素的时候，添加到集合里来，现在不能操作。
+		if name[0] == '(' and name[-1] == ')':
+			pass
+
+		for ch in child:
+			if ch == '' or ch == None:
+				continue
+			if gdata.gsin(ch):
+				ch = gdata.getgs(ch)
+				if not ch in self.child:
+					self.child.append(ch)
+				if not self in ch.father:
+					ch.father.append(self)
+			elif ch[0] == '(' and ch[-1] == ')':
+				ch = gset(ch, [])
+				if not ch in self.child:
+					self.child.append(ch)
+				if not self in ch.father:
+					ch.father.append(self)
+			else:
+				assert ch[0] == '[' and ch[-1] == ']'
+				#[主语 谓语 宾语]
+				if not '|' in ch:
+					ch = gset(ch, [])
+					if not ch in self.child:
+						self.child.append(ch)
+					if not self in ch.father:
+						ch.father.append(self)
+				else:
+					#[性别:男|女]
+					if ':' in ch:
+						name = ch[1:ch.find(':')]
+						plots = ch[ch.find(':')+1:-1].split('|')
+						plot = set()
+						for p in plots:
+							if p[0] == '(' and p[-1] == ')':
+								ch = gset(p,[])
+							else:
+								assert gdata.gsin('%s%s'%(p,self.name))
+								ch = gdata.getgs('%s%s'%(p,self.name))
+							if not ch in self.child:
+								self.child.append(ch)
+							if not self in ch.father:
+								ch.father.append(self)
+							plot.add(ch)
+						self.plot[name]=plot
+					#[奇数|偶数]
+					else:
+						plots = ch[1:-1].split('|')
+						plot = set()
+						for p in plots:
+							if p[0] == '(' and p[-1] == ')':
+								ch = gset(p,[])
+							else:
+								assert gdata.gsin(p)
+								ch = gdata.getgs(p)
+							if not ch in self.child:
+								self.child.append(ch)
+							if not self in ch.father:
+								ch.father.append(self)
+							plot.add(ch)
+						self.plot[ch]=plot
+	
+	
+	@classmethod
+	def intersection(cls, gs_A, gs_B):
+		return False
+	
 	#集合A包含于集合B 	A<=B
 	@classmethod
 	def involved_in(cls, gs_A, gs_B):
@@ -62,6 +112,60 @@ class gset:
 				return True
 		return False
 
+	@classmethod
+	def prevgram(cls, gram):
+		res = []
+		for g in gram:
+			res.extend(cls._prevgram(g))
+		return res
+	
+	@classmethod
+	def _prevgram(cls, gram):
+		if gram == '' or gram == None:
+			return []
+		if not (gram[0] == '[' and gram[-1] == ']'):
+			return [gram]
+		gram = gram[1:-1].split(' ')
+		tmp = []
+		cls.__prevgram(gram,tmp)
+		tmp.sort(key=lambda x:len(x))
+		
+		res = []
+		for t in tmp:
+			r = '[%s'%t[0]
+			for s in t[1:]:
+				r += ' %s'%s
+			r += ']'
+			res.append(r)
+		return res
+	
+	@classmethod
+	def __prevgram(cls, gram, res):
+		if gram == []:
+			return
+		if gram[0] == '' or gram[0] == None:
+			return
+		if len(gram) == 1:
+			if gram[0][0] == 'w':
+				res.append([])
+				res.append([gram[0][1:]])
+			else:
+				res.append([gram[0]])
+			return
+		cls.__prevgram(gram[1:], res)
+		if gram[0][0] == 'w':
+			res2 = []
+			for g in res:
+				ag = copy.deepcopy(g)
+				ag.insert(0,gram[0][1:])
+				res2.append(ag)
+			res.extend(res2)
+			return
+		else:
+			for g in res:
+				g.insert(0,gram[0])
+			return
+			
 	def addsp(self, sp):
 		if not isinstance(sp, seph):
 			raise TypeError
