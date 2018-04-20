@@ -331,6 +331,7 @@ def main():
 	spinit()
 	coreinit()
 	checksp('苏格拉底')
+	checkgs('人', True, True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 
