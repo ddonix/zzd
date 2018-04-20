@@ -15,80 +15,22 @@ class gset:
 							#命名划分：人划分为[性别:男|女],子集为男人，女人.
 							#匿名划分:自然数划分为[奇数|偶数],子集为奇数，偶数.
 		
-		#形如[A (a) B]的集合，[]不允许递归.把包含的(a)型集合创建出来。
-		if name[0] == '[' and name[-1] == ']':
-			assert child == []
-			name = name[1:-1].split(' ')
-			for gram in name:
-				#（a b c）集合包含a b c三个元素,这种是匿名集合.
-				if gram[0] == '(' and gram[-1] == ')':
-					gset(gram, [])
-		
-		#形如(a b c)的集合，a b c是其元素。在初始化元素的时候，添加到集合里来，现在不能操作。
-		if name[0] == '(' and name[-1] == ')':
-			pass
 
-		for ch in child:
-			if ch == '' or ch == None:
-				continue
-			if gdata.gsin(ch):
-				ch = gdata.getgs(ch)
-				if not ch in self.child:
-					self.child.append(ch)
-				if not self in ch.father:
-					ch.father.append(self)
-			elif ch[0] == '(' and ch[-1] == ')':
-				ch = gset(ch, [])
-				if not ch in self.child:
-					self.child.append(ch)
-				if not self in ch.father:
-					ch.father.append(self)
-			else:
-				assert ch[0] == '[' and ch[-1] == ']'
-				#[主语 谓语 宾语]
-				if not '|' in ch:
-					ch = gset(ch, [])
-					if not ch in self.child:
-						self.child.append(ch)
-					if not self in ch.father:
-						ch.father.append(self)
-				else:
-					#[性别:男|女]
-					if ':' in ch:
-						name = ch[1:ch.find(':')]
-						plots = ch[ch.find(':')+1:-1].split('|')
-						plot = set()
-						for p in plots:
-							if p[0] == '(' and p[-1] == ')':
-								ch = gset(p,[])
-							else:
-								assert gdata.gsin('%s%s'%(p,self.name))
-								ch = gdata.getgs('%s%s'%(p,self.name))
-							if not ch in self.child:
-								self.child.append(ch)
-							if not self in ch.father:
-								ch.father.append(self)
-							plot.add(ch)
-						self.plot[name]=plot
-					#[奇数|偶数]
-					else:
-						plots = ch[1:-1].split('|')
-						plot = set()
-						for p in plots:
-							if p[0] == '(' and p[-1] == ')':
-								ch = gset(p,[])
-							else:
-								assert gdata.gsin(p)
-								ch = gdata.getgs(p)
-							if not ch in self.child:
-								self.child.append(ch)
-							if not self in ch.father:
-								ch.father.append(self)
-							plot.add(ch)
-						self.plot[ch]=plot
-	
-	
-	@classmethod
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+@classmethod
 	def intersection(cls, gs_A, gs_B):
 		return False
 	

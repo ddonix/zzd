@@ -6,57 +6,6 @@ import sets
 import element
 import gdata
 
-def prevgram(gram):
-	res = []
-	for g in gram:
-		res.extend(_prevgram(g))
-	res = list(set(res))
-	res.sort(key=lambda x:len(x))
-	return res
-	
-def _prevgram(gram):
-	if gram == '' or gram == None:
-		return []
-	if not (gram[0] == '[' and gram[-1] == ']'):
-		return [gram]
-	gram = gram[1:-1].split(' ')
-	tmp = []
-	__prevgram(gram,tmp)
-	res = []
-	for t in tmp:
-		r = '[%s'%t[0]
-		for s in t[1:]:
-			r += ' %s'%s
-		r += ']'
-		res.append(r)
-	res = list(set(res))
-	res.sort(key=lambda x:len(x))
-	return res
-
-def __prevgram(gram, res):
-	if not gram:
-		return
-	if len(gram) == 1:			#[w宾语] [谓语]
-		if gram[0][0] == 'w':
-			res.append([])
-			res.append([gram[0][1:]])
-		else:
-			res.append([gram[0]])
-		return
-	__prevgram(gram[1:], res)	#[[w宾语], [谓语]]
-	if gram[0][0] == 'w':		
-		res2 = []
-		for g in res:
-			ag = copy.deepcopy(g)
-			ag.insert(0,gram[0][1:])
-			res2.append(ag)
-		res.extend(res2)
-		return
-	else:
-		for g in res:
-			g.insert(0,gram[0])
-	return
-
 def gsinit():
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
@@ -117,9 +66,8 @@ def gsinit():
 					print(v[0][0]+' 依赖 '+gg)
 					break
 		else:
-			gram = prevgram(v[0][1:])
-			gs = sets.gset(v[0][0])
-			gs.add_child(gram)
+			gram = sets.gset.prevgram(v[0][1:])
+			sets.gset(v[0][0], gram)
 			v.pop(0)
 			skip = False
 		if skip:
@@ -195,7 +143,7 @@ def coreinit():
 					
 		elif keyword[0][0] == '(' and keyword[0][-1] == ')':
 			gdata._gset_key[keyword[0]] = keyword[1:]
-			gs = sets.gset(keyword[0])
+			gs = sets.gset(keyword[0],[])
 			item = keyword[0][1:-1].split(' ')
 			for sp in item:
 				assert gdata.spin(sp)
@@ -383,7 +331,7 @@ def main():
 	spinit()
 	coreinit()
 	checksp('苏格拉底')
-	checkgs('认证确认1', False, True)
+	checkgs('人', True, True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 

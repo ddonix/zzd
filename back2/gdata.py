@@ -47,9 +47,11 @@ def legal(s):
 	return True
 	
 def addgs(gs):
+	assert isinstance(gs, sets.gset)
 	_gset_all[gs.name] = gs
 
 def addsp(sp):
+	assert isinstance(sp, element.seph)
 	assert len(sp.s) >= 1
 	if len(sp.s) == 1:
 		_spbase_all[sp.s[0]] = {sp.s:sp}

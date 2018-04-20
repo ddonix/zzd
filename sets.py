@@ -5,7 +5,7 @@ import gdata
 import element
 
 class gset:
-	def __init__(self, name, child):
+	def __init__(self, name):
 		self.name = name
 		gdata.addgs(self)
 		
@@ -17,80 +17,89 @@ class gset:
 							#匿名划分:自然数划分为[奇数|偶数],子集为奇数，偶数.
 		
 		#形如[A (a) B]的集合，[]不允许递归.把包含的(a)型集合创建出来。
-		if name[0] == '[' and name[-1] == ']':
-			assert child == []
+		if name[0] == '[' and name[-1] == ']' and name.find('(') != -1:
 			name = name[1:-1].split(' ')
 			for gram in name:
 				#（a b c）集合包含a b c三个元素,这种是匿名集合.
 				if gram[0] == '(' and gram[-1] == ')':
-					gset(gram, [])
+					gset(gram)
 		
-		#形如(a b c)的集合，a b c是其元素。在初始化元素的时候，添加到集合里来，现在不能操作。
-		if name[0] == '(' and name[-1] == ')':
-			pass
 
-		for ch in child:
-			if ch == '' or ch == None:
-				continue
-			if gdata.gsin(ch):
-				ch = gdata.getgs(ch)
-				if not ch in self.child:
-					self.child.append(ch)
-				if not self in ch.father:
-					ch.father.append(self)
-			elif ch[0] == '(' and ch[-1] == ')':
-				ch = gset(ch, [])
-				if not ch in self.child:
-					self.child.append(ch)
-				if not self in ch.father:
-					ch.father.append(self)
-			else:
-				assert ch[0] == '[' and ch[-1] == ']'
-				#[主语 谓语 宾语]
-				if not '|' in ch:
-					ch = gset(ch, [])
-					if not ch in self.child:
-						self.child.append(ch)
-					if not self in ch.father:
-						ch.father.append(self)
+	def add_child(self, gram):
+		for ch in gram:
+			self._add_child(ch)
+
+	def _add_child(self, ch):
+		assert ch
+		if gdata.gsin(ch):
+			ch = gdata.getgs(ch)
+			return self.__add_child(ch)
+		if ch[0] == '(' and ch[-1] == ')':
+			ch = gset(ch)
+			return self.__add_child(ch)
+		assert ch[0] == '[' and ch[-1] == ']'
+		if not '|' in ch:					#[主语 谓语 宾语]
+			ch = gset(ch)
+			return self.__add_child(ch)
+		if ':' in ch:						#[性别:男|女]
+			name = ch[1:ch.find(':')]
+			plots = ch[ch.find(':')+1:-1].split('|')
+			plot = set()
+			for p in plots:
+				if p[0] == '(' and p[-1] == ')':
+					ch = gset(p)
 				else:
-					#[性别:男|女]
-					if ':' in ch:
-						name = ch[1:ch.find(':')]
-						plots = ch[ch.find(':')+1:-1].split('|')
-						plot = set()
-						for p in plots:
-							if p[0] == '(' and p[-1] == ')':
-								ch = gset(p,[])
-							else:
-								assert gdata.gsin('%s%s'%(p,self.name))
-								ch = gdata.getgs('%s%s'%(p,self.name))
-							if not ch in self.child:
-								self.child.append(ch)
-							if not self in ch.father:
-								ch.father.append(self)
-							plot.add(ch)
-						self.plot[name]=plot
-					#[奇数|偶数]
-					else:
-						plots = ch[1:-1].split('|')
-						plot = set()
-						for p in plots:
-							if p[0] == '(' and p[-1] == ')':
-								ch = gset(p,[])
-							else:
-								assert gdata.gsin(p)
-								ch = gdata.getgs(p)
-							if not ch in self.child:
-								self.child.append(ch)
-							if not self in ch.father:
-								ch.father.append(self)
-							plot.add(ch)
-						self.plot[ch]=plot
+					assert gdata.gsin('%s%s'%(p,self.name))
+					ch = gdata.getgs('%s%s'%(p,self.name))
+				if not self.__add_child(ch):
+					return False
+				plot.add(ch)
+			self.plot[name]=plot
+		else:								#[奇数|偶数]
+			plots = ch[1:-1].split('|')
+			plot = set()
+			for p in plots:
+				if p[0] == '(' and p[-1] == ')':
+					ch = gset(p,[])
+				else:
+					assert gdata.gsin(p)
+					ch = gdata.getgs(p)
+				if not self.__add_child(ch):
+					return False
+				plot.add(ch)
+			self.plot[ch]=plot
+		return True
 	
-	
+	def __add_child(self, ch):
+		if ch in self.child:
+			assert self in ch.father
+			return True
+		assert not self in ch.father
+		if gset.conflict(self, ch):
+			print('%s and %s is conflict.'%(self.name,ch.name))
+			return False
+		self.child.append(ch)
+		ch.father.append(self)
+		return True
+
+	#集合A和B的合集是否为空集，是返回True.
+	#合集不为空集或者无法判定，返回False.
 	@classmethod
-	def intersection(cls, gs_A, gs_B):
+	def conflict(cls, gs_A, gs_B):
+		if not gs_A.father or not gs_B.father:
+			return False
+		for A_fa in gs_A.father:
+			for B_fa in gs_B.father:
+				if A_fa == B_fa:
+					for plot in A_fa.plot:
+						if gs_A in A_fa.plot[plot] and gs_B in A_fa.plot[plot]:
+							return True
+		for fa in gs_A.father:
+			if cls.conflict(fa, gs_B) == True:
+				return True
+		for fa in gs_B.father:
+			if cls.conflict(gs_A, fa) == True:
+				return True
 		return False
 	
 	#集合A包含于集合B 	A<=B
@@ -319,6 +328,14 @@ class gset:
 
 def main():
 	print('sets')
+	gs1 = gset('人')
+	gs2 = gset('男人')
+	gs3 = gset('女人')
+
+	gs1.add_child('[性别:男|女]')
+	print(gset.conflict(gs1, gs2))
+	print(gset.conflict(gs2, gs3))
+	print(gset.conflict(gs1, gs3))
 
 if __name__ == '__main__':
 	main()

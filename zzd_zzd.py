@@ -1,10 +1,10 @@
 #!/usr/bin/python3 -B
 import threading
 import db
+import gdata
 import time
 import zmath
 import play
-
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
 	inWaaClass = {}		#输入语句类型
@@ -14,7 +14,7 @@ class zzd():
 		self.friend = friend
 		
 		self.root = True
-		self.name = db.database._identifyDict['299792458']
+		self.name = gdata._identifyDict['299792458']
 		
 		self.waain = []
 		self.id_waain = 0
@@ -36,9 +36,9 @@ class zzd():
 		
 	@classmethod
 	def init(cls):
-		db.database.gsinit()
-		db.database.spinit()
-		db.database.coreinit()
+		db.gsinit()
+		db.spinit()
+		db.coreinit()
 		
 		cls.inWaaClass['verify'] = zzd._solve_verify					#verify
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
@@ -90,11 +90,11 @@ class zzd():
 		assert self.friend == waain['sour']
 		
 		phrases = db.fenci(waa, False)
-		keyword = [x for x in phrases if x.s in db.database._keyword_zzd]
+		keyword = [x for x in phrases if x.s in gdata._keyword_zzd]
 		bit = {'verify':0,'math':0,'define':0,'command':0,'system':0}
 		for k in keyword:
-			assert k.s in db.database._keyword_zzd
-			weight = db.database._keyword_zzd[k.s][0].split(' ')
+			assert k.s in gdata._keyword_zzd
+			weight = gdata._keyword_zzd[k.s][0].split(' ')
 			for i in range(0,len(weight),2):
 				if weight[i] != '':
 					bit[weight[i]] += int(weight[i+1])
@@ -112,7 +112,7 @@ class zzd():
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
 	def _solve_verify(self, phrases):
-		sp = db.database.gs('认证语句')._fensp(phrases, True)
+		sp = gdata.gs('认证语句')._fensp(phrases, True)
 		if sp == None:
 			self.say('认证语法不对', '')
 		else:
@@ -131,7 +131,7 @@ class zzd():
 						self.desire['verify'][2][1] = arg
 
 	def _solve_math(self, phrases):
-		sp = db.database.gs('数学语句')._fensp(phrases, True)
+		sp = gdata.gs('数学语句')._fensp(phrases, True)
 		if not sp:
 			self.say('数学语法不对','')
 		else:
@@ -145,26 +145,26 @@ class zzd():
 					self.say('数学语法错误', '')
 	
 	def _solve_define(self, phrases):
-		sp = db.database.gs('定义语句')._fensp(phrases, True)
+		sp = gdata.gs('定义语句')._fensp(phrases, True)
 		if sp == None:
 			self.say('定义语法错误','')
 		else:
 			assert '定义词' in sp[2]
 			sen = sp[2]['定义词']
-			if sen in db.database._defineDict:
-				explain = db.database._defineDict[sen]
+			if sen in gdata._defineDict:
+				explain = gdata._defineDict[sen]
 				self.say('%s是%s'%(sen,explain), sp[0].s)
 			else:
 				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0].s)
 	
 	def _solve_command(self, phrases):
-		sp = db.database.gs('命令语句')._fensp(phrases, True)
+		sp = gdata.gs('命令语句')._fensp(phrases, True)
 		if sp == None:
 			self.say('命令语法不对','')
 		else:
 			assert 'zzd命令' in sp[2]
 			self.say('', sp[0].s)
-			exe = db.database._keyword_zzd[sp[2]['zzd命令']][1]
+			exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
 			if exe == '' or exe == None:
 				if '命令参数' in sp[2]:
 					arg = sp[2]['命令参数']
@@ -187,7 +187,7 @@ class zzd():
 				self.say('还在开发中', '')
 
 	def _solve_set(self, phrases):
-		sp = db.database.gs('集合语句')._fensp(phrases, True)
+		sp = gdata.gs('集合语句')._fensp(phrases, True)
 		if sp == None:
 			self.say('集合语法不对',' ')
 		else:
@@ -196,7 +196,7 @@ class zzd():
 			print(sp[2]['.'])
 			print(sp[2]['集合'])
 			
-			ph = db.database.sp(sp[2]['.'])
+			ph = gdata.sp(sp[2]['.'])
 			if ph.be(sp[2]['集合']):
 				s = ''
 				for ph in phrases[0:-1]:
@@ -207,7 +207,7 @@ class zzd():
 
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
-			sp = db.database.gs(self.FSM['ask'][0])._fensp(phrases, True)
+			sp = gdata.gs(self.FSM['ask'][0])._fensp(phrases, True)
 			if sp:
 				self.FSM['ask'][1]=sp[0].s
 			self.ask_event.set()
@@ -232,8 +232,8 @@ class zzd():
 				self.say('您没有及时认证，小白要休息了。','')
 				self.say('再见！','')
 		else:
-			if desire[2][1] in db.database._identifyDict:
-				self.friend.name = db.database._identifyDict[desire[2][1]]
+			if desire[2][1] in gdata._identifyDict:
+				self.friend.name = gdata._identifyDict[desire[2][1]]
 				self.FSM['verify'] = True
 				self.say('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name),'')
 			else:
@@ -312,7 +312,7 @@ def main():
 	
 	a = '苏格拉底会死吗？'
 	phs = db.fenci(a, False)
-	g = db.database.gs('集合语句')
+	g = gdata.gs('集合语句')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])
