@@ -29,9 +29,7 @@ def getsp(s):
 		raise NameError
 	
 def gsin(gs):
-	if gs in _gset_all:
-		return True
-	return False
+	return True if gs in _gset_all else False
 	
 def spin(sp):
 	if sp[0] in _spbase_all:

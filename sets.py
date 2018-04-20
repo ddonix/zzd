@@ -122,90 +122,21 @@ class gset:
 				return True
 		return False
 
-	@classmethod
-	def prevgram(cls, gram):
-		res = []
-		for g in gram:
-			res.extend(cls._prevgram(g))
-		return res
-	
-	@classmethod
-	def _prevgram(cls, gram):
-		if gram == '' or gram == None:
-			return []
-		if not (gram[0] == '[' and gram[-1] == ']'):
-			return [gram]
-		gram = gram[1:-1].split(' ')
-		tmp = []
-		cls.__prevgram(gram,tmp)
-		tmp.sort(key=lambda x:len(x))
-		
-		res = []
-		for t in tmp:
-			r = '[%s'%t[0]
-			for s in t[1:]:
-				r += ' %s'%s
-			r += ']'
-			res.append(r)
-		return res
-	
-	@classmethod
-	def __prevgram(cls, gram, res):
-		if gram == []:
-			return
-		if gram[0] == '' or gram[0] == None:
-			return
-		if len(gram) == 1:
-			if gram[0][0] == 'w':
-				res.append([])
-				res.append([gram[0][1:]])
-			else:
-				res.append([gram[0]])
-			return
-		cls.__prevgram(gram[1:], res)
-		if gram[0][0] == 'w':
-			res2 = []
-			for g in res:
-				ag = copy.deepcopy(g)
-				ag.insert(0,gram[0][1:])
-				res2.append(ag)
-			res.extend(res2)
-			return
-		else:
-			for g in res:
-				g.insert(0,gram[0])
-			return
-			
-
 	def addsp(self, sp):
-		if not isinstance(sp, element.seph):
-			raise TypeError
 		if not self.contain(sp):
 			self.sp.add(sp)
 	
 	def removesp(self, sp):
-		if not isinstance(sp, element.seph):
-			raise TypeError
 		if sp not in self.sp:
 			raise TypeError
 		self.sp.remove(sp)
 	
 	def contain(self, sp):#苏格拉底是男人，是人。但是数据库中之记录苏格拉底是男人.
-		if not isinstance(sp, element.seph):
-			raise TypeError
 		res = []
-		if not self.child:
-			if sp in self.sp:
-				res.append(self)
-			return res
-		
 		if sp in self.sp:
-			return self
-		if self.child != []:
-			for ch in self.child:
-				res = ch.contain(sp)
-				if res:
-					return res
+			res.append(self)
+		for ch in self.child:
+			res.extend(ch.contain(sp))
 		return res
 	
 	#只处理基本集合。没有子集，不依赖任何别的集合。例如，句号，感叹号，阿拉伯数字,基本汉字
@@ -331,11 +262,17 @@ def main():
 	gs1 = gset('人')
 	gs2 = gset('男人')
 	gs3 = gset('女人')
+	gs4 = gset('活人')
+	gs5 = gset('中国人')
+	sp = element.seph('你')
 
-	gs1.add_child('[性别:男|女]')
+	gs1.add_child(['[性别:男|女]', '活人', '中国人'])
+	gs1.addsp(sp)
+	sp.addgs(gs1)
 	print(gset.conflict(gs1, gs2))
 	print(gset.conflict(gs2, gs3))
 	print(gset.conflict(gs1, gs3))
+	print(gset.conflict(gs4, gs5))
 
 if __name__ == '__main__':
 	main()

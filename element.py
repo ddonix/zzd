@@ -1,6 +1,4 @@
 #!/usr/bin/python3 -B
-import sqlite3
-import copy
 import gdata
 import sets
 
@@ -24,12 +22,10 @@ class seph:
 	#返回False，说明这条信息是多余的。
 	#返回True, 说明这条信息是有用的。
 	def addgs(self, gs):
-		assert isinstance(gs, sets.gset)
 		assert not gs in self.gs
 		self.gs.append(gs)
 	
 	def removegs(self, gs):
-		assert isinstance(gs, sets.gset)
 		assert gs in self.gs
 		self.gs.remove(gs)
 
@@ -41,6 +37,10 @@ class seph:
 
 def main():
 	print('element')
+	gs = sets.gset('你好')
+	sp = seph('合理')
+	sp.addgs(gs)
+	gs.addsp(sp)
 
 if __name__ == '__main__':
 	main()
