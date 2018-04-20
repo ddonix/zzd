@@ -231,10 +231,10 @@ def coreinit():
 #增加元素a属于集合A这条信息。
 #原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人，否则抛出异常
 #原则：2.不能重复。苏格拉底原先是男人，现在不能是人，否则返回False.
-def add_information_1(sp_a, gs_A):
-	assert gdata.spin(sp_a) and gdata.gsin(gs_A)
-	sp = gdata.getsp(sp_a)
-	gs = gdata.getgs(gs_A)
+def add_information_1(a, A):
+	assert gdata.spin(a) and gdata.gsin(A)
+	sp = gdata.getsp(a)
+	gs = gdata.getgs(A)
 	return _add_information_1(sp, gs)
 	
 def _add_information_1(sp, gs):
