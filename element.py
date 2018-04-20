@@ -31,7 +31,10 @@ class seph:
 
 	def be(self, gram):
 		gs = gdata.getgs(gram)
-		if gs.contain(self):
+		res = gs.contain(self)
+		for g in res:
+			print(g.name)
+		if res:
 			return True
 		return False
 

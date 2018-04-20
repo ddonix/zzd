@@ -103,7 +103,6 @@ def delete_windows():
 	if xhh:
 		xhh.root = False
 	while threading.activeCount() > 1:
-		print('wait...')
 		time.sleep(1)
 	print('delete_windows root.destroy')
 	root.destroy()
