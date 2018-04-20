@@ -7,11 +7,11 @@ class seph:
 		if type(s) == str:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
-			self.gs = []
+			self.gs = set()
 		elif type(s) == list and isinstance(s[0], seph):
 			self.s = ''			#sting
 			d = []
-			self.gs = []
+			self.gs = set()
 			for sp in s:
 				self.s += sp.s
 				d.append(sp.d)
@@ -21,11 +21,11 @@ class seph:
 	
 	#返回False，说明这条信息是多余的。
 	#返回True, 说明这条信息是有用的。
-	def addgs(self, gs):
+	def _addgs(self, gs):
 		assert not gs in self.gs
-		self.gs.append(gs)
+		self.gs.add(gs)
 	
-	def removegs(self, gs):
+	def _removegs(self, gs):
 		assert gs in self.gs
 		self.gs.remove(gs)
 

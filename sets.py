@@ -144,18 +144,10 @@ class gset:
 				return True
 		return False
 
-	def addsp(self, sp):
-		gs = self.contain(sp)
-		if gs:
-			return gs
-		else:#苏格拉底原先是人，现在是男人
+	def _addsp(self, sp):
+		if not self.contain(sp):
 			self.sp.add(sp)
-			for gs in sp.gs:
-				if gset.involved_in(self, gs):
-					gs.removesp(sp)
-					sp.removegs(gs)
-					
-	def removesp(self, sp):
+	def _removesp(self, sp):
 		if sp not in self.sp:
 			raise TypeError
 		self.sp.remove(sp)
@@ -264,7 +256,7 @@ class gset:
 			for res in ress:
 				sps.append(res[0])
 		sp = element.seph(sps)
-		g.addsp(sp)
+		g._addsp(sp)
 		key[self.name] = sp.s
 		return (sp, ress[-1][1], key)
 	
@@ -296,7 +288,7 @@ def main():
 	sp = element.seph('你')
 
 	gs1.add_child(['[性别:男|女]', '活人', '中国人'])
-	gs1.addsp(sp)
+	gs1._addsp(sp)
 	sp.addgs(gs1)
 	print(gset.conflict(gs1, gs2))
 	print(gset.conflict(gs2, gs3))

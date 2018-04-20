@@ -138,9 +138,7 @@ def spinit():
 		gdata._table_vocable.add(v[0][0])
 		for g in v[1:]:
 			if not (g == '' or g == None):
-				gs = gdata.getgs(g)
-				gs.addsp(sp)
-				sp.addgs(gs)
+				add_information_1(v[0], g)
 	try:
 		cursor = conn.execute("select * from table_phrase")
 	except:
@@ -154,9 +152,7 @@ def spinit():
 		
 		for g in v[1:]:
 			if not (g == '' or g == None):
-				gs = gdata.getgs(g)
-				gs.addsp(sp)
-				sp.addgs(gs)
+				add_information_1(v[0], g)
 	conn.close()
 		
 	#补充()类集合元素集
@@ -164,9 +160,7 @@ def spinit():
 		if gram[0] == '(' and gram[-1] == ')':
 			item = gram[1:-1].split(' ')
 			for sp in item:
-				assert gdata.spin(sp)
-				gdata.getgs(gram).addsp(gdata.getsp(sp))
-				gdata.getsp(sp).addgs(gdata.getgs(gram))
+				add_information_1(sp, gram)
 			
 def coreinit():
 	try:
@@ -197,8 +191,7 @@ def coreinit():
 			gdata._gset_key[keyword[0]] = keyword[1:]
 			item = keyword[0][1:-1].split(' ')
 			for sp in item:
-				assert gdata.spin(sp)
-				gs.addsp(gdata.getsp(sp))
+				add_information_1(sp, keyword[0])
 				gdata._keyword_zzd[sp] = keyword[1:]
 		else:
 			print(keyword[0])
@@ -239,7 +232,7 @@ def coreinit():
 #原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人，否则抛出异常
 #原则：2.不能重复。苏格拉底原先是男人，现在不能是人，否则返回False.
 def add_information_1(sp_a, gs_A):
-	assert spin(sp_a) and gdata.gsin(gs_A)
+	assert gdata.spin(sp_a) and gdata.gsin(gs_A)
 	sp = gdata.getsp(sp_a)
 	gs = gdata.getgs(gs_A)
 	return _add_information_1(sp, gs)
@@ -390,11 +383,8 @@ def main():
 	spinit()
 	coreinit()
 	checksp('苏格拉底')
-	sp = gdata.getsp('苏格拉底')
-	gs = gdata.getgs('男人')
-	sp.addgs(gs)
+	add_information_1('苏格拉底','男人')
 	checksp('苏格拉底')
-#	checkgs('数学语句', True, True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 
