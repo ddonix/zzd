@@ -186,8 +186,8 @@ def coreinit():
 #原则：2.不能重复。苏格拉底原先是男人，现在不能是人，否则返回False.
 def add_information_1(sp_a, gs_A):
 	assert spin(sp_a) and gdata.gsin(gs_A)
-	sp = sp(sp_a)
-	gs = gs(gs_A)
+	sp = gdata.getsp(sp_a)
+	gs = gdata.getgs(gs_A)
 	return _add_information_1(sp, gs)
 	
 def _add_information_1(sp, gs):
@@ -204,7 +204,7 @@ def add_information_2(gs_A, gs_B):#集合A包含于集合B
 	
 def checksp(sp):
 	print('检查SP %s'%sp)
-	sp = sp(sp)
+	sp = gdata.getsp(sp)
 	print('1.实例信息')
 	print(sp)
 	if len(sp.gs) == 0:
