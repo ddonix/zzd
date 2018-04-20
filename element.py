@@ -26,7 +26,7 @@ class seph:
 	def addgs(self, gs):
 		assert isinstance(gs, sets.gset)
 		assert not gs in self.gs
-		return False
+		self.gs.append(gs)
 	
 	def removegs(self, gs):
 		assert isinstance(gs, sets.gset)
@@ -35,7 +35,7 @@ class seph:
 
 	def be(self, gram):
 		gs = gdata.getgs(gram)
-		if gs.contain(self) != None:
+		if gs.contain(self):
 			return True
 		return False
 

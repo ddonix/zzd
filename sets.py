@@ -206,7 +206,7 @@ class gset:
 				res = ch.contain(sp)
 				if res:
 					return res
-		return None
+		return res
 	
 	#只处理基本集合。没有子集，不依赖任何别的集合。例如，句号，感叹号，阿拉伯数字,基本汉字
 	def fensp_1(self, phrases, mend):

@@ -10,13 +10,14 @@ import zzd_zzd
 import threading
 import signal
 import time
+import gdata
 
 input_layer1 = None
 
 entry_human = None
 entry_zzd = None
 	
-autoplay = False
+autoplay = True
 
 root = None
 #主进程ident, 小涵涵进程结束后给root进程发消息，让主进程退出.
@@ -67,7 +68,7 @@ def voicePlay(evt):
 
 def enterSen(waa):
 	for item in waa:
-		if not db.database.legal(item):
+		if not gdata.legal(item):
 			zhdShow('对不起，我不认识\"%s\"这个字符。'%item)
 			return
 	xhh.output(zhd, waa)

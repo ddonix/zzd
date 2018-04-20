@@ -194,8 +194,8 @@ def coreinit():
 				gdata._keyword_zzd[sp.s] = keyword[1:]
 					
 		elif keyword[0][0] == '(' and keyword[0][-1] == ')':
-			gdata._gset_key[keyword[0]] = keyword[1:]
 			gs = sets.gset(keyword[0])
+			gdata._gset_key[keyword[0]] = keyword[1:]
 			item = keyword[0][1:-1].split(' ')
 			for sp in item:
 				assert gdata.spin(sp)
@@ -204,6 +204,8 @@ def coreinit():
 		else:
 			print(keyword[0])
 			raise NameError
+	for key in gdata._keyword_zzd:
+		print(key,gdata._keyword_zzd[key])
 
 	try:
 		cursor = conn.execute("select * from verify")
@@ -383,8 +385,8 @@ def main():
 	gsinit()
 	spinit()
 	coreinit()
-	checksp('苏格拉底')
-	checkgs('认证确认1', False, True)
+#	checksp('')
+	checkgs('数学语句', True, True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 

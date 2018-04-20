@@ -112,7 +112,7 @@ class zzd():
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
 	def _solve_verify(self, phrases):
-		sp = gdata.gs('认证语句')._fensp(phrases, True)
+		sp = gdata.getgs('认证语句')._fensp(phrases, True)
 		if sp == None:
 			self.say('认证语法不对', '')
 		else:
@@ -131,7 +131,7 @@ class zzd():
 						self.desire['verify'][2][1] = arg
 
 	def _solve_math(self, phrases):
-		sp = gdata.gs('数学语句')._fensp(phrases, True)
+		sp = gdata.getgs('数学语句')._fensp(phrases, True)
 		if not sp:
 			self.say('数学语法不对','')
 		else:
@@ -145,7 +145,7 @@ class zzd():
 					self.say('数学语法错误', '')
 	
 	def _solve_define(self, phrases):
-		sp = gdata.gs('定义语句')._fensp(phrases, True)
+		sp = gdata.getgs('定义语句')._fensp(phrases, True)
 		if sp == None:
 			self.say('定义语法错误','')
 		else:
@@ -158,7 +158,7 @@ class zzd():
 				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0].s)
 	
 	def _solve_command(self, phrases):
-		sp = gdata.gs('命令语句')._fensp(phrases, True)
+		sp = gdata.getgs('命令语句')._fensp(phrases, True)
 		if sp == None:
 			self.say('命令语法不对','')
 		else:
@@ -187,7 +187,7 @@ class zzd():
 				self.say('还在开发中', '')
 
 	def _solve_set(self, phrases):
-		sp = gdata.gs('集合语句')._fensp(phrases, True)
+		sp = gdata.getgs('集合语句')._fensp(phrases, True)
 		if sp == None:
 			self.say('集合语法不对',' ')
 		else:
@@ -196,7 +196,7 @@ class zzd():
 			print(sp[2]['.'])
 			print(sp[2]['集合'])
 			
-			ph = gdata.sp(sp[2]['.'])
+			ph = gdata.getsp(sp[2]['.'])
 			if ph.be(sp[2]['集合']):
 				s = ''
 				for ph in phrases[0:-1]:
@@ -207,7 +207,7 @@ class zzd():
 
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
-			sp = gdata.gs(self.FSM['ask'][0])._fensp(phrases, True)
+			sp = gdata.getgs(self.FSM['ask'][0])._fensp(phrases, True)
 			if sp:
 				self.FSM['ask'][1]=sp[0].s
 			self.ask_event.set()
@@ -310,9 +310,9 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '苏格拉底会死吗？'
+	a = '1+1=x'
 	phs = db.fenci(a, False)
-	g = gdata.getgs('集合语句')
+	g = gdata.getgs('数学语句')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])

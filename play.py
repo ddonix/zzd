@@ -8,8 +8,8 @@ def mplayer_thread(core):
 	for filename in core.list:
 		if core.playflag == False:
 			break
-		print('播放 ./music/%s'%filename)
-		cmd = 'mplayer -slave -input file=/tmp/mfifo ./music/%s'%filename
+		print('播放 ../music/%s'%filename)
+		cmd = 'mplayer -slave -input file=/tmp/mfifo ../music/%s'%filename
 		print(cmd)
 		os.system('rm /tmp/mfifo -rf')
 		os.system('mkfifo /tmp/mfifo')
