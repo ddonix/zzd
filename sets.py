@@ -123,8 +123,12 @@ class gset:
 		return False
 
 	def addsp(self, sp):
-		if not self.contain(sp):
+		gs = self.contain(sp)
+		if gs:
+			return gs
+		else:
 			self.sp.add(sp)
+			
 	
 	def removesp(self, sp):
 		if sp not in self.sp:

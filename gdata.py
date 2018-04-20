@@ -43,6 +43,16 @@ def legal(s):
 			print('%s中有非法字符%s'%(s,v))
 			return False
 	return True
+
+def fix(s):
+	res = ''
+	for v in s:
+		if v in _table_vocable:
+			res += v
+	return res
+	
+def addgs(gs):
+	_gset_all[gs.name] = gs
 	
 def addgs(gs):
 	_gset_all[gs.name] = gs

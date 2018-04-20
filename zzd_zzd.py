@@ -293,10 +293,9 @@ class zzd():
 				t.start()
 			time.sleep(0.1)
 		self.ask_event.set()
-		while 'ask' in self.FSM:
-			self.ask_event.set()
-			time.sleep(1)
-			break
+		time.sleep(1)
+		self.ask_event.set()
+		time.sleep(1)
 				
 	def add_desire(self, name, arg):
 		self.desire[name][1] = True
@@ -304,6 +303,7 @@ class zzd():
 	
 def desire_thread(core, d):
 	d[0](core,d)
+	
 
 def main():
 	print('zzd_zzd')

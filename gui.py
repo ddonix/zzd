@@ -67,11 +67,8 @@ def voicePlay(evt):
 	voice.txt2voice(waa)
 
 def enterSen(waa):
-	for item in waa:
-		if not gdata.legal(item):
-			zhdShow('对不起，我不认识\"%s\"这个字符。'%item)
-			return
-	xhh.output(zhd, waa)
+	fix = gdata.fix(waa)
+	xhh.output(zhd, fix)
 
 def human_entry():
 	global entry_human
@@ -102,6 +99,7 @@ def delete_windows():
 		zhd.root = False
 	if xhh:
 		xhh.root = False
+	wxwork = False
 	while threading.activeCount() > 1:
 		print('waiting... ')
 		for t in threading.enumerate():
@@ -144,6 +142,21 @@ class xhhthread(threading.Thread):
 		xhh = None
 		print('xhh_thread over.')
 
+wxwork=True
+class wxthread(threading.Thread):
+	def __init__(self,name):
+		super().__init__()
+		self.name = name
+
+	def run(self):
+		global wxwork
+		while wxwork:
+			f=open('/tmp/zzdwx','r')
+			r=f.read()
+			f.close()
+			print('微信接收到：%s'%r)
+			enterSen(r)
+			time.sleep(1)
 
 def main():
 	global entry_human, entry_zzd
@@ -211,6 +224,10 @@ def xhh_zhd():
 	zhdt.start()
 	zhd_running.wait()
 	print('create thread over.')
+	
+	wxt = wxthread('wx_thread')
+	wxt.start()
+	print('create wx over.')
 	
 if __name__ == '__main__':
 	main()
