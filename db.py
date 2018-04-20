@@ -271,6 +271,10 @@ def checksp(sp):
 		ancestor=list(set(ancestor))
 		for gs in ancestor:
 			print(gs.name)
+		print('...')
+		for gs in sp.gs:
+			print(gs.name)
+		print('!!!')
 	
 def get_ancestor(gs):
 	res = [gs]
