@@ -267,7 +267,7 @@ def checksp(sp):
 		print('2.属合下列集合:')
 		ancestor = []
 		for gs in sp.gs:
-			ancestor.extend(getancestor(gs))
+			ancestor.extend(sets.gset.get_ancset(gs))
 		for gs in ancestor:
 			print(gs.name)
 	
@@ -384,8 +384,8 @@ def main():
 	gsinit()
 	spinit()
 	coreinit()
-#	checksp('')
-	checkgs('数学语句', True, True)
+	checksp('苏格拉底')
+#	checkgs('数学语句', True, True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 

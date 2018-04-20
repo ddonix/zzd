@@ -81,7 +81,29 @@ class gset:
 		self.child.append(ch)
 		ch.father.append(self)
 		return True
-
+	
+	#集合A的父集, 包括自己
+	@classmethod
+	def get_ancset(cls, gs_A):
+		res = []
+		res.append(gs_A)
+		for fa in gs_A.father:
+			res.append(fa)
+			res.extend(cls.get_ancset(fa))
+		res=list(set(res))
+		return res
+	
+	#集合A的子集,包括自己
+	@classmethod
+	def get_subset(cls, gs_A):
+		res = []
+		res.append(gs_A)
+		for ch in gs_A.child:
+			res.append(ch)
+			res.extend(cls.get_subset(ch))
+		return res
+	
+	
 	#集合A和B的合集是否为空集，是返回True.
 	#合集不为空集或者无法判定，返回False.
 	@classmethod
@@ -126,10 +148,13 @@ class gset:
 		gs = self.contain(sp)
 		if gs:
 			return gs
-		else:
+		else:#苏格拉底原先是人，现在是男人
 			self.sp.add(sp)
-			
-	
+			for gs in sp.gs:
+				if gset.involved_in(self, gs):
+					gs.removesp(sp)
+					sp.removegs(gs)
+					
 	def removesp(self, sp):
 		if sp not in self.sp:
 			raise TypeError
