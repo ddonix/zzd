@@ -1,7 +1,6 @@
 #!/usr/bin/python3 -B
 import sqlite3
 import copy
-import ipdb
 import sets
 import element
 import gdata
