@@ -268,6 +268,7 @@ def checksp(sp):
 		ancestor = []
 		for gs in sp.gs:
 			ancestor.extend(sets.gset.get_ancset(gs))
+		ancestor=list(set(ancestor))
 		for gs in ancestor:
 			print(gs.name)
 	
@@ -384,6 +385,10 @@ def main():
 	gsinit()
 	spinit()
 	coreinit()
+	checksp('苏格拉底')
+	sp = gdata.getsp('苏格拉底')
+	gs = gdata.getgs('男人')
+	sp.addgs(gs)
 	checksp('苏格拉底')
 #	checkgs('数学语句', True, True)
 #	add_information_1('苏格拉底', '人')
