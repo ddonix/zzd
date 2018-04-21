@@ -207,9 +207,9 @@ class zzd():
 				self.say('还在开发中', '')
 
 	def _solve_set(self, phrases):
-		sp = gdata.getgs('集合语句')._fensp(phrases, True)
+		sp = gdata.getgs('集合判断语句')._fensp(phrases, True)
 		if sp == None:
-			self.say('集合语法不对',' ')
+			self.say('集合判断语法不对',' ')
 		else:
 			assert '集合' in sp[2]
 			assert '.' in sp[2]
