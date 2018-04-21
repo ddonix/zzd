@@ -113,8 +113,16 @@ def gsinit():
 			gram = prevgram(v[0][1:])
 			gs = sets.gset(v[0][0])
 			for g in gram:
-				if g:
-					add_information_2(v[0][0], g)
+				if '|' not in g:
+					sets.gset(g)
+				else:
+					if ':' in g:
+						gg = g[g.find(':')+1:-1].split('|')
+					else:
+						gg = g[1:-1].split('|')
+					for ggg in gg:
+						sets.gset(ggg)
+				add_information_2(v[0][0], g)
 			v.pop(0)
 			skip = False
 		if skip:
@@ -389,6 +397,7 @@ def main():
 	gsinit()
 	spinit()
 	coreinit()
+	
 	checksp('苏格拉底')
 	add_information_1('苏格拉底','男人')
 	checksp('苏格拉底')

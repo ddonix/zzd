@@ -6,6 +6,9 @@ import element
 
 class gset:
 	def __init__(self, name):
+		print('name:',name)
+		assert type(name) == str
+		assert not '|' in name
 		self.name = name
 		gdata.addgs(self)
 		
@@ -18,13 +21,7 @@ class gset:
 		
 		#形如[A B]的集合,[]不允许递归.
 		if name[0] == '[' and name[-1] == ']':
-			if '|' in name:						
-				if ':' in name:
-					gram = name[name.find(':')+1:-1].split('|')	#[性别:男人|女人]
-				else:
-					gram = name[1:-1].split('|')				#[鱼|哺乳动物|鸟类]
-			else:												
-				gram = name[1:-1].split(' ')					#[主语 谓语 宾语]
+			gram = name[1:-1].split(' ')
 			for g in gram:
 				gset(g)
 	
@@ -47,13 +44,7 @@ class gset:
 		if gdata.gsin(ch):
 			ch = gdata.getgs(ch)
 			return self.__add_child(ch)
-		if ch[0] == '(' and ch[-1] == ')':
-			ch = gset(ch)
-			return self.__add_child(ch)
-		assert ch[0] == '[' and ch[-1] == ']'
-		if not '|' in ch:					#[主语 谓语 宾语]
-			ch = gset(ch)
-			return self.__add_child(ch)
+		assert '|' in ch
 		if ':' in ch:						#[性别:男人|女人]
 			name = ch[1:ch.find(':')]
 			plots = ch[ch.find(':')+1:-1].split('|')
