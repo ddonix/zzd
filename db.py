@@ -5,6 +5,8 @@ import sets
 import element
 import gdata
 
+#对子集进行排序，子集项多的在后
+#原始子集在前的在前
 def prevgram(gram):
 	tmp = []
 	for g in gram:
