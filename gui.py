@@ -68,7 +68,6 @@ def voicePlay(evt):
 
 def enterSen(waa):
 	fix = gdata.fix(waa)
-	print(fix)
 	xhh.output(zhd, fix)
 
 def human_entry():
@@ -82,42 +81,33 @@ def return_event(evt):
 	human_entry()
 
 
-#xhh线程发出，通知主进程退出.
-def gameoversignal(signum,frame):
-	print('game over root.destroy')
-	root.destroy()
-	sys.exit()
-
-#微信进程发出，通知主进程接收微信消息.
-wxmess = None
-def weixinsignal(signum,frame):
-	global root_conn,wxmess
-	waa = wxmess[-1]
-	print('weixin message:%s'%waa)
-	enterSen(waa)
-
-
 xhht = None
 zhdt = None
 root = None
-
-def exitZZD(evt):
-	pass
-
-def delete_windows():
+def gameover():
 	global zhd, zhdt, xhh, xhht, wxwork
 	if zhd:
 		zhd.root = False
 	if xhh:
 		xhh.root = False
 	wxwork = False
+	os.system('echo ZZDOVER >> /tmp/zzdwxin')
 	while threading.activeCount() > 1:
 		print('waiting... ')
 		for t in threading.enumerate():
 			print(t)
 		time.sleep(1)
-	print('delete_windows root.destroy')
 	root.destroy()
+
+def exitZZD(evt):
+	gameover()
+
+def delete_windows():
+	gameover()
+
+#xhh线程发出，通知主进程退出.
+def gameoversignal(signum,frame):
+	gameover()
 
 zhd = None
 zhd_running = None
@@ -164,6 +154,9 @@ def wx_thread():
 	while wxwork:
 		r=wxfile.read()
 		if r:
+			print(r)
+			if r[0:7] == 'ZZDOVER':
+				break
 			r=gdata.fix(r)
 			print('微信收到%d个字符：%s'%(len(r),r))
 			enterSen(r)
@@ -216,7 +209,6 @@ def main():
 	
 	rootpid = os.getpid()
 	signal.signal(signal.SIGUSR1, gameoversignal)
-	signal.signal(signal.SIGUSR2, weixinsignal)
 	root.after(1000, xhh_zhd)
 	root.mainloop()
 

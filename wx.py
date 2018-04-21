@@ -17,7 +17,7 @@ def text_reply(msg):
 			break
 		else:
 			time.sleep(1)
-	return r
+	return r[4:]
 
 def main():
 	global f,wxid
