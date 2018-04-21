@@ -11,7 +11,6 @@ import threading
 import signal
 import time
 import gdata
-import multiprocessing
 
 input_layer1 = None
 
@@ -112,7 +111,6 @@ def delete_windows():
 	if xhh:
 		xhh.root = False
 	wxwork = False
-	os.kill(wxpid, signal.SIGUSR1)
 	while threading.activeCount() > 1:
 		print('waiting... ')
 		for t in threading.enumerate():
@@ -152,34 +150,12 @@ class xhhthread(threading.Thread):
 		xhh.live()
 		if xhh.root:
 			os.kill(rootpid, signal.SIGUSR1)
-		os.kill(wxpid, signal.SIGUSR1)
 		xhh = None
 		print('xhh_thread over.')
 
 wxid=1000
 wxwork=False
 wxfile=None
-wxpid=0
-
-def wxoversignal(signum,frame):
-	print('wx_process sigtstp.')
-	sys.exit()
-
-def wx_process(wxm):
-	global wxwork,wxfile, wxid, wxpid
-	wxpid = os.getpid()
-	signal.signal(signal.SIGUSR1, wxoversignal)
-	wxfile = open('/tmp/zzdwxin','r')
-	print('open /tmp/zzdwxin success.')
-	while wxwork:
-		r=wxfile.read()
-		if r:
-			r=gdata.fix(r)
-			wxm.append(r)
-			print('微信收到%d个字符：%s'%(len(r),r))
-			os.kill(rootpid, signal.SIGUSR2)
-	wxfile.close()
-	print('wx_process over.')
 
 def wx_thread():
 	global wxwork,wxfile

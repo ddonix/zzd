@@ -11,7 +11,12 @@ def text_reply(msg):
 	global f,wxid
 	wx=msg['Text']
 	os.system('echo %s >> /tmp/zzdwxin'%wx)
-	r = 'zzd:%s'%wx
+	while True:
+		r=f.read()
+		if r:
+			break
+		else:
+			time.sleep(1)
 	return r
 
 def main():
