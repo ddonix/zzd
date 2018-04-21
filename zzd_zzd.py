@@ -207,23 +207,30 @@ class zzd():
 				self.say('还在开发中', '')
 
 	def _solve_set(self, phrases):
-		sp = gdata.getgs('集合判断语句')._fensp(phrases, True)
+		sp = gdata.getgs('集合语句')._fensp(phrases, True)
 		if sp == None:
-			self.say('集合判断语法不对',' ')
+			self.say('集合语法不对',' ')
 		else:
-			assert '集合' in sp[2]
-			assert '.' in sp[2]
-			print(sp[2]['.'])
-			print(sp[2]['集合'])
+			if '集合判断语句' in sp[2]:
+				assert '集合' in sp[2]
+				assert '.' in sp[2]
+				print(sp[2]['.'])
+				print(sp[2]['集合'])
 			
-			ph = gdata.getsp(sp[2]['.'])
-			if ph.be(sp[2]['集合']):
-				s = ''
-				for ph in phrases[0:-1]:
-					s += ph.s
-				self.say(s, sp[0].s)
+				ph = gdata.getsp(sp[2]['.'])
+				if ph.be(sp[2]['集合']):
+					s = ''
+					for ph in phrases[0:-1]:
+						s += ph.s
+					self.say(s, sp[0].s)
+				else:
+					self.say('对不起，我不知道', sp[0].s)
 			else:
-				self.say('对不起，我不知道', sp[0].s)
+				assert '集合断言语句' in sp[2]
+				if self.FSM['train'] == False:
+					self.say('对不起，您需进入学习模式才可以增加断言', sp[0].s)
+				else:
+					self.say('好的，我记住了', sp[0].s)
 
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
