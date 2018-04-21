@@ -334,7 +334,7 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '柏拉图会死吗'
+	a = '苏格拉底是人吗'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')

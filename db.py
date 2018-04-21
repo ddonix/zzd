@@ -16,7 +16,10 @@ def prevgram(gram):
 		if t in tmp2:
 			continue
 		for i in range(0,len(tmp2),1):
-			if len(t) >= len(tmp2[i]):
+			if len(t) < len(tmp2[i]):
+				tmp2.insert(i, t)
+				break
+			if len(t) == len(tmp2[i]):
 				tmp2.insert(i+1, t)
 				break
 		else:
@@ -375,7 +378,7 @@ def main():
 	spinit()
 	coreinit()
 	
-	checkgs('人', False, False)
+	checkgs('属于判断语句', False, False)
 	checkgs('会死', False, False)
 #add_information_1('苏格拉底','男人')
 #checksp('苏格拉底')
