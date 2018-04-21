@@ -38,7 +38,7 @@ class player:
 			arg = self.zhd.ask('命令参数')
 			if not arg:
 				return
-		elif arg == '随便':
+		if arg == '随便':
 			self.list = os.listdir('./music')
 		else:
 			self.list = ['%s.mp3'%arg[1:-1]]

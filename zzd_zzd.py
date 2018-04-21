@@ -302,7 +302,6 @@ class zzd():
 def desire_thread(core, d):
 	d[0](core,d)
 	
-
 def main():
 	print('zzd_zzd')
 	zzd.init()
