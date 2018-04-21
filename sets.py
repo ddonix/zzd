@@ -257,15 +257,24 @@ class gset:
 		return (sp, ress[-1][1], key)
 	
 	def _fensp(self, phrases, mend):
+		print('self.name:',self.name)
 		if self.child != []:
 			ress = []
+			tmp = []
 			for i in range(len(self.child)-1, -1, -1):
 				res = self.child[i]._fensp(phrases, mend)
 				if res:
 					res[2][self.name] = res[0].s
+					tmp.append(res)
+			if not tmp:
+				return None
+			for res in tmp:
+				if not res[1]:
 					ress.append(res)
 					return res
-			return None
+			else:
+				ress.append(tmp[0])
+				return tmp[0]
 		else:
 			if self.name[0] == '(' and self.name[-1] == ')':
 				return self.fensp_2(phrases, mend)
@@ -283,9 +292,11 @@ def main():
 	gs5 = gset('中国人')
 	sp = element.seph('你')
 
-	gs1.add_child(['[性别:男|女]', '活人', '中国人'])
+	gs1.add_child('[性别:男人|女人]')
+	gs1.add_child('活人')
+	gs1.add_child('中国人')
 	gs1._addsp(sp)
-	sp.addgs(gs1)
+	sp._addgs(gs1)
 	print(gset.conflict(gs1, gs2))
 	print(gset.conflict(gs2, gs3))
 	print(gset.conflict(gs1, gs3))

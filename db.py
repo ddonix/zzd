@@ -4,12 +4,33 @@ import copy
 import sets
 import element
 import gdata
+
 def prevgram(gram):
-	res = []
+	tmp = []
 	for g in gram:
-		res.extend(_prevgram(g))
-	res = list(set(res))
-	res.sort(key=lambda x:len(x))
+		tmp.extend(_prevgram(g))
+	tmp2 = []
+	for t in tmp:
+		if t in tmp2:
+			continue
+		for i in range(0,len(tmp2),1):
+			if len(t) >= len(tmp2[i]):
+				tmp2.insert(i+1, t)
+				break
+		else:
+			tmp2.append(t)
+	res = []
+	for t in tmp2:
+		print('t:',t)
+		if type(t) == str:
+			r = t
+		else:
+			r = '[%s'%t[0]
+			for s in t[1:]:
+				r += ' %s'%s
+			r += ']'
+		print('r:',r)
+		res.append(r)
 	return res
 	
 def _prevgram(gram):
@@ -18,17 +39,8 @@ def _prevgram(gram):
 	if not (gram[0] == '[' and gram[-1] == ']'):
 		return [gram]
 	gram = gram[1:-1].split(' ')
-	tmp = []
-	__prevgram(gram,tmp)
 	res = []
-	for t in tmp:
-		r = '[%s'%t[0]
-		for s in t[1:]:
-			r += ' %s'%s
-		r += ']'
-		res.append(r)
-	res = list(set(res))
-	res.sort(key=lambda x:len(x))
+	__prevgram(gram, res)
 	return res
 
 def __prevgram(gram, res):
@@ -361,9 +373,10 @@ def main():
 	spinit()
 	coreinit()
 	
-	checksp('苏格拉底')
-	add_information_1('苏格拉底','男人')
-	checksp('苏格拉底')
+	checkgs('人', False, False)
+	checkgs('会死', False, False)
+#add_information_1('苏格拉底','男人')
+#checksp('苏格拉底')
 #	checkgs('人', False, False)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
