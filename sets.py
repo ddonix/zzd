@@ -6,9 +6,11 @@ import element
 
 class gset:
 	def __init__(self, name):
-		print('name:',name)
+		print('gs name:%s'%name)
 		assert type(name) == str
 		assert not '|' in name
+		assert not gdata.gsin(name)
+		
 		self.name = name
 		gdata.addgs(self)
 		
@@ -23,7 +25,8 @@ class gset:
 		if name[0] == '[' and name[-1] == ']':
 			gram = name[1:-1].split(' ')
 			for g in gram:
-				gset(g)
+				if not (g == '.' or g == '...' or gdata.gsin(g)):
+					gset(g)
 	
 	def __add_child(self, ch):
 		if ch in self.child:
@@ -40,7 +43,6 @@ class gset:
 
 	def add_child(self, ch):
 		assert ch
-		print(self.name, ch)
 		if gdata.gsin(ch):
 			ch = gdata.getgs(ch)
 			return self.__add_child(ch)
@@ -48,31 +50,16 @@ class gset:
 		if ':' in ch:						#[性别:男人|女人]
 			name = ch[1:ch.find(':')]
 			plots = ch[ch.find(':')+1:-1].split('|')
-			plot = set()
-			for p in plots:
-				if p[0] == '(' and p[-1] == ')':
-					ch = gset(p)
-				else:
-					print(p)
-					assert gdata.gsin(p)
-					ch = gdata.getgs(p)
-				if not self.__add_child(ch):
-					return False
-				plot.add(ch)
-			self.plot[name]=plot
 		else:								#[奇数|偶数]
+			name = ch
 			plots = ch[1:-1].split('|')
-			plot = set()
-			for p in plots:
-				if p[0] == '(' and p[-1] == ')':
-					ch = gset(p)
-				else:
-					assert gdata.gsin(p)
-					ch = gdata.getgs(p)
-				if not self.__add_child(ch):
-					return False
-				plot.add(ch)
-			self.plot[ch]=plot
+		plot = set()
+		for p in plots:
+			ch = gdata.getgs(p)
+			if not self.__add_child(ch):
+				return False
+			plot.add(ch)
+		self.plot[name]=plot
 		return True
 	
 	def __add_child(self, ch):

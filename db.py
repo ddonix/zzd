@@ -59,75 +59,31 @@ def gsinit():
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
 		cursor = conn.execute("select * from gset_phrase")
-		v = cursor.fetchall()
+		grammar = cursor.fetchall()
 		cursor = conn.execute("select * from gset_set")
-		v.extend(cursor.fetchall())
+		grammar.extend(cursor.fetchall())
 		cursor = conn.execute("select * from gset_sentence")
-		v.extend(cursor.fetchall())
+		grammar.extend(cursor.fetchall())
 		conn.close()
 	except:
 		return NameError
-	while v != []:
-		if gdata.gsin(v[0][0]):
-			v.pop(0)
-			continue
-		skip = True
-		for g in v[0][1:]:
-			if g == '' or g == None or gdata.gsin(g):
-				continue
-			if g[0] == '(' and g[-1] == ')':
-				continue
-			if not (g[0] == '[' and g[-1] == ']'):
-				break
-			if not '|' in g:
-				gsp = g[1:-1].split(' ')
-				skip2 = True
-				for gg in gsp:
-					if gg == '' or gg == '.' or gg == '...' or gdata.gsin(gg):
-						continue
-					if gg[0] == 'w' and gdata.gsin(gg[1:]):
-						continue
-					if gg[0] == '(' or gg[-1] == ')':
-						continue
-					break
-				else:
-					skip2 = False
-				if skip2:
-					print(v[0][0]+' 依赖 '+g)
-					break
-			else:
-				skip2 = True
-				if g.find(':') == -1:
-					gsp = g[1:-1].split('|')
-				else:
-					gsp = g[g.find(':')+1:-1].split('|')
-				for gg in gsp:
-					if not (gg == '' or (gg[0]=='(' and gg[-1]==')') or gdata.gsin(gg)):
-						break
-				else:
-					skip2 = False
-				if skip2:
-					print(v[0][0]+' 依赖 '+gg)
-					break
-		else:
-			gram = prevgram(v[0][1:])
-			gs = sets.gset(v[0][0])
-			for g in gram:
-				if '|' not in g:
+	for v in grammar:
+		if not gdata.gsin(v[0]):
+			gs = sets.gset(v[0])
+		gram = prevgram(v[1:])
+		for g in gram:
+			if '|' not in g:
+				if not gdata.gsin(g):
 					sets.gset(g)
+			else:
+				if ':' in g:
+					gs = g[g.find(':')+1:-1].split('|')
 				else:
-					if ':' in g:
-						gg = g[g.find(':')+1:-1].split('|')
-					else:
-						gg = g[1:-1].split('|')
-					for ggg in gg:
-						sets.gset(ggg)
-				add_information_2(v[0][0], g)
-			v.pop(0)
-			skip = False
-		if skip:
-			tmp = v.pop(0)
-			v.append(tmp)
+					gs = g[1:-1].split('|')
+				for gg in gs:
+					if not gdata.gsin(gg):
+						sets.gset(gg)
+			add_information_2(v[0], g)
 
 def spinit():
 	try:
@@ -236,7 +192,10 @@ def coreinit():
 #原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人，否则抛出异常
 #原则：2.不能无用。苏格拉底原先是男人，现在不能是人，否则返回False.
 def add_information_1(sp_a, gs_A):
-	assert gdata.spin(sp_a) and gdata.gsin(gs_A)
+	if not gdata.spin(sp_a):
+		element.seph(sp_a)
+	if not gdata.gsin(gs_A):
+		sets.gset(gs_A)
 	sp = gdata.getsp(sp_a)
 	gs = gdata.getgs(gs_A)
 	return _add_information_1(sp, gs)
@@ -357,7 +316,9 @@ def fenci(waa, point):
 				s += waa[0]
 				waa = waa[1:]
 			sp = element.seph(s)
-			gdata.getgs('数').addsp(sp)
+			gs = gdata.getgs('数')
+			sp._addgs(gs)
+			gs._addsp(sp)
 			phrases.append(sp)
 		elif waa[0] in cnumber:
 			s = waa[0]
@@ -366,7 +327,9 @@ def fenci(waa, point):
 				s += waa[0]
 				waa = waa[1:]
 			sp = element.seph(s)
-			gdata.getgs('汉语数').addsp(sp)
+			gs = gdata.getgs('汉语数')
+			sp._addgs(gs)
+			gs._addsp(sp)
 			phrases.append(sp)
 		elif waa[0] in zstr[10:]:
 			s = waa[0]
@@ -375,7 +338,9 @@ def fenci(waa, point):
 				s += waa[0]
 				waa = waa[1:]
 			sp = element.seph(s)
-			gdata.getgs('字符串').addsp(sp)
+			gs = gdata.getgs('汉语数')
+			sp._addgs(gs)
+			gs._addsp(sp)
 			phrases.append(sp)
 		elif waa[0:2] == '!=':
 			phrases.append(gdata.getsp('!='))
@@ -401,6 +366,7 @@ def main():
 	checksp('苏格拉底')
 	add_information_1('苏格拉底','男人')
 	checksp('苏格拉底')
+#	checkgs('人', False, False)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 

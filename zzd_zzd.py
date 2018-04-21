@@ -310,9 +310,11 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '1+1=x'
+	a = '认证123456'
 	phs = db.fenci(a, False)
-	g = gdata.getgs('数学语句')
+	for p in phs:
+		print(p.s,'|')
+	g = gdata.getgs('[认证确认1 认证参数 感叹号]')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])
