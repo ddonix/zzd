@@ -239,19 +239,17 @@ def add_information_1(sp_a, gs_A):
 
 def _add_information_1(sp, gs):
 	assert isinstance(sp, element.seph) and isinstance(gs, sets.gset)
-	for g in sp.gs:
+	for g in list(sp.gs):
 		#判断是否无用
 		if sets.gset.involved_in(g, gs):
 			return False
-		#判断是否矛盾
-		if sets.gset.conflict(g, gs):
-			return False
-	#判断是否要删除无用信息。原先苏格拉底是人，现在是男人，删掉苏格拉底是人.
-	for g in sp.gs:
 		#判断是否删除
 		if sets.gset.involved_in(gs, g):
 			g._removesp(sp)
 			sp._removegs(g)
+		#判断是否矛盾
+		if sets.gset.conflict(g, gs):
+			return False
 	gs._addsp(sp)
 	sp._addgs(gs)
 	return True
@@ -259,7 +257,6 @@ def _add_information_1(sp, gs):
 def add_information_2(gs_A, gs_B):#集合A包含于集合B
 	assert gdata.gsin(gs_A) and gsin(gs_B)
 		
-	
 def checksp(sp):
 	print('检查SP %s'%sp)
 	sp = gdata.getsp(sp)
