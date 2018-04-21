@@ -16,21 +16,34 @@ class gset:
 							#命名划分：人划分为[性别:男|女],子集为男人，女人.
 							#匿名划分:自然数划分为[奇数|偶数],子集为奇数，偶数.
 		
-		#形如[A (a) B]的集合，[]不允许递归.把包含的(a)型集合创建出来。
-		if name[0] == '[' and name[-1] == ']' and name.find('(') != -1:
-			name = name[1:-1].split(' ')
-			for gram in name:
-				#（a b c）集合包含a b c三个元素,这种是匿名集合.
-				if gram[0] == '(' and gram[-1] == ')':
-					gset(gram)
-		
+		#形如[A B]的集合,[]不允许递归.
+		if name[0] == '[' and name[-1] == ']':
+			if '|' in name:						
+				if ':' in name:
+					gram = name[name.find(':')+1:-1].split('|')	#[性别:男人|女人]
+				else:
+					gram = name[1:-1].split('|')				#[鱼|哺乳动物|鸟类]
+			else:												
+				gram = name[1:-1].split(' ')					#[主语 谓语 宾语]
+			for g in gram:
+				gset(g)
+	
+	def __add_child(self, ch):
+		if ch in self.child:
+			assert self in ch.father
+			return True
+		assert not self in ch.father
+		if gset.conflict(self, ch):
+			print('%s and %s is conflict.'%(self.name,ch.name))
+			return False
+		self.child.append(ch)
+		ch.father.append(self)
+		return True
+	
 
-	def add_child(self, gram):
-		for ch in gram:
-			self._add_child(ch)
-
-	def _add_child(self, ch):
+	def add_child(self, ch):
 		assert ch
+		print(self.name, ch)
 		if gdata.gsin(ch):
 			ch = gdata.getgs(ch)
 			return self.__add_child(ch)
@@ -41,7 +54,7 @@ class gset:
 		if not '|' in ch:					#[主语 谓语 宾语]
 			ch = gset(ch)
 			return self.__add_child(ch)
-		if ':' in ch:						#[性别:男|女]
+		if ':' in ch:						#[性别:男人|女人]
 			name = ch[1:ch.find(':')]
 			plots = ch[ch.find(':')+1:-1].split('|')
 			plot = set()
@@ -49,8 +62,9 @@ class gset:
 				if p[0] == '(' and p[-1] == ')':
 					ch = gset(p)
 				else:
-					assert gdata.gsin('%s%s'%(p,self.name))
-					ch = gdata.getgs('%s%s'%(p,self.name))
+					print(p)
+					assert gdata.gsin(p)
+					ch = gdata.getgs(p)
 				if not self.__add_child(ch):
 					return False
 				plot.add(ch)
@@ -60,7 +74,7 @@ class gset:
 			plot = set()
 			for p in plots:
 				if p[0] == '(' and p[-1] == ')':
-					ch = gset(p,[])
+					ch = gset(p)
 				else:
 					assert gdata.gsin(p)
 					ch = gdata.getgs(p)

@@ -4,7 +4,6 @@ import copy
 import sets
 import element
 import gdata
-
 def prevgram(gram):
 	res = []
 	for g in gram:
@@ -100,25 +99,22 @@ def gsinit():
 				skip2 = True
 				if g.find(':') == -1:
 					gsp = g[1:-1].split('|')
-					for gg in gsp:
-						if not (gg == '' or (gg[0]=='(' and gg[-1]==')') or gdata.gsin(gg)):
-							break
-					else:
-						skip2 = False
 				else:
 					gsp = g[g.find(':')+1:-1].split('|')
-					for gg in gsp:
-						if not (gg == '' or (gg[0]=='(' and gg[-1]==')') or gdata.gsin('%s%s'%(gg,v[0][0]))):
-							break
-					else:
-						skip2 = False
+				for gg in gsp:
+					if not (gg == '' or (gg[0]=='(' and gg[-1]==')') or gdata.gsin(gg)):
+						break
+				else:
+					skip2 = False
 				if skip2:
 					print(v[0][0]+' 依赖 '+gg)
 					break
 		else:
 			gram = prevgram(v[0][1:])
 			gs = sets.gset(v[0][0])
-			gs.add_child(gram)
+			for g in gram:
+				if g:
+					add_information_2(v[0][0], g)
 			v.pop(0)
 			skip = False
 		if skip:
@@ -255,8 +251,11 @@ def _add_information_1(sp, gs):
 	return True
 	
 def add_information_2(gs_A, gs_B):#集合A包含于集合B
-	assert gdata.gsin(gs_A) and gsin(gs_B)
-		
+	print(gs_A, gs_B)
+	assert gdata.gsin(gs_A)
+	gsA = gdata.getgs(gs_A)
+	return gsA.add_child(gs_B)
+
 def checksp(sp):
 	print('检查SP %s'%sp)
 	sp = gdata.getsp(sp)
