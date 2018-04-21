@@ -338,7 +338,7 @@ def main():
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('集合判断语句')
+	g = gdata.getgs('集合语句')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])
