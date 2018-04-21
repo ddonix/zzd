@@ -334,11 +334,11 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '小白进入学习模式'
+	a = '柏拉图会死吗'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('学习语句')
+	g = gdata.getgs('集合判断语句')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])

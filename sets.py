@@ -226,9 +226,11 @@ class gset:
 				key['.'] = phrases[0].s
 				phrases = phrases[1:]
 			elif gram == '...':
+				tc = ''
 				if i < len(frame)-1:
 					while not (phrases[0].be(frame[i+1])):
-						ress.append((phrases[0], phrases[1:], {}))
+						tc += phrases[0].s
+						#ress.append((phrases[0], phrases[1:], {}))
 						phrases = phrases[1:]
 						if phrases == []:
 							break
@@ -236,10 +238,13 @@ class gset:
 					if phrases == []:
 						break
 					while True:
-						ress.append((phrases[0], phrases[1:], {}))
+						tc += phrases[0].s
+						#ress.append((phrases[0], phrases[1:], {}))
 						phrases = phrases[1:]
 						if phrases == []:
 							break
+				ress.append((element.seph(tc), phrases, {}))
+				key['...'] = tc
 			else:
 				print(gram)
 				raise TypeError
