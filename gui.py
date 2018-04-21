@@ -8,10 +8,10 @@ import sys
 import zzd_human
 import zzd_zzd
 import threading
-import multiprocessing
 import signal
 import time
 import gdata
+import multiprocessing
 
 input_layer1 = None
 
@@ -69,6 +69,7 @@ def voicePlay(evt):
 
 def enterSen(waa):
 	fix = gdata.fix(waa)
+	print(fix)
 	xhh.output(zhd, fix)
 
 def human_entry():
@@ -82,10 +83,20 @@ def return_event(evt):
 	human_entry()
 
 
+#xhh线程发出，通知主进程退出.
 def gameoversignal(signum,frame):
 	print('game over root.destroy')
 	root.destroy()
 	sys.exit()
+
+#微信进程发出，通知主进程接收微信消息.
+wxmess = None
+def weixinsignal(signum,frame):
+	global root_conn,wxmess
+	waa = wxmess[-1]
+	print('weixin message:%s'%waa)
+	enterSen(waa)
+
 
 xhht = None
 zhdt = None
@@ -101,7 +112,7 @@ def delete_windows():
 	if xhh:
 		xhh.root = False
 	wxwork = False
-	os.kill(wxpid, signal.SIGUSR2)
+	os.kill(wxpid, signal.SIGUSR1)
 	while threading.activeCount() > 1:
 		print('waiting... ')
 		for t in threading.enumerate():
@@ -141,7 +152,7 @@ class xhhthread(threading.Thread):
 		xhh.live()
 		if xhh.root:
 			os.kill(rootpid, signal.SIGUSR1)
-		os.kill(wxpid, signal.SIGUSR2)
+		os.kill(wxpid, signal.SIGUSR1)
 		xhh = None
 		print('xhh_thread over.')
 
@@ -154,17 +165,34 @@ def wxoversignal(signum,frame):
 	print('wx_process sigtstp.')
 	sys.exit()
 
-def wx_process():
+def wx_process(wxm):
 	global wxwork,wxfile, wxid, wxpid
 	wxpid = os.getpid()
-	signal.signal(signal.SIGUSR2, wxoversignal)
+	signal.signal(signal.SIGUSR1, wxoversignal)
 	wxfile = open('/tmp/zzdwxin','r')
 	print('open /tmp/zzdwxin success.')
 	while wxwork:
-		wxid += 1
-		time.sleep(1)
+		r=wxfile.read()
+		if r:
+			r=gdata.fix(r)
+			wxm.append(r)
+			print('微信收到%d个字符：%s'%(len(r),r))
+			os.kill(rootpid, signal.SIGUSR2)
 	wxfile.close()
 	print('wx_process over.')
+
+def wx_thread():
+	global wxwork,wxfile
+	wxfile = open('/tmp/zzdwxin','r')
+	print('open /tmp/zzdwxin success.')
+	while wxwork:
+		r=wxfile.read()
+		if r:
+			r=gdata.fix(r)
+			print('微信收到%d个字符：%s'%(len(r),r))
+			enterSen(r)
+	wxfile.close()
+	print('wx_thread over.')
 
 def main():
 	global entry_human, entry_zzd
@@ -212,6 +240,7 @@ def main():
 	
 	rootpid = os.getpid()
 	signal.signal(signal.SIGUSR1, gameoversignal)
+	signal.signal(signal.SIGUSR2, weixinsignal)
 	root.after(1000, xhh_zhd)
 	root.mainloop()
 
@@ -220,6 +249,7 @@ def xhh_zhd():
 	global xhht, xhh, xhh_running
 	global zhdt, zhd, zhd_running
 	global wxfile, wxwork
+	global root_conn
 	
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
@@ -240,8 +270,8 @@ def xhh_zhd():
 	print('create thread over.')
 
 	wxwork = True
-	wxp = multiprocessing.Process(target=wx_process, args=())
-	wxp.start()
+	wxt = threading.Thread(target=wx_thread, args=())
+	wxt.start()
 	print('create wx over.')
 
 if __name__ == '__main__':

@@ -10,13 +10,8 @@ wxid=1000
 def text_reply(msg):
 	global f,wxid
 	wx=msg['Text']
-	os.system('echo %s >> /tmp/zzdwx'%wx)
-	while True:
-		r=f.read()
-		if r:
-			break
-		else:
-			time.sleep(3)
+	os.system('echo %s >> /tmp/zzdwxin'%wx)
+	r = 'zzd:%s'%wx
 	return r
 
 def main():
@@ -27,6 +22,7 @@ def main():
 	wxid=int(r[0:4])
 	itchat.auto_login(True)
 	itchat.run()
+	f.close()
 
 if __name__ == "__main__":
 	main()
