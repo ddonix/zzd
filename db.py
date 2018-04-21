@@ -106,6 +106,7 @@ def spinit():
 	for v in cursor:
 		assert len(v[0]) > 1
 		if not gdata.legal(v[0]):
+			print(v)
 			raise NameError
 		sp = element.seph(v[0])
 		gdata.addsp(sp)

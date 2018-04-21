@@ -21,7 +21,7 @@ class zzd():
 		
 		self.player = play.player(self)
 		#有限状态机Finite-state machine
-		self.FSM = {'verify':False, 'work':True, 'play':self.player}
+		self.FSM = {'verify':False, 'work':True, 'train':False, 'play':self.player}
 		
 		#大凡物不得其平则鸣
 		self.desire = {}
@@ -44,6 +44,7 @@ class zzd():
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
 		cls.inWaaClass['define'] = zzd._solve_define					#define
 		cls.inWaaClass['command'] = zzd._solve_command					#command
+		cls.inWaaClass['system'] = zzd._solve_system					#system
 		cls.inWaaClass['set'] = zzd._solve_set							#set
 		
 	#运行在root进程
@@ -157,6 +158,25 @@ class zzd():
 			else:
 				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0].s)
 	
+	def _solve_system(self, phrases):
+		sp = gdata.getgs('学习语句')._fensp(phrases, True)
+		if sp == None:
+			self.say('学习语法不对','')
+		else:
+			assert 'zzd学习命令' in sp[2]
+			if '学习状语' not in sp[2] or sp[2]['学习状语'] == '进入':
+				if self.FSM['train'] == False:
+					self.say('好的，已进入%s模式'%sp[2]['zzd学习命令'], sp[0].s)
+					self.FSM['train'] = True
+				else:
+					self.say('您已经是已%s模式了'%sp[2]['zzd学习命令'], sp[0].s)
+			else:
+				if self.FSM['train'] == True:
+					self.say('好的，已退出%s模式'%sp[2]['zzd学习命令'], sp[0].s)
+					self.FSM['train'] = False
+				else:
+					self.say('您并没有在%s模式'%sp[2]['zzd学习命令'], sp[0].s)
+
 	def _solve_command(self, phrases):
 		sp = gdata.getgs('命令语句')._fensp(phrases, True)
 		if sp == None:
@@ -307,11 +327,11 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '认证123456'
+	a = '小白进入学习模式'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('[认证确认1 认证参数 感叹号]')
+	g = gdata.getgs('学习语句')
 	sp = g._fensp(phs,True)
 	print(sp[0].s)
 	print(sp[1])
