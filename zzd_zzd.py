@@ -292,10 +292,8 @@ class zzd():
 				t = threading.Thread(target=desire_thread, args=(self, d))
 				t.start()
 			time.sleep(0.1)
+		self.player.stop(False)
 		self.ask_event.set()
-		time.sleep(1)
-		self.ask_event.set()
-		time.sleep(1)
 				
 	def add_desire(self, name, arg):
 		self.desire[name][1] = True
