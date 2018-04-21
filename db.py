@@ -156,8 +156,6 @@ def coreinit():
 		else:
 			print(keyword[0])
 			raise NameError
-	for key in gdata._keyword_zzd:
-		print(key,gdata._keyword_zzd[key])
 
 	try:
 		cursor = conn.execute("select * from verify")
@@ -218,7 +216,6 @@ def _add_information_1(sp, gs):
 	return True
 	
 def add_information_2(gs_A, gs_B):#集合A包含于集合B
-	print(gs_A, gs_B)
 	assert gdata.gsin(gs_A)
 	gsA = gdata.getgs(gs_A)
 	return gsA.add_child(gs_B)

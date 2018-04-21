@@ -6,7 +6,6 @@ import element
 
 class gset:
 	def __init__(self, name):
-		print('gs name:%s'%name)
 		assert type(name) == str
 		assert not '|' in name
 		assert not gdata.gsin(name)

@@ -8,6 +8,7 @@ import sys
 import zzd_human
 import zzd_zzd
 import threading
+import multiprocessing
 import signal
 import time
 import gdata
@@ -56,7 +57,7 @@ def zhdShow(waa, form=''):
 		entry_zzd.delete(0,'end')
 		entry_zzd.insert(0, waa)
 		entry_zzd.update()
-		os.system('echo %s >> /tmp/zzdfifo'%waa)
+		os.system('echo %d %s >> /tmp/zzdoutput'%(wxid,waa))
 		if autoplay:
 			voice.txt2voice(waa)
 	return
@@ -94,12 +95,13 @@ def exitZZD(evt):
 	pass
 
 def delete_windows():
-	global zhd, zhdt, xhh, xhht
+	global zhd, zhdt, xhh, xhht, wxwork
 	if zhd:
 		zhd.root = False
 	if xhh:
 		xhh.root = False
 	wxwork = False
+	os.kill(wxpid, signal.SIGUSR2)
 	while threading.activeCount() > 1:
 		print('waiting... ')
 		for t in threading.enumerate():
@@ -139,30 +141,41 @@ class xhhthread(threading.Thread):
 		xhh.live()
 		if xhh.root:
 			os.kill(rootpid, signal.SIGUSR1)
+		os.kill(wxpid, signal.SIGUSR2)
 		xhh = None
 		print('xhh_thread over.')
 
-wxwork=True
-class wxthread(threading.Thread):
-	def __init__(self,name):
-		super().__init__()
-		self.name = name
+wxid=1000
+wxwork=False
+wxfile=None
+wxpid=0
 
-	def run(self):
-		global wxwork
-		while wxwork:
-			f=open('/tmp/zzdwx','r')
-			r=f.read()
-			f.close()
-			print('微信接收到：%s'%r)
-			enterSen(r)
-			time.sleep(1)
+def wxoversignal(signum,frame):
+	print('wx_process sigtstp.')
+	sys.exit()
+
+def wx_process():
+	global wxwork,wxfile, wxid, wxpid
+	wxpid = os.getpid()
+	signal.signal(signal.SIGUSR2, wxoversignal)
+	wxfile = open('/tmp/zzdwxin','r')
+	print('open /tmp/zzdwxin success.')
+	while wxwork:
+		wxid += 1
+		time.sleep(1)
+	wxfile.close()
+	print('wx_process over.')
 
 def main():
 	global entry_human, entry_zzd
 	global input_layer1
 	global entry_human,entry_zzd
 	global root, rootpid
+	
+	os.system('rm /tmp/zzdoutput -f')
+	os.system('> /tmp/zzdoutput')
+	os.system('rm /tmp/zzdwxin -f')
+	os.system('mkfifo /tmp/zzdwxin')
 	
 	root = tk.Tk()
 	root.geometry('640x480+20+20')
@@ -206,6 +219,7 @@ def xhh_zhd():
 	global root,rootpid
 	global xhht, xhh, xhh_running
 	global zhdt, zhd, zhd_running
+	global wxfile, wxwork
 	
 	zzd_human.human.init()
 	zzd_zzd.zzd.init()
@@ -224,10 +238,11 @@ def xhh_zhd():
 	zhdt.start()
 	zhd_running.wait()
 	print('create thread over.')
-	
-	wxt = wxthread('wx_thread')
-	wxt.start()
+
+	wxwork = True
+	wxp = multiprocessing.Process(target=wx_process, args=())
+	wxp.start()
 	print('create wx over.')
-	
+
 if __name__ == '__main__':
 	main()

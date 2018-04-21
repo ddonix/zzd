@@ -9,7 +9,7 @@ def text_reply(msg):
 	wx=msg['Text']
 	os.system('echo %s >> /tmp/zzdwx'%wx)
 	r=f.read()
-	return '人工智能小冬为您服务: %s'%r
+	return 'zzd:%s'%r
 
 def find_friend(nick_name):
 	for friend in itchat.get_friends():
@@ -17,6 +17,8 @@ def find_friend(nick_name):
 			return friend
 			
 def main():
+	os.system('rm /tmp/zzdwx -f')
+	os.system('mkfifo /tmp/zzdwx')
 	itchat.auto_login(True)
 	itchat.run()
 

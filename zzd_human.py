@@ -30,7 +30,6 @@ class human():
 	
 	def live(self):
 		while self.working and self.root:
-			print('xhh working',time.time())
 			time.sleep(1)
 
 def main():
