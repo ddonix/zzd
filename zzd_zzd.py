@@ -5,7 +5,6 @@ import db
 import time
 import zmath
 import play
-import ipdb
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -92,8 +91,6 @@ class zzd():
 		waa = waain['waa']
 		assert self.friend == waain['sour']
 		
-		if waa[0] == '苏':
-			ipdb.set_trace()
 		phrases = db.fenci(waa, False)
 		keyword = [x for x in phrases if x.s in gdata._keyword_zzd]
 		bit = {'verify':0,'math':0,'define':0,'command':0,'system':0}
@@ -211,7 +208,6 @@ class zzd():
 				self.say('还在开发中', '')
 
 	def _solve_set(self, phrases):
-		ipdb.set_trace()
 		sp = gdata.getgs('集合语句').fensp(phrases, True)
 		if sp == None:
 			self.say('集合语法不对',' ')
@@ -221,7 +217,6 @@ class zzd():
 					self.say('%s是未知的词.'%sp[2]['...'], sp[0])
 					return
 				assert '.' in sp[2]
-				ipdb.set_trace()
 				ph = gdata.getsp(sp[2]['.'])
 				if ph.be(sp[2]['集合']):
 					s = ''
@@ -350,6 +345,18 @@ def main():
 	for p in phs:
 		print(p.s,'|')
 	g = gdata.getgs('集合语句')
+	sp = g.fensp(phs,True)
+	print('sp[0]:',sp[0])
+	print('sp[1]:',sp[1])
+	print('sp[2]:',sp[2])
+	for s in sp[2]:
+		print(s,sp[2][s])
+	
+	a = '再见'
+	phs = db.fenci(a, False)
+	for p in phs:
+		print(p.s,'|')
+	g = gdata.getgs('命令语句')
 	sp = g.fensp(phs,True)
 	print('sp[0]:',sp[0])
 	print('sp[1]:',sp[1])

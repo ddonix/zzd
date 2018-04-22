@@ -232,6 +232,7 @@ class gset:
 				else:
 					key['.'] = phrases[0].s
 				ress.append((phrases[0].s, phrases[1:], {}))
+				phrases = phrases[1:]
 			elif gram == '...':
 				tc = ''
 				if i < len(frame)-1:
@@ -266,7 +267,7 @@ class gset:
 	
 	def _fensp(self, phrases, mend):
 		print('self.name:',self.name)
-		if phrases[0] in self.sp:
+		if phrases and phrases[0] in self.sp:
 			return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 		if self.child != []:
 			ress = []
