@@ -206,8 +206,15 @@ class zzd():
 					if self.infomation_a:
 						self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
 						arg = self.ask('答复语句')
-						if arg:
-							self.say(arg[0], '')
+						print(arg)
+						if arg and '肯定语句' in arg[2]:
+							print('self.info',self.infomation_a)
+							for info in self.infomation_a:
+								if db.add_database_a(info, self.infomation_a[info]):
+									self.say('%s信息写入数据库成功'%info, '')
+								else:
+									self.say('%s信息写入数据库失败'%info, '')
+							self.say('%s！'%sp[2]['zzd再见命令'], '')
 						else:
 							self.say('%s！'%sp[2]['zzd再见命令'], '')
 					else:
@@ -249,9 +256,9 @@ class zzd():
 					if res[0] == 0:
 						self.say('好的，我记住了', sp[0])
 						if sp_a in self.infomation_a:
-							self.infomation_a[sp_a].append(gs_A)
+							self.infomation_a[sp_a] += '~%s'%gs_A
 						else:
-							self.infomation_a[sp_a] = [gs_A]
+							self.infomation_a[sp_a] = gs_A
 					elif res[0] == 1:
 						self.say('您的信息已经在我的知识库里了。原因：%s'%res[1], sp[0])
 					else:
