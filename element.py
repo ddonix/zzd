@@ -1,13 +1,15 @@
 #!/usr/bin/python3 -B
 import gdata
-import sets
+import ipdb
 
 class seph:
 	def __init__(self, s):
+		assert not gdata.spin(s)
 		if type(s) == str:
 			self.s = s				#sting
 			self.d = (s)			#迪卡尔
 			self.gs = set()
+			gdata.addsp(self)
 		elif type(s) == list and isinstance(s[0], seph):
 			self.s = ''			#sting
 			d = []
@@ -16,6 +18,7 @@ class seph:
 				self.s += sp.s
 				d.append(sp.d)
 			self.d = tuple(d)
+			gdata.addsp(self)
 		else:
 			raise TypeError
 	
@@ -40,10 +43,6 @@ class seph:
 
 def main():
 	print('element')
-	gs = sets.gset('你好')
-	sp = seph('合理')
-	sp.addgs(gs)
-	gs.addsp(sp)
 
 if __name__ == '__main__':
 	main()

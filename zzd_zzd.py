@@ -1,10 +1,12 @@
 #!/usr/bin/python3 -B
 import threading
-import db
 import gdata
+import db
 import time
 import zmath
 import play
+import ipdb
+
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
 	inWaaClass = {}		#输入语句类型
@@ -90,6 +92,8 @@ class zzd():
 		waa = waain['waa']
 		assert self.friend == waain['sour']
 		
+		if waa[0] == '苏':
+			ipdb.set_trace()
 		phrases = db.fenci(waa, False)
 		keyword = [x for x in phrases if x.s in gdata._keyword_zzd]
 		bit = {'verify':0,'math':0,'define':0,'command':0,'system':0}
@@ -113,7 +117,7 @@ class zzd():
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
 	def _solve_verify(self, phrases):
-		sp = gdata.getgs('认证语句')._fensp(phrases, True)
+		sp = gdata.getgs('认证语句').fensp(phrases, True)
 		if sp == None:
 			self.say('认证语法不对', '')
 		else:
@@ -132,7 +136,7 @@ class zzd():
 						self.desire['verify'][2][1] = arg
 
 	def _solve_math(self, phrases):
-		sp = gdata.getgs('数学语句')._fensp(phrases, True)
+		sp = gdata.getgs('数学语句').fensp(phrases, True)
 		if not sp:
 			self.say('数学语法不对','')
 		else:
@@ -146,7 +150,7 @@ class zzd():
 					self.say('数学语法错误', '')
 	
 	def _solve_define(self, phrases):
-		sp = gdata.getgs('定义语句')._fensp(phrases, True)
+		sp = gdata.getgs('定义语句').fensp(phrases, True)
 		if sp == None:
 			self.say('定义语法错误','')
 		else:
@@ -159,7 +163,7 @@ class zzd():
 				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0].s)
 	
 	def _solve_system(self, phrases):
-		sp = gdata.getgs('学习语句')._fensp(phrases, True)
+		sp = gdata.getgs('学习语句').fensp(phrases, True)
 		if sp == None:
 			self.say('学习语法不对','')
 		else:
@@ -178,7 +182,7 @@ class zzd():
 					self.say('您并没有在%s模式'%sp[2]['zzd学习命令'], sp[0].s)
 
 	def _solve_command(self, phrases):
-		sp = gdata.getgs('命令语句')._fensp(phrases, True)
+		sp = gdata.getgs('命令语句').fensp(phrases, True)
 		if sp == None:
 			self.say('命令语法不对','')
 		else:
@@ -207,16 +211,17 @@ class zzd():
 				self.say('还在开发中', '')
 
 	def _solve_set(self, phrases):
-		sp = gdata.getgs('集合语句')._fensp(phrases, True)
+		ipdb.set_trace()
+		sp = gdata.getgs('集合语句').fensp(phrases, True)
 		if sp == None:
 			self.say('集合语法不对',' ')
 		else:
 			if '集合判断语句' in sp[2]:
-				assert '集合' in sp[2]
+				if '...' in sp[2]:
+					self.say('%s是未知的词.'%sp[2]['...'], sp[0].s)
+					return
 				assert '.' in sp[2]
-				print(sp[2]['.'])
-				print(sp[2]['集合'])
-			
+				ipdb.set_trace()
 				ph = gdata.getsp(sp[2]['.'])
 				if ph.be(sp[2]['集合']):
 					s = ''
@@ -227,14 +232,20 @@ class zzd():
 					self.say('对不起，我不知道', sp[0].s)
 			else:
 				assert '集合断言语句' in sp[2]
+				if sp[0].s[-1] == '？' or sp[0].s[-1] == '吗':
+					self.say('对不起，我不知道。', sp[0].s)
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加断言', sp[0].s)
 				else:
+					assert '...' in sp[2]
+					print('...:%s'%sp[2]['...'])
+					sp_a,gs_A = sp[2]['...'].split('|')
+					db.add_information_1(sp_a, gs_A)
 					self.say('好的，我记住了', sp[0].s)
 
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
-			sp = gdata.getgs(self.FSM['ask'][0])._fensp(phrases, True)
+			sp = gdata.getgs(self.FSM['ask'][0]).fensp(phrases, True)
 			if sp:
 				self.FSM['ask'][1]=sp[0].s
 			self.ask_event.set()
@@ -339,10 +350,10 @@ def main():
 	for p in phs:
 		print(p.s,'|')
 	g = gdata.getgs('集合语句')
-	sp = g._fensp(phs,True)
-	print(sp[0].s)
-	print(sp[1])
-	print(sp[2])
+	sp = g.fensp(phs,True)
+	print('sp[0]:',sp[0])
+	print('sp[1]:',sp[1])
+	print('sp[2]:',sp[2])
 	for s in sp[2]:
 		print(s,sp[2][s])
 	

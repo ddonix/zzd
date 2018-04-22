@@ -26,7 +26,6 @@ def prevgram(gram):
 			tmp2.append(t)
 	res = []
 	for t in tmp2:
-		print('t:',t)
 		if type(t) == str:
 			r = t
 		else:
@@ -34,7 +33,6 @@ def prevgram(gram):
 			for s in t[1:]:
 				r += ' %s'%s
 			r += ']'
-		print('r:',r)
 		res.append(r)
 	return res
 	
@@ -110,8 +108,9 @@ def spinit():
 		raise NameError
 	for v in cursor:
 		assert len(v[0]) == 1
+		print('v[0]:',v[0])
+		print('v:',v)
 		sp = element.seph(v[0])
-		gdata.addsp(sp)
 		gdata._table_vocable.add(v[0][0])
 		for g in v[1:]:
 			if not (g == '' or g == None):
@@ -126,7 +125,6 @@ def spinit():
 			print(v)
 			raise NameError
 		sp = element.seph(v[0])
-		gdata.addsp(sp)
 		
 		for g in v[1:]:
 			if not (g == '' or g == None):
@@ -378,8 +376,7 @@ def main():
 	spinit()
 	coreinit()
 	
-	checkgs('属于判断语句', False, False)
-	checkgs('会死', False, False)
+	checksp('苏格拉底')
 #add_information_1('苏格拉底','男人')
 #checksp('苏格拉底')
 #	checkgs('人', False, False)

@@ -2,7 +2,6 @@
 import sqlite3
 import copy
 import gdata
-import element
 
 class gset:
 	def __init__(self, name):
@@ -157,18 +156,18 @@ class gset:
 		assert self.name[0] != '(' and self.name[0] != ')'
 		assert self.name[0] != '[' and self.name[0] != ']'
 		if phrases != [] and phrases[0] in self.sp:
-			return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+			return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 		else:
 			if not mend:
 				return None
 			if self.name in gdata._mend_add:
 				phrases.insert(0,gdata.getsp(gdata._mend_add[self.name]))
-				return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+				return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 			if phrases != [] and phrases[0].s in gdata._mend_replace:
 				for replace in gdata._mend_replace[phrases[0].s]:
 					if gdata.getsp(replace) in self.sp:
 						phrases[0] = gdata.getsp(replace)
-						return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+						return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 			return None
 	
 	#只处理()集合。没有子集，不依赖任何别的集合。例如(, o ?)
@@ -176,19 +175,19 @@ class gset:
 		assert self.child == []
 		assert self.name[0] == '(' and self.name[-1] == ')'
 		if phrases != [] and phrases[0] in self.sp:
-			return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+			return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 		else:
 			if not mend:
 				return None
 			for sp in self.sp:
 				if sp in gdata._mend_add:
 					phrases.insert(0,gdata.getsp(sp))
-					return (phrases[0], phrases[1:], {self.name:sp})
+					return (phrases[0].s, phrases[1:], {self.name:sp})
 			if phrases != [] and phrases[0].s in gdata._mend_replace:
 				for replace in gdata._mend_replace[phrases[0].s]:
 					if gdata.getsp(replace) in self.sp:
 						phrases[0] = gdata.getsp(replace)
-						return (phrases[0], phrases[1:], {self.name:phrases[0].s})
+						return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 			return None
 	
 	#只处理[]集合。没有子集,但是要递归。例如[主语 谓语 句号] [上引号 ... 下引号] [认证命令 (身份)]
@@ -211,70 +210,78 @@ class gset:
 						res = g.fensp_1(phrases, mend)
 				else:
 					res = g._fensp(phrases, mend)
-				if res == None:
+				if not res:
 					return None
 				
-				key[gram] = res[0].s
+				if gram in key and res[0] not in key[gram]:
+					key[gram] += '|%s'%res[0]
+				else:
+					key[gram] = res[0]
 				for k in res[2]:
-					key[k] = res[2][k]
-				ress.append(res)
+					if k in key and res[2][k] not in key[k]:
+						key[k] += '|%s'%res[2][k]
+					else:
+						key[k] = res[2][k]
 				phrases = res[1]
+				ress.append(res)
 			elif gram == '.':
 				if phrases == []:
-					break
-				ress.append((phrases[0], phrases[1:], {}))
-				key['.'] = phrases[0].s
-				phrases = phrases[1:]
+					return None
+				if '.' in key and phrases[0].s not in key['.']:
+					key['.'] += '|%s'%phrases[0].s
+				else:
+					key['.'] = phrases[0].s
+				ress.append((phrases[0].s, phrases[1:], {}))
 			elif gram == '...':
 				tc = ''
 				if i < len(frame)-1:
-					while not (phrases[0].be(frame[i+1])):
+					while phrases and not (phrases[0].be(frame[i+1])):
 						tc += phrases[0].s
-						#ress.append((phrases[0], phrases[1:], {}))
 						phrases = phrases[1:]
-						if phrases == []:
-							break
 				else:
-					if phrases == []:
-						break
-					while True:
+					while phrases:
 						tc += phrases[0].s
-						#ress.append((phrases[0], phrases[1:], {}))
 						phrases = phrases[1:]
-						if phrases == []:
-							break
-				ress.append((element.seph(tc), phrases, {}))
-				key['...'] = tc
+				if '...' in key and tc not in key['...']:
+					key['...'] += '|%s'%tc
+				else:
+					key['...'] = tc
+				ress.append((tc, phrases, {}))
 			else:
 				print(gram)
 				raise TypeError
-			sps = []
-			for res in ress:
-				sps.append(res[0])
-		sp = element.seph(sps)
-		g._addsp(sp)
-		key[self.name] = sp.s
-		return (sp, ress[-1][1], key)
+		sps = ''
+		for res in ress:
+			sps += res[0]
+		if self.name in key and sps not in key[self.name]:
+			key[self.name] += '|%s'%sps
+		else:
+			key[self.name] = sps
+		return (sps, ress[-1][1], key)
+	
+	def fensp(self, phrases, mend):
+		print('self.name:',self.name)
+		res = self._fensp(phrases, mend)
+		return res if res and not res[1] else None
 	
 	def _fensp(self, phrases, mend):
 		print('self.name:',self.name)
+		if phrases[0] in self.sp:
+			return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 		if self.child != []:
 			ress = []
-			tmp = []
 			for i in range(len(self.child)-1, -1, -1):
 				res = self.child[i]._fensp(phrases, mend)
 				if res:
-					res[2][self.name] = res[0].s
-					tmp.append(res)
-			if not tmp:
-				return None
-			for res in tmp:
-				if not res[1]:
+					res[2][self.name] = res[0]
 					ress.append(res)
+			if not ress:
+				return None
+			for res in ress:
+				if not res[1]:
 					return res
 			else:
-				ress.append(tmp[0])
-				return tmp[0]
+				return ress[0]
 		else:
 			if self.name[0] == '(' and self.name[-1] == ')':
 				return self.fensp_2(phrases, mend)
@@ -290,7 +297,6 @@ def main():
 	gs3 = gset('女人')
 	gs4 = gset('活人')
 	gs5 = gset('中国人')
-	sp = element.seph('你')
 
 	gs1.add_child('[性别:男人|女人]')
 	gs1.add_child('活人')
