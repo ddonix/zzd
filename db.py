@@ -209,14 +209,17 @@ def coreinit():
 #成功返回0，无用返回1，矛盾返回2.
 #原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人
 #原则：2.不能无用。苏格拉底原先是男人，现在不能是人
-def add_information_1(sp_a, gs_A):
+def add_information_1(sp_a, gs_A, train):
 	if not gdata.spin(sp_a):
 		element.seph(sp_a)
 	if not gdata.gsin(gs_A):
 		sets.gset(gs_A)
 	sp = gdata.getsp(sp_a)
 	gs = gdata.getgs(gs_A)
-	return _add_information_1(sp, gs)
+	res = _add_information_1(sp, gs)
+	if res[0] == 0 and train:
+		pass
+	return res
 
 def _add_information_1(sp, gs):
 	assert isinstance(sp, element.seph) and isinstance(gs, sets.gset)
