@@ -235,8 +235,13 @@ class zzd():
 					assert '...' in sp[2]
 					print('...:%s'%sp[2]['...'])
 					sp_a,gs_A = sp[2]['...'].split('|')
-					db.add_information_1(sp_a, gs_A)
-					self.say('好的，我记住了', sp[0])
+					res = db.add_information_1(sp_a, gs_A)
+					if res[0] == 0:
+						self.say('好的，我记住了', sp[0])
+					elif res[0] == 1:
+						self.say('您的断言已经在我的知识库里了。原因：%s'%res[1], sp[0])
+					else:
+						self.say('您的断言与我的知识库冲突。原因:%s'%res[1], sp[0])
 
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
@@ -340,11 +345,11 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '苏格拉底是人吗'
+	a = '苏格拉底是女人吗'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('集合语句')
+	g = gdata.getgs('[... 系动词 集合 疑问词 问号]')
 	sp = g.fensp(phs,True)
 	print('sp[0]:',sp[0])
 	print('sp[1]:',sp[1])

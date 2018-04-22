@@ -1,6 +1,5 @@
 #!/usr/bin/python3 -B
 import gdata
-import ipdb
 
 class seph:
 	def __init__(self, s):

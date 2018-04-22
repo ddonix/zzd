@@ -83,6 +83,9 @@ def gsinit():
 	except:
 		return NameError
 	for v in grammar:
+		if not v[0]:
+			continue
+		print('v[0]',v[0])
 		if not gdata.gsin(v[0]):
 			gs = sets.gset(v[0])
 		gram = prevgram(v[1:])
@@ -203,8 +206,9 @@ def coreinit():
 	conn.close()
 
 #增加元素a属于集合A这条信息。
-#原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人，否则抛出异常
-#原则：2.不能无用。苏格拉底原先是男人，现在不能是人，否则返回False.
+#成功返回0，无用返回1，矛盾返回2.
+#原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人
+#原则：2.不能无用。苏格拉底原先是男人，现在不能是人
 def add_information_1(sp_a, gs_A):
 	if not gdata.spin(sp_a):
 		element.seph(sp_a)
@@ -219,17 +223,17 @@ def _add_information_1(sp, gs):
 	for g in list(sp.gs):
 		#判断是否无用
 		if sets.gset.involved_in(g, gs):
-			return False
+			return (1, '%s是%s,而%s是%s的子集'%(sp.s,g.name,g.name,gs.name))
 		#判断是否删除
 		if sets.gset.involved_in(gs, g):
 			g._removesp(sp)
 			sp._removegs(g)
 		#判断是否矛盾
 		if sets.gset.conflict(g, gs):
-			return False
+			return (2, '%s与%s不相容'%(g.name,gs.name))
 	gs._addsp(sp)
 	sp._addgs(gs)
-	return True
+	return (0, '')
 	
 def add_information_2(gs_A, gs_B):#集合A包含于集合B
 	assert gdata.gsin(gs_A)
@@ -251,10 +255,8 @@ def checksp(sp):
 		ancestor=list(set(ancestor))
 		for gs in ancestor:
 			print(gs.name)
-		print('...')
 		for gs in sp.gs:
 			print(gs.name)
-		print('!!!')
 	
 def get_ancestor(gs):
 	res = [gs]
@@ -328,10 +330,13 @@ def fenci(waa, point):
 			while waa != '' and waa[0] in znumber:
 				s += waa[0]
 				waa = waa[1:]
-			sp = element.seph(s)
-			gs = gdata.getgs('数')
-			sp._addgs(gs)
-			gs._addsp(sp)
+			if gdata.spin(s):
+				sp = gdata.getsp(s)
+			else:
+				sp = element.seph(s)
+				gs = gdata.getgs('数')
+				sp._addgs(gs)
+				gs._addsp(sp)
 			phrases.append(sp)
 		elif waa[0] in cnumber:
 			s = waa[0]
@@ -339,10 +344,13 @@ def fenci(waa, point):
 			while waa != '' and waa[0] in cnumber:
 				s += waa[0]
 				waa = waa[1:]
-			sp = element.seph(s)
-			gs = gdata.getgs('汉语数')
-			sp._addgs(gs)
-			gs._addsp(sp)
+			if gdata.spin(s):
+				sp = gdata.getsp(s)
+			else:
+				sp = element.seph(s)
+				gs = gdata.getgs('汉语数')
+				sp._addgs(gs)
+				gs._addsp(sp)
 			phrases.append(sp)
 		elif waa[0] in zstr[10:]:
 			s = waa[0]
@@ -350,10 +358,13 @@ def fenci(waa, point):
 			while waa != '' and waa[0] in zstr:
 				s += waa[0]
 				waa = waa[1:]
-			sp = element.seph(s)
-			gs = gdata.getgs('汉语数')
-			sp._addgs(gs)
-			gs._addsp(sp)
+			if gdata.spin(s):
+				sp = gdata.getsp(s)
+			else:
+				sp = element.seph(s)
+				gs = gdata.getgs('汉语数')
+				sp._addgs(gs)
+				gs._addsp(sp)
 			phrases.append(sp)
 		elif waa[0:2] == '!=':
 			phrases.append(gdata.getsp('!='))
@@ -376,7 +387,7 @@ def main():
 	spinit()
 	coreinit()
 	
-	checksp('苏格拉底')
+	checksp('女人')
 #add_information_1('苏格拉底','男人')
 #checksp('苏格拉底')
 #	checkgs('人', False, False)
