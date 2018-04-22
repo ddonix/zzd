@@ -9,7 +9,8 @@ import gdata
 #原始子集在前的在前
 def prevgram(gram):
 	tmp = []
-	for g in gram:
+	for g in gram.split('~'):
+		print('g:',g)
 		tmp.extend(_prevgram(g))
 	tmp2 = []
 	for t in tmp:
@@ -141,7 +142,9 @@ def gsinit():
 			continue
 		if not gdata.gsin(v[0]):
 			gs = sets.gset(v[0])
-		gram = prevgram(v[1:])
+		if not v[1]:
+			continue
+		gram = prevgram(v[1])
 		for g in gram:
 			if '|' not in g:
 				if not gdata.gsin(g):
