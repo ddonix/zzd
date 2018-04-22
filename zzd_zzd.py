@@ -121,7 +121,7 @@ class zzd():
 		if sp == None:
 			self.say('认证语法不对', '')
 		else:
-			self.say('', sp[0].s)
+			self.say('', sp[0])
 			if self.FSM['verify'] == True:
 				self.say('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', '')
 			else:
@@ -141,7 +141,7 @@ class zzd():
 			self.say('数学语法不对','')
 		else:
 			if '数学判断' in sp[2] or '数学方程' in sp[2]:
-				self.add_desire('math',sp[0].s)
+				self.add_desire('math',sp[0])
 			else:
 				sen = zmath.c2math(phrases)
 				if sen:
@@ -158,9 +158,9 @@ class zzd():
 			sen = sp[2]['定义词']
 			if sen in gdata._defineDict:
 				explain = gdata._defineDict[sen]
-				self.say('%s是%s'%(sen,explain), sp[0].s)
+				self.say('%s是%s'%(sen,explain), sp[0])
 			else:
-				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0].s)
+				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0])
 	
 	def _solve_system(self, phrases):
 		sp = gdata.getgs('学习语句').fensp(phrases, True)
@@ -170,16 +170,16 @@ class zzd():
 			assert 'zzd学习命令' in sp[2]
 			if '学习状语' not in sp[2] or sp[2]['学习状语'] == '进入':
 				if self.FSM['train'] == False:
-					self.say('好的，已进入%s模式'%sp[2]['zzd学习命令'], sp[0].s)
+					self.say('好的，已进入%s模式'%sp[2]['zzd学习命令'], sp[0])
 					self.FSM['train'] = True
 				else:
-					self.say('您已经是已%s模式了'%sp[2]['zzd学习命令'], sp[0].s)
+					self.say('您已经是已%s模式了'%sp[2]['zzd学习命令'], sp[0])
 			else:
 				if self.FSM['train'] == True:
-					self.say('好的，已退出%s模式'%sp[2]['zzd学习命令'], sp[0].s)
+					self.say('好的，已退出%s模式'%sp[2]['zzd学习命令'], sp[0])
 					self.FSM['train'] = False
 				else:
-					self.say('您并没有在%s模式'%sp[2]['zzd学习命令'], sp[0].s)
+					self.say('您并没有在%s模式'%sp[2]['zzd学习命令'], sp[0])
 
 	def _solve_command(self, phrases):
 		sp = gdata.getgs('命令语句').fensp(phrases, True)
@@ -187,7 +187,7 @@ class zzd():
 			self.say('命令语法不对','')
 		else:
 			assert 'zzd命令' in sp[2]
-			self.say('', sp[0].s)
+			self.say('', sp[0])
 			exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
 			if exe == '' or exe == None:
 				if '命令参数' in sp[2]:
@@ -218,7 +218,7 @@ class zzd():
 		else:
 			if '集合判断语句' in sp[2]:
 				if '...' in sp[2]:
-					self.say('%s是未知的词.'%sp[2]['...'], sp[0].s)
+					self.say('%s是未知的词.'%sp[2]['...'], sp[0])
 					return
 				assert '.' in sp[2]
 				ipdb.set_trace()
@@ -227,27 +227,27 @@ class zzd():
 					s = ''
 					for ph in phrases[0:-1]:
 						s += ph.s
-					self.say(s, sp[0].s)
+					self.say(s, sp[0])
 				else:
-					self.say('对不起，我不知道', sp[0].s)
+					self.say('对不起，我不知道', sp[0])
 			else:
 				assert '集合断言语句' in sp[2]
-				if sp[0].s[-1] == '？' or sp[0].s[-1] == '吗':
-					self.say('对不起，我不知道。', sp[0].s)
+				if sp[0][-1] == '？' or sp[0][-1] == '吗':
+					self.say('对不起，我不知道。', sp[0])
 				if self.FSM['train'] == False:
-					self.say('对不起，您需进入学习模式才可以增加断言', sp[0].s)
+					self.say('对不起，您需进入学习模式才可以增加断言', sp[0])
 				else:
 					assert '...' in sp[2]
 					print('...:%s'%sp[2]['...'])
 					sp_a,gs_A = sp[2]['...'].split('|')
 					db.add_information_1(sp_a, gs_A)
-					self.say('好的，我记住了', sp[0].s)
+					self.say('好的，我记住了', sp[0])
 
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
 			sp = gdata.getgs(self.FSM['ask'][0]).fensp(phrases, True)
 			if sp:
-				self.FSM['ask'][1]=sp[0].s
+				self.FSM['ask'][1]=sp[0]
 			self.ask_event.set()
 		else:
 			self.say('对不起，我还需要调教！','')
