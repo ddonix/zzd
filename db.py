@@ -170,7 +170,8 @@ def spinit():
 		assert len(v[0]) == 1
 		sp = element.seph(v[0])
 		gdata._table_vocable.add(v[0][0])
-		for g in v[1].split('|') if v[1] else []:
+		for g in v[1].split('~') if v[1] else []:
+			print('g:',g)
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
 	try:
@@ -183,7 +184,8 @@ def spinit():
 			print(v)
 			raise NameError
 		sp = element.seph(v[0])
-		for g in v[1].split('|') if v[1] else []:
+		for g in v[1].split('~') if v[1] else []:
+			print('g:',g)
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
 	conn.close()
