@@ -70,6 +70,24 @@ def __prevgram(gram, res):
 			g.insert(0,gram[0])
 	return
 
+def	add_database_a(sp_a, gs_A):
+	try:
+		conn = sqlite3.connect('./data/grammar.db')
+		cursor = conn.cursor()
+		sql = ''' insert into table_phrase
+              (name, field2)
+              values
+              (:st_name, :st_username)'''
+    	# 把数据保存到name username和 id_num中
+		cursor.execute(sql,{'st_name':sp_a, 'st_username':gs_A})
+		conn.commit()
+	except:
+		print('写入数据库失败')
+		return False
+	print('写入数据库成功')
+	return True
+
+
 #增加元素a属于集合A这条信息。
 #成功返回0，无用返回1，矛盾返回2.
 #原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人
@@ -149,7 +167,7 @@ def spinit():
 		assert len(v[0]) == 1
 		sp = element.seph(v[0])
 		gdata._table_vocable.add(v[0][0])
-		for g in v[1:]:
+		for g in v[1].split('|') if v[1] else []:
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
 	try:
@@ -162,8 +180,7 @@ def spinit():
 			print(v)
 			raise NameError
 		sp = element.seph(v[0])
-		
-		for g in v[1:]:
+		for g in v[1].split('|') if v[1] else []:
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
 	conn.close()
@@ -315,8 +332,7 @@ def main():
 	spinit()
 	coreinit()
 	
-	gdata.checksp('女人')
-#add_information_1('苏格拉底','男人')
+	add_database_a('柏拉图','男人')
 #checksp('苏格拉底')
 #	checkgs('人', False, False)
 #	add_information_1('苏格拉底', '人')
