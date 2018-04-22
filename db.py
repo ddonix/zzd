@@ -70,6 +70,42 @@ def __prevgram(gram, res):
 			g.insert(0,gram[0])
 	return
 
+#增加元素a属于集合A这条信息。
+#成功返回0，无用返回1，矛盾返回2.
+#原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人
+#原则：2.不能无用。苏格拉底原先是男人，现在不能是人
+def add_information_1(sp_a, gs_A):
+	if not gdata.spin(sp_a):
+		element.seph(sp_a)
+	if not gdata.gsin(gs_A):
+		sets.gset(gs_A)
+	sp = gdata.getsp(sp_a)
+	gs = gdata.getgs(gs_A)
+	res = _add_information_1(sp, gs)
+	return res
+
+def _add_information_1(sp, gs):
+	assert isinstance(sp, element.seph) and isinstance(gs, sets.gset)
+	for g in list(sp.gs):
+		#判断是否无用
+		if sets.gset.involved_in(g, gs):
+			return (1, '%s是%s,而%s是%s的子集'%(sp.s,g.name,g.name,gs.name))
+		#判断是否删除
+		if sets.gset.involved_in(gs, g):
+			g._removesp(sp)
+			sp._removegs(g)
+		#判断是否矛盾
+		if sets.gset.conflict(g, gs):
+			return (2, '%s与%s不相容'%(g.name,gs.name))
+	gs._addsp(sp)
+	sp._addgs(gs)
+	return (0, '')
+	
+def add_information_2(gs_A, gs_B):#集合A包含于集合B
+	assert gdata.gsin(gs_A)
+	gsA = gdata.getgs(gs_A)
+	return gsA.add_child(gs_B)
+
 def gsinit():
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
@@ -85,7 +121,6 @@ def gsinit():
 	for v in grammar:
 		if not v[0]:
 			continue
-		print('v[0]',v[0])
 		if not gdata.gsin(v[0]):
 			gs = sets.gset(v[0])
 		gram = prevgram(v[1:])
@@ -103,6 +138,7 @@ def gsinit():
 						sets.gset(gg)
 			add_information_2(v[0], g)
 
+
 def spinit():
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
@@ -111,8 +147,6 @@ def spinit():
 		raise NameError
 	for v in cursor:
 		assert len(v[0]) == 1
-		print('v[0]:',v[0])
-		print('v:',v)
 		sp = element.seph(v[0])
 		gdata._table_vocable.add(v[0][0])
 		for g in v[1:]:
@@ -205,115 +239,6 @@ def coreinit():
 			gdata._mend_replace[m]=rep
 	conn.close()
 
-#增加元素a属于集合A这条信息。
-#成功返回0，无用返回1，矛盾返回2.
-#原则：1.不能矛盾。苏格拉底原先是男人，现在不能是女人
-#原则：2.不能无用。苏格拉底原先是男人，现在不能是人
-def add_information_1(sp_a, gs_A, train):
-	if not gdata.spin(sp_a):
-		element.seph(sp_a)
-	if not gdata.gsin(gs_A):
-		sets.gset(gs_A)
-	sp = gdata.getsp(sp_a)
-	gs = gdata.getgs(gs_A)
-	res = _add_information_1(sp, gs)
-	if res[0] == 0 and train:
-		pass
-	return res
-
-def _add_information_1(sp, gs):
-	assert isinstance(sp, element.seph) and isinstance(gs, sets.gset)
-	for g in list(sp.gs):
-		#判断是否无用
-		if sets.gset.involved_in(g, gs):
-			return (1, '%s是%s,而%s是%s的子集'%(sp.s,g.name,g.name,gs.name))
-		#判断是否删除
-		if sets.gset.involved_in(gs, g):
-			g._removesp(sp)
-			sp._removegs(g)
-		#判断是否矛盾
-		if sets.gset.conflict(g, gs):
-			return (2, '%s与%s不相容'%(g.name,gs.name))
-	gs._addsp(sp)
-	sp._addgs(gs)
-	return (0, '')
-	
-def add_information_2(gs_A, gs_B):#集合A包含于集合B
-	assert gdata.gsin(gs_A)
-	gsA = gdata.getgs(gs_A)
-	return gsA.add_child(gs_B)
-
-def checksp(sp):
-	print('检查SP %s'%sp)
-	sp = gdata.getsp(sp)
-	print('1.实例信息')
-	print(sp)
-	if len(sp.gs) == 0:
-		print('2.不属于任何集合')
-	else:
-		print('2.属合下列集合:')
-		ancestor = []
-		for gs in sp.gs:
-			ancestor.extend(sets.gset.get_ancset(gs))
-		ancestor=list(set(ancestor))
-		for gs in ancestor:
-			print(gs.name)
-		for gs in sp.gs:
-			print(gs.name)
-	
-def get_ancestor(gs):
-	res = [gs]
-	res.extend(gs.father)
-	for fa in gs.father:
-		res.extend(get_ancestor(fa))
-	res = list(set(res))
-	return res
-	
-def get_descendant(gs):
-	res = [gs]
-	res.extend(gs.child)
-	for ch in gs.child:
-		res.extend(get_descendant(ch))
-	res = list(set(res))
-	return res
-	
-def checkgs(gram, recursion, mend):
-	assert gdata.gsin(gram)
-	#检查gs的sp与子集的sp是否有重合
-	gs = gdata.getgs(gram)
-	print('检查集合 %s：'%gs.name)
-	print('1.实例信息')
-	print(gs)
-		
-	print('2.子集')
-	if gs.child == []:
-		print('没有子集')
-	else:
-		print('包含以下子集')
-		for ch in gs.child:
-			print(ch.name)
-	
-	print('3.父集')
-	if gs.father == []:
-		print('没有父集')
-	else:
-		print('包含于以下父集')
-		for fa in gs.father:
-			print(fa.name)
-
-	print('4.元素')
-	if len(gs.sp) == 0:
-		print('没有元素')
-	else:
-		print('包含以下元素')
-		for sp in gs.sp:
-			print(sp.s)
-	
-	#递归检查gs的子集
-	if recursion:
-		for ch in gs.child:
-			checkgs(ch.name, True, mend)
-	print('check success')
 
 def fenci(waa, point):
 	phrases = []
@@ -390,7 +315,7 @@ def main():
 	spinit()
 	coreinit()
 	
-	checksp('女人')
+	gdata.checksp('女人')
 #add_information_1('苏格拉底','男人')
 #checksp('苏格拉底')
 #	checkgs('人', False, False)

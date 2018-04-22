@@ -63,6 +63,78 @@ def addsp(sp):
 		_spbase_all[sp.s[0]] = {sp.s:sp}
 	else:
 		_spbase_all[sp.s[0]][sp.s] = sp
+
+def checksp(sp):
+	print('检查SP %s'%sp)
+	sp = getsp(sp)
+	print('1.实例信息')
+	print(sp)
+	if len(sp.gs) == 0:
+		print('2.不属于任何集合')
+	else:
+		print('2.属合下列集合:')
+		ancestor = []
+		for gs in sp.gs:
+			ancestor.extend(sets.gset.get_ancset(gs))
+		ancestor=list(set(ancestor))
+		for gs in ancestor:
+			print(gs.name)
+		for gs in sp.gs:
+			print(gs.name)
+	
+def get_ancestor(gs):
+	res = [gs]
+	res.extend(gs.father)
+	for fa in gs.father:
+		res.extend(get_ancestor(fa))
+	res = list(set(res))
+	return res
+	
+def get_descendant(gs):
+	res = [gs]
+	res.extend(gs.child)
+	for ch in gs.child:
+		res.extend(get_descendant(ch))
+	res = list(set(res))
+	return res
+	
+def checkgs(gram, recursion, mend):
+	assert gsin(gram)
+	#检查gs的sp与子集的sp是否有重合
+	gs = getgs(gram)
+	print('检查集合 %s：'%gs.name)
+	print('1.实例信息')
+	print(gs)
+		
+	print('2.子集')
+	if gs.child == []:
+		print('没有子集')
+	else:
+		print('包含以下子集')
+		for ch in gs.child:
+			print(ch.name)
+	
+	print('3.父集')
+	if gs.father == []:
+		print('没有父集')
+	else:
+		print('包含于以下父集')
+		for fa in gs.father:
+			print(fa.name)
+
+	print('4.元素')
+	if len(gs.sp) == 0:
+		print('没有元素')
+	else:
+		print('包含以下元素')
+		for sp in gs.sp:
+			print(sp.s)
+	
+	#递归检查gs的子集
+	if recursion:
+		for ch in gs.child:
+			checkgs(ch.name, True, mend)
+	print('check success')
 	
 def main():
 	print('gdata')

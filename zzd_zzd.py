@@ -9,6 +9,8 @@ import play
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
 	inWaaClass = {}		#输入语句类型
+	infomation_a = {}
+	infomation_A = {}
 	def __init__(self, show, friend):
 		assert show and friend
 		self.show = show
@@ -130,7 +132,7 @@ class zzd():
 					arg = self.ask('认证参数')
 					if arg:
 						self.desire['verify'][1] = True
-						self.desire['verify'][2][1] = arg
+						self.desire['verify'][2][1] = arg[0]
 
 	def _solve_math(self, phrases):
 		sp = gdata.getgs('数学语句').fensp(phrases, True)
@@ -201,7 +203,15 @@ class zzd():
 					out = self.player.stop(True)
 				elif 'zzd再见命令' in sp[2]:
 					self.player.stop(False)
-					self.say('%s！'%sp[2]['zzd再见命令'], '')
+					if self.infomation_a:
+						self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
+						arg = self.ask('答复语句')
+						if arg:
+							self.say(arg[0], '')
+						else:
+							self.say('%s！'%sp[2]['zzd再见命令'], '')
+					else:
+						self.say('%s！'%sp[2]['zzd再见命令'], '')
 				else:
 					self.say('不识别的内置命令', '')
 			else:
@@ -230,7 +240,7 @@ class zzd():
 				if sp[0][-1] == '？' or sp[0][-1] == '吗':
 					self.say('对不起，我不知道。', sp[0])
 				if self.FSM['train'] == False:
-					self.say('对不起，您需进入学习模式才可以增加断言', sp[0])
+					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
 				else:
 					assert '...' in sp[2]
 					print('...:%s'%sp[2]['...'])
@@ -238,16 +248,20 @@ class zzd():
 					res = db.add_information_1(sp_a, gs_A)
 					if res[0] == 0:
 						self.say('好的，我记住了', sp[0])
+						if sp_a in self.infomation_a:
+							self.infomation_a[sp_a].append(gs_A)
+						else:
+							self.infomation_a[sp_a] = [gs_A]
 					elif res[0] == 1:
-						self.say('您的断言已经在我的知识库里了。原因：%s'%res[1], sp[0])
+						self.say('您的信息已经在我的知识库里了。原因：%s'%res[1], sp[0])
 					else:
-						self.say('您的断言与我的知识库冲突。原因:%s'%res[1], sp[0])
+						self.say('您的信息与我的知识库冲突。原因:%s'%res[1], sp[0])
 
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
 			sp = gdata.getgs(self.FSM['ask'][0]).fensp(phrases, True)
 			if sp:
-				self.FSM['ask'][1]=sp[0]
+				self.FSM['ask'][1]=sp
 			self.ask_event.set()
 		else:
 			self.say('对不起，我还需要调教！','')
@@ -264,7 +278,7 @@ class zzd():
 				arg = self.ask('认证参数')
 				if arg:
 					self.desire['verify'][1] = True
-					self.desire['verify'][2][1] = arg
+					self.desire['verify'][2][1] = arg[0]
 				self.add_desire('time', (desire, True, time.time()+20))
 			else:
 				self.say('您没有及时认证，小白要休息了。','')
@@ -345,23 +359,11 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '苏格拉底是女人吗'
+	a = '同意'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('[... 系动词 集合 疑问词 问号]')
-	sp = g.fensp(phs,True)
-	print('sp[0]:',sp[0])
-	print('sp[1]:',sp[1])
-	print('sp[2]:',sp[2])
-	for s in sp[2]:
-		print(s,sp[2][s])
-	
-	a = '再见'
-	phs = db.fenci(a, False)
-	for p in phs:
-		print(p.s,'|')
-	g = gdata.getgs('命令语句')
+	g = gdata.getgs('答复语句')
 	sp = g.fensp(phs,True)
 	print('sp[0]:',sp[0])
 	print('sp[1]:',sp[1])
