@@ -75,13 +75,24 @@ def	add_database_a(sp_a, gs_A):
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
 		cursor = conn.cursor()
-		sql = ''' insert into table_phrase
-              (name, field2)
-              values
-              (:st_name, :st_username)'''
-    	# 把数据保存到name username和 id_num中
-		cursor.execute(sql,{'st_name':sp_a, 'st_username':gs_A})
+		sql = ''' select * from table_phrase where name=(?)'''
+		cursor.execute(sql, (sp_a,))
 		conn.commit()
+		info = cursor.fetchall()
+		print(info)
+		if not info:
+			sql = ''' insert into table_phrase
+	              (name, gs)
+	              values
+	              (:name, :gs)'''
+    		# 把数据保存到name username和 id_num中
+			cursor.execute(sql,{'name':sp_a, 'gs':gs_A})
+		else:
+			gs = '%s~%s'%(info[0][1],gs_A)
+			sql = ''' update table_phrase set gs=(?) where name=(?)'''
+			cursor.execute(sql, (gs, sp_a))
+		conn.commit()
+		conn.close
 	except:
 		print('写入数据库失败')
 		return False
@@ -337,7 +348,7 @@ def main():
 	spinit()
 	coreinit()
 	
-	add_database_a('柏拉图','男人')
+	add_database_a('柏dadf拉图','好的23')
 #checksp('苏格拉底')
 #	checkgs('人', False, False)
 #	add_information_1('苏格拉底', '人')
