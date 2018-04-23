@@ -9,8 +9,8 @@ import play
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
 	inWaaClass = {}		#输入语句类型
-	infomation_a = {}
-	infomation_A = {}
+	infomation_a = {} # 'a':'A' a属于A
+	infomation_A = {} # 'A':'B' A包含B
 	def __init__(self, show, friend):
 		assert show and friend
 		self.show = show
@@ -165,14 +165,14 @@ class zzd():
 			arg = ''
 		exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
 		if exe:
-			self.say('还在开发中', '')
+			self.say('还在开发中', sp[0].s)
 			return
 		if self.FSM['verify'] == False:
 			if 'zzd认证命令' in sp[2]:
 				self.desire['verify'][1] = True
 				self.desire['verify'][2][1] = arg
 			else:
-				self.say('请先认证身份', '')
+				self.say('请先认证身份', sp[0].s)
 			return
 		if 'zzd认证命令' in sp[2]:
 			self.say('请已经认证过身份了.同时服务多人功能正在开发中', '')
@@ -188,20 +188,59 @@ class zzd():
 			self.add_desire('goodbye', '%s！'%sp[2]['zzd再见命令'])
 		elif 'zzd问候命令' in sp[2]:
 			self.say(sp[2]['zzd问候命令'],'')
-		elif 'zzd学习命令' in sp[2] or '进入命令' in sp[2]:
+		elif 'zzd保存命令' in sp[2]:
+			self._command_save(sp)
+		elif 'zzd学习命令' in sp[2] or 'zzd进入命令' in sp[2]:
 			if self.FSM['train'] == False:
 				self.say('好的，已进入%s模式'%sp[2]['zzd学习命令'], sp[0])
 				self.FSM['train'] = True
 			else:
 				self.say('您已经是已%s模式了'%sp[2]['zzd学习命令'], sp[0])
-		elif '退出命令' in sp[2]:
+		elif 'zzd退出命令' in sp[2]:
+			mode = sp[2]['zzd学习命令'] if 'zzd学习命令' in sp[2] else '学习'
 			if self.FSM['train'] == True:
-				self.say('好的，已退出%s模式'%sp[2]['zzd学习命令'], sp[0])
+				self.say('好的，已退出%s模式'%mode, sp[0])
 				self.FSM['train'] = False
 			else:
-				self.say('您并没有在%s模式'%sp[2]['zzd学习命令'], sp[0])
+				self.say('您并没有在%s模式'%mode, sp[0].s)
 		else:
 			self.say('不识别的内置命令', '')
+
+	def _command_save(self, sp):
+		if not (self.infomation_a or self.infomation_A):
+			self.say('没有信息需要写入数据库', sp[0].s)
+			return
+		if sp and '认证参数' in sp[2]:
+			password = sp[2]['认证参数']
+		else:
+			self.say('请输入管理员口令','')
+			password = self.ask(['认证参数句','认证参数'])
+			if not password:
+				self.say('您没有输入口令，写入取消。', '')
+				return
+			else:
+				password = password[2]['认证参数']
+		if password != self.managerid:
+			self.say('口令错误，写入取消。', '')
+			return
+		while self.infomation_a:
+			info = self.infomation_a.popitem()
+			if not db.add_database_a_in_A(info[0], info[1]):
+				self.say('%s信息写入失败'%info[0], '')
+				self.infomation_a[info[0]]=info[1]
+				break
+		else:
+			self.say('元素信息写入成功', '')
+		
+		while self.infomation_A:
+			info = self.infomation_a.popitem()
+			if not db.add_database_A_in_B(info[1], info[0]):
+				self.say('%s信息写入失败'%info[0], '')
+				self.infomation_a[info[0]]=info[1]
+				break
+		else:	
+			self.say('集合信息写入成功', '')
+		
 		
 	def _solve_set(self, phrases):
 		sp = gdata.getgs('集合语句').fensp(phrases, True)
@@ -317,22 +356,17 @@ class zzd():
 		assert desire[2]
 		desire[1] = False
 		self.player.stop(False)
-		if self.infomation_a:
+		print(self.infomation_a)
+		print(self.infomation_A)
+		if self.infomation_a or self.infomation_A:
 			self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
 			ok = self.ask(['答复语句'])
 			if ok and '肯定语句' in ok[2]:
-				self.say('请输入管理员口令','')
-				password = self.ask(['认证参数句','认证参数'])
-				for info in self.infomation_a:
-					if not db.add_database_a(info, self.infomation_a[info]):
-						self.say('%s信息写入失败。%s'%(info,desire[2][0]), '')
-						break
-				else:
-					self.say('信息写入成功.%s'%desire[2][0], '')
+				self._command_save(None)
 			else:
-				self.say('丢弃学习信息。%s'%desire[2][0], '')
-		self.desire['time'][1] == False
+				self.say('丢弃学习信息。', '')
 		self.say(desire[2][0],'')
+		self.desire['time'][1] == False
 		self.FSM['work'] = False
 
 	def desire_math(self, desire):
@@ -387,11 +421,23 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '您好'
+	a = '保存下来'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('zzd命令')
+	g = gdata.getgs('命令语句')
+	sp = g.fensp(phs,True)
+	print('sp[0]:',sp[0])
+	print('sp[1]:',sp[1])
+	print('sp[2]:',sp[2])
+	for s in sp[2]:
+		print(s,sp[2][s])
+	
+	a = '脊椎动物包含哺乳动物'
+	phs = db.fenci(a, False)
+	for p in phs:
+		print(p.s,'|')
+	g = gdata.getgs('集合语句')
 	sp = g.fensp(phs,True)
 	print('sp[0]:',sp[0])
 	print('sp[1]:',sp[1])
@@ -401,4 +447,3 @@ def main():
 	
 if __name__ == '__main__':
 	main()
-

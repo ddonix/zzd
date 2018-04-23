@@ -70,23 +70,59 @@ def __prevgram(gram, res):
 			g.insert(0,gram[0])
 	return
 
-def	add_database_a(sp_a, gs_A):
+#a是A的元素
+def	add_database_a_in_A(sp_a, gs_A):
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
 		cursor = conn.cursor()
-		sql = '''select * from table_phrase where name=(?)'''
+		if len(sp_a) > 1:
+			sql = '''select * from table_phrase where name=(?)'''
+		else:
+			sql = '''select * from table_vocable where name=(?)'''
 		cursor.execute(sql, (sp_a,))
 		conn.commit()
 		info = cursor.fetchall()
 		print(info)
 		if not info:
-			sql = '''insert into table_phrase (name, gs) values (?, ?)'''
+			if len(sp_a) > 1:
+				sql = '''insert into table_phrase (name, gs) values (?, ?)'''
+			else:
+				sql = '''insert into table_vocable (name, gs) values (?, ?)'''
     		# 把数据保存到name username和 id_num中
 			cursor.execute(sql, (sp_a,gs_A))
 		else:
-			gs = '%s~%s'%(info[0][1],gs_A)
-			sql = '''update table_phrase set gs=(?) where name=(?)'''
+			gs = '%s~%s'%(info[0][1],gs_A) if info[0][1] else gs_A
+			if len(sp_a) > 1:
+				sql = '''update table_phrase set gs=(?) where name=(?)'''
+			else:
+				sql = '''update table_vocable set gs=(?) where name=(?)'''
 			cursor.execute(sql, (gs, sp_a))
+		conn.commit()
+		conn.close
+	except:
+		print('写入数据库失败')
+		return False
+	print('写入数据库成功')
+	return True
+
+#A是B的子集
+def	add_database_A_in_B(gs_A, gs_B):
+	try:
+		conn = sqlite3.connect('./data/grammar.db')
+		cursor = conn.cursor()
+		sql = '''select * from gset_phrase where name=(?)'''
+		cursor.execute(sql, (gs_B,))
+		conn.commit()
+		info = cursor.fetchall()
+		print(info)
+		if not info:
+			sql = '''insert into gset_phrase (name, subset) values (?, ?)'''
+    		# 把数据保存到name username和 id_num中
+			cursor.execute(sql, (gs_B,gs_A))
+		else:
+			gs = '%s~%s'%(info[0][1],gs_A) if info[0][1] else gs_A
+			sql = '''update gset_phrase set subset=(?) where name=(?)'''
+			cursor.execute(sql, (gs, gs_B))
 		conn.commit()
 		conn.close
 	except:
@@ -137,8 +173,6 @@ def gsinit():
 		conn = sqlite3.connect('./data/grammar.db')
 		cursor = conn.execute("select * from gset_phrase")
 		grammar = cursor.fetchall()
-		cursor = conn.execute("select * from gset_set")
-		grammar.extend(cursor.fetchall())
 		cursor = conn.execute("select * from gset_sentence")
 		grammar.extend(cursor.fetchall())
 		conn.close()
@@ -345,18 +379,13 @@ def main():
 	gsinit()
 	spinit()
 	coreinit()
+
 	
-	a='1234加上232等于多少'
-	phs = fenci(a,True)
-	for p in phs:
-		print(p.s)
-		for g in p.gs:
-			print(g.name)
-	#add_database_a('柏拉图','好33233323')
-#checksp('苏格拉底')
-#	gdata.checkgs('zzd命令宾语', False, False)
+#	gdata.checksp('柏拉图')
+	gdata.checkgs('集合断言语句', True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 
 if __name__ == '__main__':
 	main()
+

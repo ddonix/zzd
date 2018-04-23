@@ -98,7 +98,7 @@ def get_descendant(gs):
 	res = list(set(res))
 	return res
 	
-def checkgs(gram, recursion, mend):
+def checkgs(gram, recursion):
 	assert gsin(gram)
 	#检查gs的sp与子集的sp是否有重合
 	gs = getgs(gram)
@@ -133,7 +133,7 @@ def checkgs(gram, recursion, mend):
 	#递归检查gs的子集
 	if recursion:
 		for ch in gs.child:
-			checkgs(ch.name, True, mend)
+			checkgs(ch.name, True)
 	print('check success')
 	
 def main():
