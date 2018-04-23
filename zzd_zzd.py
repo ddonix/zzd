@@ -33,6 +33,7 @@ class zzd():
 		self.desire['input'] = [zzd.desire_input, False, []]
 		self.desire['time'] = [zzd.desire_time, False, []]
 		self.desire['math'] = [zzd.desire_math, False, []]
+		self.desire['goodbye'] = [zzd.desire_goodbye, False, []]
 		self.desire['think'] = [zzd.desire_think, False, []]
 	
 		self.ask_event = threading.Event()
@@ -64,8 +65,6 @@ class zzd():
 		self.show(waa[0], waa[1])
 		if waa[0]:
 			dest.input(self, waa[0])
-		if waa[0] == '再见！' or waa[0] == '拜拜！':
-			self.FSM['work'] = False
 	
 	def say(self, out, form):
 		self.output(self.friend, (out, form))
@@ -81,6 +80,8 @@ class zzd():
 			return self.desire['math']
 		if self.desire['time'][1]:
 			return self.desire['time']
+		if self.desire['goodbye'][1]:
+			return self.desire['goodbye']
 		if self.desire['think'][1]:
 			return self.desire['think']
 		return None
@@ -203,25 +204,7 @@ class zzd():
 				elif 'zzd停止命令' in sp[2]:
 					out = self.player.stop(True)
 				elif 'zzd再见命令' in sp[2]:
-					self.player.stop(False)
-					if self.infomation_a:
-						self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
-						arg = self.ask(['答复语句'])
-						print(arg)
-						if arg and '肯定语句' in arg[2]:
-							print('self.info',self.infomation_a)
-							self.say('请输入管理员口令','')
-							password = self.ask(['认证参数句','认证参数'])
-							for info in self.infomation_a:
-								if db.add_database_a(info, self.infomation_a[info]):
-									self.say('%s信息写入数据库成功'%info, '')
-								else:
-									self.say('%s信息写入数据库失败'%info, '')
-							self.say('%s！'%sp[2]['zzd再见命令'], '')
-						else:
-							self.say('%s！'%sp[2]['zzd再见命令'], '')
-					else:
-						self.say('%s！'%sp[2]['zzd再见命令'], '')
+					self.add_desire('goodbye', '%s！'%sp[2]['zzd再见命令'])
 				else:
 					self.say('不识别的内置命令', '')
 			else:
@@ -291,14 +274,14 @@ class zzd():
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
 				self.say('您好，我是小白，请认证身份！','')
+				self.add_desire('time', (desire, True, time.time()+20))
 				arg = self.ask(['认证参数'])
 				if arg:
 					self.desire['verify'][1] = True
 					self.desire['verify'][2][1] = arg[0]
-				self.add_desire('time', (desire, True, time.time()+20))
 			else:
 				self.say('您没有及时认证，小白要休息了。','')
-				self.say('再见！','')
+				self.add_desire('goodbye', '再见')
 		else:
 			if desire[2][1] in gdata._identifyDict:
 				self.friend.name = gdata._identifyDict[desire[2][1]]
@@ -323,6 +306,14 @@ class zzd():
 		if not desire[2]:
 			desire[1] = False
 	
+	def desire_goodbye(self, desire):
+		assert desire[2]
+		desire[1] = False
+		self.player.stop(False)
+		print('d[2][0]',desire[2][0])
+		self.say(desire[2][0],'')
+		self.FSM['work'] = False
+
 	def desire_math(self, desire):
 		assert desire[2]
 		eq = desire[2].pop(0)
@@ -357,9 +348,10 @@ class zzd():
 		while self.FSM['work'] and self.root:
 			d = self.get_desire()
 			if d:
+				print('live:', d[2])
 				t = threading.Thread(target=desire_thread, args=(self, d))
 				t.start()
-			time.sleep(0.1)
+			time.sleep(0.5)
 		self.player.stop(False)
 		self.ask_event.set()
 				
@@ -389,3 +381,24 @@ def main():
 	
 if __name__ == '__main__':
 	main()
+
+'''	
+					if self.infomation_a:
+						self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
+						arg = self.ask(['答复语句'])
+						self.add_desire('time', ([], True, time.time()+20))
+						print(arg)
+						if arg and '肯定语句' in arg[2]:
+							print('self.info',self.infomation_a)
+							self.say('请输入管理员口令','')
+							password = self.ask(['认证参数句','认证参数'])
+							for info in self.infomation_a:
+								if db.add_database_a(info, self.infomation_a[info]):
+									self.say('%s信息写入数据库成功'%info, '')
+								else:
+									self.say('%s信息写入数据库失败'%info, '')
+							self.say('%s！'%sp[2]['zzd再见命令'], '')
+						else:
+							self.say('%s！'%sp[2]['zzd再见命令'], '')
+					else:
+'''
