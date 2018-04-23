@@ -5,7 +5,6 @@ import db
 import time
 import zmath
 import play
-import ipdb
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -49,7 +48,6 @@ class zzd():
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
 		cls.inWaaClass['define'] = zzd._solve_define					#define
 		cls.inWaaClass['command'] = zzd._solve_command					#command
-		cls.inWaaClass['system'] = zzd._solve_system					#system
 		cls.inWaaClass['set'] = zzd._solve_set							#set
 		
 	#运行在root进程
@@ -96,8 +94,14 @@ class zzd():
 		assert self.friend == waain['sour']
 		
 		phrases = db.fenci(waa, False)
+		if 'ask' in self.FSM:
+			if self._solve_answer(phrases):
+				return
+		if not self.FSM['verify']:
+			self._solve_command(phrases)
+			return
 		keyword = [x for x in phrases if x.s in gdata._keyword_zzd]
-		bit = {'math':0,'define':0,'command':0,'system':0}
+		bit = {'math':0,'define':0,'command':0, 'set':0}
 		for k in keyword:
 			assert k.s in gdata._keyword_zzd
 			weight = gdata._keyword_zzd[k.s][0].split(' ')
@@ -105,10 +109,6 @@ class zzd():
 				if weight[i] != '':
 					bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
-		ipdb.set_trace()
-		if self.FSM['verify'] == False and 'ask' not in self.FSM and bit[0] != 'command':
-			self.say('请您先认证身份','')
-			return
 		if bit[0][1] == 0:
 			for ph in phrases:
 				if ph.be('集合'):
@@ -117,8 +117,6 @@ class zzd():
 			else:
 				self._solve_other(phrases)
 		else:
-			if 'ask' in self.FSM:
-				self.ask_event.set()
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
 	def _solve_math(self, phrases):
@@ -148,54 +146,29 @@ class zzd():
 			else:
 				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0])
 	
-	def _solve_system(self, phrases):
-		sp = gdata.getgs('学习语句').fensp(phrases, True)
-		if sp == None:
-			self.say('学习语法不对','')
-		else:
-			assert 'zzd学习命令' in sp[2]
-			if '学习状语' not in sp[2] or sp[2]['学习状语'] == '进入':
-				if self.FSM['train'] == False:
-					self.say('好的，已进入%s模式'%sp[2]['zzd学习命令'], sp[0])
-					self.FSM['train'] = True
-				else:
-					self.say('您已经是已%s模式了'%sp[2]['zzd学习命令'], sp[0])
-			else:
-				if self.FSM['train'] == True:
-					self.say('好的，已退出%s模式'%sp[2]['zzd学习命令'], sp[0])
-					self.FSM['train'] = False
-				else:
-					self.say('您并没有在%s模式'%sp[2]['zzd学习命令'], sp[0])
-
 	def _solve_command(self, phrases):
 		sp = gdata.getgs('命令语句').fensp(phrases, True)
 		if sp == None:
 			self.say('语法错误','')
 			return
 		assert 'zzd命令' in sp[2]
-		if self.FSM['verify'] == False and 'zzd认证命令' not in sp[2]:
-			self.say('请您先认证身份','')
-			return
-		
-		self.say('', sp[0])
-		exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
-		if exe:
-			self.say('还在开发中', '')
-			return
 		if '命令参数' in sp[2]:
 			arg = sp[2]['命令参数']
 		else:
 			arg = ''
+		exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
+		if exe:
+			self.say('还在开发中', '')
+			return
+		if self.FSM['verify'] == False:
+			if 'zzd认证命令' in sp[2]:
+				self.desire['verify'][1] = True
+				self.desire['verify'][2][1] = arg
+			else:
+				self.say('请先认证身份', '')
+			return
 		if 'zzd认证命令' in sp[2]:
-			if self.FSM['verify'] == True:
-				self.say('您已经认证过身份了。同时服务多人功能正在开发中，请耐心等待。', '')
-				return
-			if not arg:
-				self.say('口令是什么？', '')
-				arg = self.ask(['认证参数'])
-				if arg:
-					self.desire['verify'][1] = True
-					self.desire['verify'][2][1] = arg[0]
+			self.say('请已经认证过身份了.同时服务多人功能正在开发中', '')
 		elif 'zzd播放命令' in sp[2]:
 			out = self.player.play(arg)
 		elif 'zzd暂停命令' in sp[2]:
@@ -206,9 +179,21 @@ class zzd():
 			out = self.player.stop(True)
 		elif 'zzd再见命令' in sp[2]:
 			self.add_desire('goodbye', '%s！'%sp[2]['zzd再见命令'])
+		elif 'zzd学习命令' in sp[2] or '进入命令' in sp[2]:
+			if self.FSM['train'] == False:
+				self.say('好的，已进入%s模式'%sp[2]['zzd学习命令'], sp[0])
+				self.FSM['train'] = True
+			else:
+				self.say('您已经是已%s模式了'%sp[2]['zzd学习命令'], sp[0])
+		elif '退出命令' in sp[2]:
+			if self.FSM['train'] == True:
+				self.say('好的，已退出%s模式'%sp[2]['zzd学习命令'], sp[0])
+				self.FSM['train'] = False
+			else:
+				self.say('您并没有在%s模式'%sp[2]['zzd学习命令'], sp[0])
 		else:
 			self.say('不识别的内置命令', '')
-
+		
 	def _solve_set(self, phrases):
 		sp = gdata.getgs('集合语句').fensp(phrases, True)
 		if sp == None:
@@ -249,20 +234,20 @@ class zzd():
 					else:
 						self.say('您的信息与我的知识库冲突。原因:%s'%res[1], sp[0])
 
+	def _solve_answer(self, phrases):
+		assert 'ask' in self.FSM and not self.FSM['ask'][1]
+		for question in self.FSM['ask'][0]:
+			print('question:',question)
+			sp = gdata.getgs(question).fensp(phrases, True)
+			if sp:
+				self.FSM['ask'][1] = sp
+				self.ask_event.set()
+				return True
+		self.ask_event.set()
+		return False
+	
 	def _solve_other(self, phrases):
-		if 'ask' in self.FSM:
-			for question in self.FSM['ask'][0]:
-				print('question:',question)
-				print('ask0',self.FSM['ask'][0])
-				sp = gdata.getgs(question).fensp(phrases, True)
-				if sp:
-					self.FSM['ask'][1] = sp
-				self.ask_event.set()
-				break
-			else:
-				self.ask_event.set()
-		else:
-			self.say('对不起，我还需要调教！','')
+		self.say('对不起，我还需要调教！','')
 				
 	def desire_verify(self, desire):
 		if self.FSM['verify'] == True:
