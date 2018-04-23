@@ -345,9 +345,15 @@ def main():
 	spinit()
 	coreinit()
 	
+	a='1234加上232等于多少'
+	phs = fenci(a,True)
+	for p in phs:
+		print(p.s)
+		for g in p.gs:
+			print(g.name)
 	#add_database_a('柏拉图','好33233323')
 #checksp('苏格拉底')
-	gdata.checkgs('zzd命令宾语', False, False)
+#	gdata.checkgs('zzd命令宾语', False, False)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 

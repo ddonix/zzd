@@ -149,7 +149,10 @@ class zzd():
 	def _solve_command(self, phrases):
 		sp = gdata.getgs('命令语句').fensp(phrases, True)
 		if sp == None:
-			self.say('语法错误','')
+			if not self.FSM['verify']:
+				self.say('请先认证身份。','')
+			else:
+				self.say('语法错误。','')
 			return
 		assert 'zzd命令' in sp[2]
 		if '命令参数' in sp[2]:
@@ -258,11 +261,11 @@ class zzd():
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
 				self.say('您好，我是小白，请认证身份！','')
-				#self.add_desire('time', (desire, True, time.time()+20))
-				arg = self.ask(['认证参数'])
+				self.add_desire('time', (desire, True, time.time()+20))
+				arg = self.ask(['认证参数','认证参数句'])
 				if arg:
 					self.desire['verify'][1] = True
-					self.desire['verify'][2][1] = arg[0]
+					self.desire['verify'][2][1] = arg[2]['认证参数']
 			else:
 				self.say('您没有及时认证，小白要休息了。','')
 				self.add_desire('goodbye', '再见')
