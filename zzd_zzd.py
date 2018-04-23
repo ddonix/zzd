@@ -151,6 +151,10 @@ class zzd():
 		if sp == None:
 			if not self.FSM['verify']:
 				self.say('请先认证身份。','')
+				arg = self.ask(['认证参数','认证参数句'])
+				if arg:
+					self.desire['verify'][1] = True
+					self.desire['verify'][2][1] = arg[2]['认证参数']
 			else:
 				self.say('语法错误。','')
 			return
@@ -182,6 +186,8 @@ class zzd():
 			out = self.player.stop(True)
 		elif 'zzd再见命令' in sp[2]:
 			self.add_desire('goodbye', '%s！'%sp[2]['zzd再见命令'])
+		elif 'zzd问候命令' in sp[2]:
+			self.say(sp[2]['zzd问候命令'],'')
 		elif 'zzd学习命令' in sp[2] or '进入命令' in sp[2]:
 			if self.FSM['train'] == False:
 				self.say('好的，已进入%s模式'%sp[2]['zzd学习命令'], sp[0])
@@ -250,7 +256,10 @@ class zzd():
 		return False
 	
 	def _solve_other(self, phrases):
-		self.say('对不起，我还需要调教！','')
+		if gdata.getgs('称呼').fensp(phrases, True):
+			self.say('我在，有什么为你做的吗','')
+		else:
+			self.say('对不起，我还需要学习','')
 				
 	def desire_verify(self, desire):
 		if self.FSM['verify'] == True:
@@ -261,13 +270,13 @@ class zzd():
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
 				self.say('您好，我是小白，请认证身份！','')
-				self.add_desire('time', (desire, True, time.time()+20))
+				self.add_desire('time', (desire, True, time.time()+10))
 				arg = self.ask(['认证参数','认证参数句'])
 				if arg:
 					self.desire['verify'][1] = True
 					self.desire['verify'][2][1] = arg[2]['认证参数']
 			else:
-				self.say('您没有及时认证，小白要休息了。','')
+				self.say('您没有及时认证，我要休息了。','')
 				self.add_desire('goodbye', '再见')
 		else:
 			if desire[2][1] in gdata._identifyDict:
@@ -285,6 +294,10 @@ class zzd():
 					desire[2][1] == ''
 					desire[2][0] -= 1
 					self.add_desire('time', (desire, True, time.time()+20))
+				arg = self.ask(['认证参数','认证参数句'])
+				if arg:
+					self.desire['verify'][1] = True
+					self.desire['verify'][2][1] = arg[2]['认证参数']
 	
 	def desire_think(self, desire):
 		return None
@@ -374,11 +387,11 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '开始学习'
+	a = '您好'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('命令语句')
+	g = gdata.getgs('zzd命令')
 	sp = g.fensp(phs,True)
 	print('sp[0]:',sp[0])
 	print('sp[1]:',sp[1])

@@ -10,7 +10,6 @@ import gdata
 def prevgram(gram):
 	tmp = []
 	for g in gram.split('~'):
-		print('g:',g)
 		tmp.extend(_prevgram(g))
 	tmp2 = []
 	for t in tmp:
@@ -179,7 +178,6 @@ def spinit():
 		sp = element.seph(v[0])
 		gdata._table_vocable.add(v[0][0])
 		for g in v[1].split('~') if v[1] else []:
-			print('g:',g)
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
 	try:
@@ -193,7 +191,6 @@ def spinit():
 			raise NameError
 		sp = element.seph(v[0])
 		for g in v[1].split('~') if v[1] else []:
-			print('g:',g)
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
 	conn.close()
@@ -226,9 +223,10 @@ def coreinit():
 	for keyword in cursor:
 		if keyword[0] in gdata._gset_all:
 			gdata._gset_key[keyword[0]] = keyword[1:]
-			for sp in gdata._gset_all[keyword[0]].sp:
-				gdata._keyword_zzd[sp.s] = keyword[1:]
-					
+			for sp in gdata._spbase_all:
+				for s in gdata._spbase_all[sp]:
+					if gdata._spbase_all[sp][s].be(keyword[0]):
+						gdata._keyword_zzd[s] = keyword[1:]
 		elif keyword[0][0] == '(' and keyword[0][-1] == ')':
 			gs = sets.gset(keyword[0])
 			gdata._gset_key[keyword[0]] = keyword[1:]
@@ -239,6 +237,9 @@ def coreinit():
 		else:
 			print(keyword[0])
 			raise NameError
+	
+	for key in gdata._keyword_zzd:
+		print('keyword:',key)
 
 	try:
 		cursor = conn.execute("select * from verify")

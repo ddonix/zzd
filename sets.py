@@ -264,7 +264,6 @@ class gset:
 		return (sps, ress[-1][1], key)
 	
 	def fensp(self, phrases, mend):
-		print('self.name:',self.name)
 		res = self._fensp(phrases, mend)
 		return res if res and not res[1] else None
 	
