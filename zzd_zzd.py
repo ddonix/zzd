@@ -287,6 +287,11 @@ class zzd():
 				self.friend.name = gdata._identifyDict[desire[2][1]]
 				self.FSM['verify'] = True
 				self.say('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name),'')
+				if self.desire['time'][1] == True:
+					if len(self.desire['time'][2]) == 1:
+						if self.desire['time'][2][0][0] == self.desire['verify']:
+							self.desire['time'][1] == False
+							self.desire['time'][2] = []
 			else:
 				self.say('认证失败。','')
 				if desire[2][0] > 0:
@@ -298,7 +303,9 @@ class zzd():
 		return None
 	
 	def desire_time(self, desire):
-		assert desire[2]
+		if not desire[2]:
+			desire[1] = False
+			return
 		for i in range(len(desire[2])-1, -1, -1):
 			if time.time() >= desire[2][i][2]:
 				desire[2][i][0][1] = desire[2][i][1]
@@ -310,7 +317,21 @@ class zzd():
 		assert desire[2]
 		desire[1] = False
 		self.player.stop(False)
-		print('d[2][0]',desire[2][0])
+		if self.infomation_a:
+			self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
+			ok = self.ask(['答复语句'])
+			if ok and '肯定语句' in ok[2]:
+				self.say('请输入管理员口令','')
+				password = self.ask(['认证参数句','认证参数'])
+				for info in self.infomation_a:
+					if not db.add_database_a(info, self.infomation_a[info]):
+						self.say('%s信息写入失败。%s'%(info,desire[2][0]), '')
+						break
+				else:
+					self.say('信息写入成功.%s'%desire[2][0], '')
+			else:
+				self.say('丢弃学习信息。%s'%desire[2][0], '')
+		self.desire['time'][1] == False
 		self.say(desire[2][0],'')
 		self.FSM['work'] = False
 
@@ -382,23 +403,3 @@ def main():
 if __name__ == '__main__':
 	main()
 
-'''	
-					if self.infomation_a:
-						self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
-						arg = self.ask(['答复语句'])
-						self.add_desire('time', ([], True, time.time()+20))
-						print(arg)
-						if arg and '肯定语句' in arg[2]:
-							print('self.info',self.infomation_a)
-							self.say('请输入管理员口令','')
-							password = self.ask(['认证参数句','认证参数'])
-							for info in self.infomation_a:
-								if db.add_database_a(info, self.infomation_a[info]):
-									self.say('%s信息写入数据库成功'%info, '')
-								else:
-									self.say('%s信息写入数据库失败'%info, '')
-							self.say('%s！'%sp[2]['zzd再见命令'], '')
-						else:
-							self.say('%s！'%sp[2]['zzd再见命令'], '')
-					else:
-'''

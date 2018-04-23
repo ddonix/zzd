@@ -19,10 +19,11 @@ class human():
 
 	#运行在zhd线程
 	def input(self, sour, waa):
-		if waa == u'再见！' or waa == '拜拜！':
-			self.working = False
-		else:
-			pass			#这里体现人不理会机器的反应
+		for bye in ('再见', '拜拜', '晚安', '午安'):
+			if bye in waa:
+				self.working = False
+		#这里体现人不理会机器的反应
+		pass
 	
 	#运行在root主进程
 	def output(self, dest, waa):
