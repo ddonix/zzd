@@ -18,6 +18,7 @@ class zzd():
 		
 		self.root = True
 		self.name = gdata._identifyDict['299792458']
+		self.managerid = '314159'
 		
 		self.waain = []
 		self.id_waain = 0
@@ -129,7 +130,7 @@ class zzd():
 					self.desire['verify'][2][1] = sp[2]['认证参数']
 				else:
 					self.say('口令是什么？', '')
-					arg = self.ask('认证参数')
+					arg = self.ask(['认证参数'])
 					if arg:
 						self.desire['verify'][1] = True
 						self.desire['verify'][2][1] = arg[0]
@@ -205,10 +206,12 @@ class zzd():
 					self.player.stop(False)
 					if self.infomation_a:
 						self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
-						arg = self.ask('答复语句')
+						arg = self.ask(['答复语句'])
 						print(arg)
 						if arg and '肯定语句' in arg[2]:
 							print('self.info',self.infomation_a)
+							self.say('请输入管理员口令','')
+							password = self.ask(['认证参数句','认证参数'])
 							for info in self.infomation_a:
 								if db.add_database_a(info, self.infomation_a[info]):
 									self.say('%s信息写入数据库成功'%info, '')
@@ -266,10 +269,16 @@ class zzd():
 
 	def _solve_other(self, phrases):
 		if 'ask' in self.FSM:
-			sp = gdata.getgs(self.FSM['ask'][0]).fensp(phrases, True)
-			if sp:
-				self.FSM['ask'][1]=sp
-			self.ask_event.set()
+			for question in self.FSM['ask'][0]:
+				print('question:',question)
+				print('ask0',self.FSM['ask'][0])
+				sp = gdata.getgs(question).fensp(phrases, True)
+				if sp:
+					self.FSM['ask'][1] = sp
+				self.ask_event.set()
+				break
+			else:
+				self.ask_event.set()
 		else:
 			self.say('对不起，我还需要调教！','')
 				
@@ -282,7 +291,7 @@ class zzd():
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
 				self.say('您好，我是小白，请认证身份！','')
-				arg = self.ask('认证参数')
+				arg = self.ask(['认证参数'])
 				if arg:
 					self.desire['verify'][1] = True
 					self.desire['verify'][2][1] = arg[0]
@@ -366,11 +375,11 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '同意'
+	a = '123456'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('答复语句')
+	g = gdata.getgs('认证参数')
 	sp = g.fensp(phs,True)
 	print('sp[0]:',sp[0])
 	print('sp[1]:',sp[1])

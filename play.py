@@ -35,7 +35,7 @@ class player:
 			self.stop(True)
 		if arg == '':
 			self.zhd.say('播放什么歌曲','')
-			arg = self.zhd.ask('命令参数')
+			arg = self.zhd.ask(['命令参数'])
 			if not arg:
 				return
 			arg = arg[0]
