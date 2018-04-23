@@ -5,6 +5,7 @@ import db
 import time
 import zmath
 import play
+import ipdb
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -45,7 +46,6 @@ class zzd():
 		db.spinit()
 		db.coreinit()
 		
-		cls.inWaaClass['verify'] = zzd._solve_verify					#verify
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
 		cls.inWaaClass['define'] = zzd._solve_define					#define
 		cls.inWaaClass['command'] = zzd._solve_command					#command
@@ -97,7 +97,7 @@ class zzd():
 		
 		phrases = db.fenci(waa, False)
 		keyword = [x for x in phrases if x.s in gdata._keyword_zzd]
-		bit = {'verify':0,'math':0,'define':0,'command':0,'system':0}
+		bit = {'math':0,'define':0,'command':0,'system':0}
 		for k in keyword:
 			assert k.s in gdata._keyword_zzd
 			weight = gdata._keyword_zzd[k.s][0].split(' ')
@@ -105,6 +105,10 @@ class zzd():
 				if weight[i] != '':
 					bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
+		ipdb.set_trace()
+		if self.FSM['verify'] == False and 'ask' not in self.FSM and bit[0] != 'command':
+			self.say('请您先认证身份','')
+			return
 		if bit[0][1] == 0:
 			for ph in phrases:
 				if ph.be('集合'):
@@ -117,25 +121,6 @@ class zzd():
 				self.ask_event.set()
 			zzd.inWaaClass[bit[0][0]](self, phrases)
 		
-	def _solve_verify(self, phrases):
-		sp = gdata.getgs('认证语句').fensp(phrases, True)
-		if sp == None:
-			self.say('认证语法不对', '')
-		else:
-			self.say('', sp[0])
-			if self.FSM['verify'] == True:
-				self.say('您已经认证过身份了。服务多人功能正在开发中，请耐心等待。', '')
-			else:
-				if '认证参数' in sp[2]:
-					self.desire['verify'][1] = True
-					self.desire['verify'][2][1] = sp[2]['认证参数']
-				else:
-					self.say('口令是什么？', '')
-					arg = self.ask(['认证参数'])
-					if arg:
-						self.desire['verify'][1] = True
-						self.desire['verify'][2][1] = arg[0]
-
 	def _solve_math(self, phrases):
 		sp = gdata.getgs('数学语句').fensp(phrases, True)
 		if not sp:
@@ -185,30 +170,44 @@ class zzd():
 	def _solve_command(self, phrases):
 		sp = gdata.getgs('命令语句').fensp(phrases, True)
 		if sp == None:
-			self.say('命令语法不对','')
+			self.say('语法错误','')
+			return
+		assert 'zzd命令' in sp[2]
+		if self.FSM['verify'] == False and 'zzd认证命令' not in sp[2]:
+			self.say('请您先认证身份','')
+			return
+		
+		self.say('', sp[0])
+		exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
+		if exe:
+			self.say('还在开发中', '')
+			return
+		if '命令参数' in sp[2]:
+			arg = sp[2]['命令参数']
 		else:
-			assert 'zzd命令' in sp[2]
-			self.say('', sp[0])
-			exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
-			if exe == '' or exe == None:
-				if '命令参数' in sp[2]:
-					arg = sp[2]['命令参数']
-				else:
-					arg = ''
-				if 'zzd播放命令' in sp[2]:
-					out = self.player.play(arg)
-				elif 'zzd暂停命令' in sp[2]:
-					out = self.player.pause()
-				elif 'zzd继续命令' in  sp[2]:
-					out = self.player.con()
-				elif 'zzd停止命令' in sp[2]:
-					out = self.player.stop(True)
-				elif 'zzd再见命令' in sp[2]:
-					self.add_desire('goodbye', '%s！'%sp[2]['zzd再见命令'])
-				else:
-					self.say('不识别的内置命令', '')
-			else:
-				self.say('还在开发中', '')
+			arg = ''
+		if 'zzd认证命令' in sp[2]:
+			if self.FSM['verify'] == True:
+				self.say('您已经认证过身份了。同时服务多人功能正在开发中，请耐心等待。', '')
+				return
+			if not arg:
+				self.say('口令是什么？', '')
+				arg = self.ask(['认证参数'])
+				if arg:
+					self.desire['verify'][1] = True
+					self.desire['verify'][2][1] = arg[0]
+		elif 'zzd播放命令' in sp[2]:
+			out = self.player.play(arg)
+		elif 'zzd暂停命令' in sp[2]:
+			out = self.player.pause()
+		elif 'zzd继续命令' in  sp[2]:
+			out = self.player.con()
+		elif 'zzd停止命令' in sp[2]:
+			out = self.player.stop(True)
+		elif 'zzd再见命令' in sp[2]:
+			self.add_desire('goodbye', '%s！'%sp[2]['zzd再见命令'])
+		else:
+			self.say('不识别的内置命令', '')
 
 	def _solve_set(self, phrases):
 		sp = gdata.getgs('集合语句').fensp(phrases, True)
@@ -274,7 +273,7 @@ class zzd():
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
 				self.say('您好，我是小白，请认证身份！','')
-				self.add_desire('time', (desire, True, time.time()+20))
+				#self.add_desire('time', (desire, True, time.time()+20))
 				arg = self.ask(['认证参数'])
 				if arg:
 					self.desire['verify'][1] = True
@@ -369,7 +368,6 @@ class zzd():
 		while self.FSM['work'] and self.root:
 			d = self.get_desire()
 			if d:
-				print('live:', d[2])
 				t = threading.Thread(target=desire_thread, args=(self, d))
 				t.start()
 			time.sleep(0.5)
@@ -388,7 +386,7 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '进入学习状态'
+	a = '开始学习'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
