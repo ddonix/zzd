@@ -24,6 +24,8 @@ class gset:
 		if name[0] == '[' and name[-1] == ']':
 			gram = name[1:-1].split(' ')
 			for g in gram:
+				if not g:
+					continue
 				if not (g[0] == '.' or gdata.gsin(g)):
 					gset(g)
 	

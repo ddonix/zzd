@@ -345,9 +345,9 @@ def main():
 	spinit()
 	coreinit()
 	
-	add_database_a('柏拉图','好33233323')
+	#add_database_a('柏拉图','好33233323')
 #checksp('苏格拉底')
-#	checkgs('人', False, False)
+	gdata.checkgs('zzd命令宾语', False, False)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 
