@@ -239,13 +239,16 @@ class gset:
 			elif gram == '...':
 				tc = ''
 				if i < len(frame)-1:
-					while phrases and not (phrases[0].be('分隔词')) and not (phrases[0].be(frame[i+1])):
+					while phrases and len(phrases[0].s) == 1 and not (phrases[0].be('分隔词')) and not (phrases[0].be(frame[i+1])):
 						tc += phrases[0].s
 						phrases = phrases[1:]
 				else:
-					while phrases and not (phrases[0].be('分隔词')):
+					while phrases and len(phrases[0].s) == 1 and not (phrases[0].be('分隔词')):
 						tc += phrases[0].s
 						phrases = phrases[1:]
+				if not tc and phrases:
+					tc = phrases[0].s
+					phrases = phrases[1:]
 				if '...' in key and tc not in key['...']:
 					key['...'] += '|%s'%tc
 				else:

@@ -248,26 +248,36 @@ class zzd():
 		if sp == None:
 			self.say('集合语法不对',' ')
 		else:
+			assert '...' in sp[2]
+			assert '集合' in sp[2]
+			for k in sp[2]:
+				print(k,sp[2][k])
 			if '集合判断语句' in sp[2]:
-				if '...' in sp[2]:
-					self.say('%s是未知的词.'%sp[2]['...'], sp[0])
-					return
-				assert '.' in sp[2]
-				ph = gdata.getsp(sp[2]['.'])
-				if ph.be(sp[2]['集合']):
-					s = ''
-					for ph in phrases[0:-1]:
-						s += ph.s
-					self.say(s, sp[0])
-				else:
-					self.say('对不起，我不知道', sp[0])
+				if '属于判断语句' in sp[2]:
+					sp_a = sp[2]['...']
+					if not gdata.spin(sp_a):
+						self.say('%s是未知的词.您可以进入学习模式进行学习.'%sp[2]['...'], sp[0])
+					elif gdata.getsp(sp_a).be(sp[2]['集合']):
+						self.say(sp[2]['属于断言语句'], sp[0])
+					else:
+						self.say('对不起，我不知道', sp[0])
+				elif '包含判断语句' in sp[2]:
+					gs_A = sp[2]['...']
+					gs_B = sp[2]['集合']
+					if not gdata.gsin(gs_A):
+						self.say('%s不是集合.您可以进入学习模式进行学习.'%gs_A, sp[0])
+					else:
+						if '(包含)' in sp[2] and gdata.involved(gs_B, gs_A):
+							self.say(sp[2]['包含断言语句'], sp[0])
+						elif '(包含于)' in sp[2] and gdata.involved_in(gs_A, gs_B):
+							self.say(sp[2]['包含断言语句'], sp[0])
+						else:
+							self.say('对不起，我不知道', sp[0])
 			else:
-				assert '集合断言语句' in sp[2]
-				if sp[0][-1] == '？' or sp[0][-1] == '吗':
-					self.say('对不起，我不知道。', sp[0])
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
-				else:
+					return
+				if '属于断言语句' in sp[2]:
 					assert '...' in sp[2]
 					print('...:%s'%sp[2]['...'])
 					sp_a,gs_A = sp[2]['...'].split('|')
@@ -282,6 +292,10 @@ class zzd():
 						self.say('您的信息已经在我的知识库里了。原因：%s'%res[1], sp[0])
 					else:
 						self.say('您的信息与我的知识库冲突。原因:%s'%res[1], sp[0])
+				elif '包含断言语句' in sp[2]:
+					self.say('稍等', sp[0])
+				else:
+					self.say('稍等', sp[0])
 
 	def _solve_answer(self, phrases):
 		assert 'ask' in self.FSM and not self.FSM['ask'][1]
