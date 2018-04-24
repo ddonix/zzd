@@ -271,21 +271,25 @@ class zzd():
 						else:
 							self.say('对不起，我不知道', sp[0])
 				else:
-					self.say('稍等')
+					if gdata.getsp(x).be('集合'):
+						if gdata.involved_in(x, gs):
+							self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
+					else:
+						if gdata.getsp(x).be(gs):
+							self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
+					self.say('对不起，我不知道')
 			else:
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
 					return
 				if '属于断言语句' in sp[2]:
-					sp_a = sp[2]['...']
-					gs_A = sp[2]['集合']
-					res = db.add_information_1(sp_a, gs_A)
+					res = db.add_information_1(x, gs)
 					if res[0] == 0:
 						self.say('好的，我记住了', sp[0])
 						if sp_a in self.infomation_a:
-							self.infomation_a[sp_a] += '~%s'%gs_A
+							self.infomation_a[x] += '~%s'%gs
 						else:
-							self.infomation_a[sp_a] = gs_A
+							self.infomation_a[x] = gs
 					elif res[0] == 1:
 						self.say('您的信息已经在我的知识库里了。原因：%s'%res[1], sp[0])
 					else:
