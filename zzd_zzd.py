@@ -421,19 +421,7 @@ def main():
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '保存下来'
-	phs = db.fenci(a, False)
-	for p in phs:
-		print(p.s,'|')
-	g = gdata.getgs('命令语句')
-	sp = g.fensp(phs,True)
-	print('sp[0]:',sp[0])
-	print('sp[1]:',sp[1])
-	print('sp[2]:',sp[2])
-	for s in sp[2]:
-		print(s,sp[2][s])
-	
-	a = '脊椎动物包含哺乳动物'
+	a = '鸟是哺乳动物对吗'
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
