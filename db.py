@@ -229,12 +229,17 @@ def spinit():
 				add_information_1(v[0], g)
 	conn.close()
 		
-	#补充()类集合元素集
+	#补充所有集合类元素集,例如：集合语句是集合
+	#补充()类集合里面的元素
 	for gram in gdata._gset_all:
+		if gram[0] != '[' and gram[0] != '(':
+			add_information_1(gram, '集合')
 		if gram[0] == '(' and gram[-1] == ')':
 			item = gram[1:-1].split(' ')
 			for sp in item:
 				add_information_1(sp, gram)
+	
+
 			
 def coreinit():
 	try:
@@ -380,7 +385,7 @@ def main():
 	spinit()
 	coreinit()
 #	gdata.checksp('柏拉图')
-	gdata.checkgs('全称量词', True)
+	gdata.checkgs('集合', True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 
