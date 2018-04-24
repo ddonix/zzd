@@ -258,9 +258,9 @@ class zzd():
 				gs = sp[2]['集合']
 			else:
 				if '(包含)' in sp[2]:
-					x,gs = sp[2]['集合'].split('|')
-				else:
 					gs,x = sp[2]['集合'].split('|')
+				else:
+					x,gs = sp[2]['集合'].split('|')
 			
 			assert gdata.gsin(gs)
 			if not gdata.spin(x) and '集合判断语句' in sp[2]:
