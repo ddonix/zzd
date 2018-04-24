@@ -379,6 +379,13 @@ def main():
 	gsinit()
 	spinit()
 	coreinit()
+	f= open('wz.txt','r')
+	book=f.read()
+	f.close()
+	for v in book:
+		if v != '，' and v != '。' and v != ' ' and v != '\n':
+			if v not in gdata._table_vocable:
+				add_database_a_in_A(v, '普通汉字')
 #	gdata.checksp('柏拉图')
 #	gdata.checkgs('[肯定回答语句]', True)
 #	add_information_1('苏格拉底', '人')
