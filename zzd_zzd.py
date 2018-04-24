@@ -5,6 +5,7 @@ import db
 import time
 import zmath
 import play
+import sys
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -416,12 +417,12 @@ class zzd():
 def desire_thread(core, d):
 	d[0](core,d)
 	
-def main():
+def main(arg):
 	print('zzd_zzd')
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = '鸟是哺乳动物对吗'
+	a = arg
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
@@ -434,4 +435,4 @@ def main():
 		print(s,sp[2][s])
 	
 if __name__ == '__main__':
-	main()
+	main(sys.argv[1])

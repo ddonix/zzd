@@ -382,7 +382,7 @@ def main():
 
 	
 #	gdata.checksp('柏拉图')
-	gdata.checkgs('集合量词', True)
+	gdata.checkgs('元素量词', True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 
