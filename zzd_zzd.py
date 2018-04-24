@@ -193,7 +193,7 @@ class zzd():
 			self._command_save(sp)
 		elif 'zzd学习命令' in sp[2] or 'zzd进入命令' in sp[2]:
 			if self.FSM['train'] == False:
-				self.say('好的，已进入%s模式'%sp[2]['zzd学习命令'], sp[0])
+				self.say('好的，已进入%s模式！每次最多包含一条信息。'%sp[2]['zzd学习命令'], sp[0])
 				self.FSM['train'] = True
 			else:
 				self.say('您已经是已%s模式了'%sp[2]['zzd学习命令'], sp[0])
@@ -250,37 +250,35 @@ class zzd():
 		else:
 			assert '...' in sp[2]
 			assert '集合' in sp[2]
+			x = sp[2]['...']
+			gs = sp[2]['集合']
 			for k in sp[2]:
 				print(k,sp[2][k])
 			if '集合判断语句' in sp[2]:
 				if '属于判断语句' in sp[2]:
-					sp_a = sp[2]['...']
-					if not gdata.spin(sp_a):
-						self.say('%s是未知的词.您可以进入学习模式进行学习.'%sp[2]['...'], sp[0])
-					elif gdata.getsp(sp_a).be(sp[2]['集合']):
+					if not gdata.spin(x):
+						self.say('%s是未知的词.您可以进入学习模式进行学习'%x, sp[0])
+					elif gdata.getsp(x).be(gs):
 						self.say(sp[2]['属于断言语句'], sp[0])
 					else:
 						self.say('对不起，我不知道', sp[0])
 				elif '包含判断语句' in sp[2]:
-					gs_A = sp[2]['...']
-					gs_B = sp[2]['集合']
-					print('gs_A',gs_A)
-					print('gs_B',gs_B)
-					if not gdata.gsin(gs_A):
-						self.say('%s不是集合.您可以进入学习模式进行学习.'%gs_A, sp[0])
+					if not gdata.gsin(x):
+						self.say('%s不是集合.您可以进入学习模式进行学习.'%x, sp[0])
 					else:
-						if gdata.involved_in(gs_A, gs_B):
+						if gdata.involved_in(x, gs):
 							self.say(sp[2]['包含断言语句'], sp[0])
 						else:
 							self.say('对不起，我不知道', sp[0])
+				else:
+					self.say('稍等')
 			else:
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
 					return
 				if '属于断言语句' in sp[2]:
-					assert '...' in sp[2]
-					print('...:%s'%sp[2]['...'])
-					sp_a,gs_A = sp[2]['...'].split('|')
+					sp_a = sp[2]['...']
+					gs_A = sp[2]['集合']
 					res = db.add_information_1(sp_a, gs_A)
 					if res[0] == 0:
 						self.say('好的，我记住了', sp[0])
