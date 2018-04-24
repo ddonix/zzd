@@ -253,6 +253,7 @@ class zzd():
 		else:
 			assert '集合' in sp[2]
 			if '|' not in sp[2]['集合']:
+				print(sp[2])
 				assert '...' in sp[2]
 				x = sp[2]['...']
 				gs = sp[2]['集合']
@@ -278,9 +279,10 @@ class zzd():
 					else:
 						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				else:
+					print(x,gs,'llllllll')
 					if gdata.getsp(x).be('集合') and gdata.involved_in(x, gs):
 						self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
-					if not gdata.getsp(x).be('集合') and gdata.getsp(x).be(gs):
+					elif not gdata.getsp(x).be('集合') and gdata.getsp(x).be(gs):
 						self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
 					else:
 						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
@@ -301,9 +303,19 @@ class zzd():
 					else:
 						self.say('您的信息与我的知识库冲突。原因:%s'%res[1], sp[0])
 				elif '包含断言语句' in sp[2]:
-					self.say('包含断言语句稍等', sp[0])
+					res = db.add_information_2(x, gs)
+					if res[0] == 0:
+						if x in self.infomation_A:
+							self.infomation_A[x] += '~%s'%gs
+						else:
+							self.infomation_A[x] = gs
+						self.say('好的，我记住了', sp[0])
+					elif res[0] == 1:
+						self.say('您的信息已经在我的知识库里了。原因：%s'%res[1], sp[0])
+					else:
+						self.say('您的信息与我的知识库冲突。原因:%s'%res[1], sp[0])
 				else:
-					self.say('稍等', sp[0])
+					self.say('%s %s未知断言语句稍等'%(x,gs), sp[0])
 
 	def _solve_answer(self, phrases):
 		assert 'ask' in self.FSM and not self.FSM['ask'][1]

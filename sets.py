@@ -146,7 +146,7 @@ class gset:
 	@classmethod
 	def _addkey(cls, key, name, value):
 		if name in key:
-			if value not in key[name]:
+			if value not in key[name].split('|'):
 				key[name] += '|%s'%value
 		else:
 			key[name] = value

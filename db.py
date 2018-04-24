@@ -163,10 +163,13 @@ def _add_information_1(sp, gs):
 	sp._addgs(gs)
 	return (0, '')
 	
+#成功返回0，无用返回1，矛盾返回2.
+#原则：1.不能矛盾。鲸鱼原先是哺乳动物，现在不能鸟.因为鸟和哺乳动物冲突.
+#原则：2.不能无用。鲸鱼原先是哺乳动物，现在不能是脊椎动物。因为哺乳动物都是脊椎动物.
 def add_information_2(gs_A, gs_B):#集合A包含于集合B
-	assert gdata.gsin(gs_A)
-	gsA = gdata.getgs(gs_A)
-	return gsA.add_child(gs_B)
+	assert gdata.gsin(gs_B)
+	gsB = gdata.getgs(gs_B)
+	return gsB.add_child(gs_A)
 
 def gsinit():
 	try:
@@ -198,7 +201,7 @@ def gsinit():
 				for gg in gs:
 					if not gdata.gsin(gg):
 						sets.gset(gg)
-			add_information_2(v[0], g)
+			add_information_2(g, v[0])
 
 
 def spinit():
@@ -385,7 +388,7 @@ def main():
 	spinit()
 	coreinit()
 #	gdata.checksp('柏拉图')
-	gdata.checkgs('集合', True)
+	gdata.checksp('人')
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 
