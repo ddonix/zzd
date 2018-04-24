@@ -264,7 +264,7 @@ class zzd():
 					elif gdata.getsp(x).be(gs):
 						self.say(sp[2]['属于断言语句'], sp[0])
 					else:
-						self.say('对不起，我不知道', sp[0])
+						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				elif '包含判断语句' in sp[2]:
 					if not gdata.gsin(x):
 						self.say('%s不是集合.您可以进入学习模式进行学习.'%x, sp[0])
@@ -272,7 +272,7 @@ class zzd():
 						if gdata.involved_in(x, gs):
 							self.say(sp[2]['包含断言语句'], sp[0])
 						else:
-							self.say('对不起，我不知道', sp[0])
+							self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				else:
 					if gdata.getsp(x).be('集合'):
 						if gdata.involved_in(x, gs):
@@ -280,7 +280,7 @@ class zzd():
 					else:
 						if gdata.getsp(x).be(gs):
 							self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
-					self.say('对不起，我不知道')
+					self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 			else:
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
