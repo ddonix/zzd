@@ -382,10 +382,9 @@ def main():
 
 	
 #	gdata.checksp('柏拉图')
-	gdata.checkgs('元素量词', True)
+	gdata.checkgs('[肯定回答语句]', True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 
 if __name__ == '__main__':
 	main()
-

@@ -192,13 +192,14 @@ class zzd():
 		elif 'zzd保存命令' in sp[2]:
 			self._command_save(sp)
 		elif 'zzd学习命令' in sp[2] or 'zzd进入命令' in sp[2]:
+			mode = sp[2]['zzd学习命令'] if 'zzd学习命令' in sp[2] else sp[2]['zzd模式定语_学习']
 			if self.FSM['train'] == False:
-				self.say('好的，已进入%s模式！每次最多包含一条信息。'%sp[2]['zzd学习命令'], sp[0])
+				self.say('好的，已进入%s模式！每次最多包含一条信息。'%mode, sp[0])
 				self.FSM['train'] = True
 			else:
-				self.say('您已经是已%s模式了'%sp[2]['zzd学习命令'], sp[0])
+				self.say('您已经是已%s模式了'%mode, sp[0])
 		elif 'zzd退出命令' in sp[2]:
-			mode = sp[2]['zzd学习命令'] if 'zzd学习命令' in sp[2] else '学习'
+			mode = sp[2]['zzd学习命令'] if 'zzd学习命令' in sp[2] else sp[2]['zzd模式定语_学习']
 			if self.FSM['train'] == True:
 				self.say('好的，已退出%s模式'%mode, sp[0])
 				self.FSM['train'] = False
@@ -377,8 +378,8 @@ class zzd():
 		print(self.infomation_A)
 		if self.infomation_a or self.infomation_A:
 			self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
-			ok = self.ask(['答复语句'])
-			if ok and '肯定语句' in ok[2]:
+			ok = self.ask(['选择回答语句'])
+			if ok and '肯定回答语句' in ok[2]:
 				self._command_save(None)
 			else:
 				self.say('丢弃学习信息。', '')

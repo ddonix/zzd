@@ -229,11 +229,11 @@ class gset:
 			elif gram == '...':
 				tc = ''
 				if i < len(frame)-1:
-					while phrases and len(phrases[0].s) == 1 and not (phrases[0].be('分隔词')) and not (phrases[0].be(frame[i+1])):
+					while phrases and not (phrases[0].be('分隔词')) and not (phrases[0].be(frame[i+1])):
 						tc += phrases[0].s
 						phrases = phrases[1:]
 				else:
-					while phrases and len(phrases[0].s) == 1 and not (phrases[0].be('分隔词')):
+					while phrases and not (phrases[0].be('分隔词')):
 						tc += phrases[0].s
 						phrases = phrases[1:]
 				if not tc and phrases:
@@ -297,8 +297,6 @@ def main():
 	gs1.add_child('[性别:男人|女人]')
 	gs1.add_child('活人')
 	gs1.add_child('中国人')
-	gs1._addsp(sp)
-	sp._addgs(gs1)
 	print(gset.conflict(gs1, gs2))
 	print(gset.conflict(gs2, gs3))
 	print(gset.conflict(gs1, gs3))
