@@ -251,10 +251,17 @@ class zzd():
 		if sp == None:
 			self.say('集合语法不对',' ')
 		else:
-			assert '...' in sp[2]
 			assert '集合' in sp[2]
-			x = sp[2]['...']
-			gs = sp[2]['集合']
+			if '|' not in sp[2]['集合']:
+				assert '...' in sp[2]
+				x = sp[2]['...']
+				gs = sp[2]['集合']
+			else:
+				if '(包含)' in sp[2]:
+					x,gs = sp[2]['集合'].split('|')
+				else:
+					gs,x = sp[2]['集合'].split('|')
+			
 			assert gdata.gsin(gs)
 			if not gdata.spin(x) and '集合判断语句' in sp[2]:
 				self.say('%s是未知的词.您可以在学习模式进行学习'%x, sp[0])
