@@ -122,21 +122,11 @@ class gset:
 	def involved_in(cls, gs_A, gs_B):
 		if gs_A == gs_B:
 			return True
-		for fa in gs_A.father:
-			if cls.involved_in(fa, gs_B):
+		for ch in gs_B.child:
+			if cls.involved_in(gs_A, ch):
 				return True
 		return False
 	
-	#集合A包含集合B 	A>=B (B<=A)
-	@classmethod
-	def involved(cls, gs_A, gs_B):
-		if gs_A == gs_B:
-			return True
-		for ch in gs_A.child:
-			if cls.involved(ch, gs_B):
-				return True
-		return False
-
 	def _addsp(self, sp):
 		if not self.contain(sp):
 			self.sp.add(sp)

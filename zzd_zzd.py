@@ -264,12 +264,12 @@ class zzd():
 				elif '包含判断语句' in sp[2]:
 					gs_A = sp[2]['...']
 					gs_B = sp[2]['集合']
+					print('gs_A',gs_A)
+					print('gs_B',gs_B)
 					if not gdata.gsin(gs_A):
 						self.say('%s不是集合.您可以进入学习模式进行学习.'%gs_A, sp[0])
 					else:
-						if '(包含)' in sp[2] and gdata.involved(gs_B, gs_A):
-							self.say(sp[2]['包含断言语句'], sp[0])
-						elif '(包含于)' in sp[2] and gdata.involved_in(gs_A, gs_B):
+						if gdata.involved_in(gs_A, gs_B):
 							self.say(sp[2]['包含断言语句'], sp[0])
 						else:
 							self.say('对不起，我不知道', sp[0])
