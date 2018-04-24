@@ -166,14 +166,14 @@ class zzd():
 			arg = ''
 		exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
 		if exe:
-			self.say('还在开发中', sp[0].s)
+			self.say('还在开发中', sp[0])
 			return
 		if self.FSM['verify'] == False:
 			if 'zzd认证命令' in sp[2]:
 				self.desire['verify'][1] = True
 				self.desire['verify'][2][1] = arg
 			else:
-				self.say('请先认证身份', sp[0].s)
+				self.say('请先认证身份', sp[0])
 			return
 		if 'zzd认证命令' in sp[2]:
 			self.say('请已经认证过身份了.同时服务多人功能正在开发中', '')
@@ -204,13 +204,15 @@ class zzd():
 				self.say('好的，已退出%s模式'%mode, sp[0])
 				self.FSM['train'] = False
 			else:
-				self.say('您并没有在%s模式'%mode, sp[0].s)
+				self.say('您并没有在%s模式'%mode, sp[0])
 		else:
 			self.say('不识别的内置命令', '')
 
 	def _command_save(self, sp):
 		if not (self.infomation_a or self.infomation_A):
-			self.say('没有信息需要写入数据库', sp[0].s)
+			print(self.infomation_a)
+			print(self.infomation_A)
+			self.say('没有信息需要写入数据库', sp[0])
 			return
 		if sp and '认证参数' in sp[2]:
 			password = sp[2]['认证参数']
@@ -286,11 +288,11 @@ class zzd():
 				if '属于断言语句' in sp[2]:
 					res = db.add_information_1(x, gs)
 					if res[0] == 0:
-						self.say('好的，我记住了', sp[0])
-						if sp_a in self.infomation_a:
+						if x in self.infomation_a:
 							self.infomation_a[x] += '~%s'%gs
 						else:
 							self.infomation_a[x] = gs
+						self.say('好的，我记住了', sp[0])
 					elif res[0] == 1:
 						self.say('您的信息已经在我的知识库里了。原因：%s'%res[1], sp[0])
 					else:
@@ -374,8 +376,6 @@ class zzd():
 		assert desire[2]
 		desire[1] = False
 		self.player.stop(False)
-		print(self.infomation_a)
-		print(self.infomation_A)
 		if self.infomation_a or self.infomation_A:
 			self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
 			ok = self.ask(['选择回答语句'])
