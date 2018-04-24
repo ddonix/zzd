@@ -142,6 +142,14 @@ class gset:
 		for ch in self.child:
 			res.extend(ch.contain(sp))
 		return res
+				
+	@classmethod
+	def _addkey(cls, key, name, value):
+		if name in key:
+			if value not in key[name]:
+				key[name] += '|%s'%value
+		else:
+			key[name] = value
 	
 	#只处理基本集合。没有子集，不依赖任何别的集合。例如，句号，感叹号，阿拉伯数字,基本汉字
 	def fensp_1(self, phrases, mend):
@@ -206,24 +214,15 @@ class gset:
 				if not res:
 					return None
 				
-				if gram in key and res[0] not in key[gram]:
-					key[gram] += '|%s'%res[0]
-				else:
-					key[gram] = res[0]
+				gset._addkey(key, gram, res[0])
 				for k in res[2]:
-					if k in key and res[2][k] not in key[k]:
-						key[k] += '|%s'%res[2][k]
-					else:
-						key[k] = res[2][k]
+					gset._addkey(key, k, res[2][k])
 				phrases = res[1]
 				ress.append(res)
 			elif gram == '.':
 				if phrases == []:
 					return None
-				if '.' in key and phrases[0].s not in key['.']:
-					key['.'] += '|%s'%phrases[0].s
-				else:
-					key['.'] = phrases[0].s
+				gset._addkey(key, '.', phrases[0].s)
 				ress.append((phrases[0].s, phrases[1:], {}))
 				phrases = phrases[1:]
 			elif gram == '...':
@@ -236,13 +235,7 @@ class gset:
 					while phrases and not (phrases[0].be('分隔词')):
 						tc += phrases[0].s
 						phrases = phrases[1:]
-				if not tc and phrases:
-					tc = phrases[0].s
-					phrases = phrases[1:]
-				if '...' in key and tc not in key['...']:
-					key['...'] += '|%s'%tc
-				else:
-					key['...'] = tc
+				gset._addkey(key, '...', tc)
 				ress.append((tc, phrases, {}))
 			else:
 				print(gram)
@@ -250,10 +243,7 @@ class gset:
 		sps = ''
 		for res in ress:
 			sps += res[0]
-		if self.name in key and sps not in key[self.name]:
-			key[self.name] += '|%s'%sps
-		else:
-			key[self.name] = sps
+		gset._addkey(key, self.name, sps)
 		return (sps, ress[-1][1], key)
 	
 	def fensp(self, phrases, mend):
@@ -273,11 +263,9 @@ class gset:
 					ress.append(res)
 			if not ress:
 				return None
-			for res in ress:
-				if not res[1]:
-					return res
-			else:
-				return ress[0]
+			ress.sort(key=lambda x:len(x[1]))
+			print(ress)
+			return ress[0]
 		else:
 			if self.name[0] == '(' and self.name[-1] == ')':
 				return self.fensp_2(phrases, mend)

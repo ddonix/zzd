@@ -255,32 +255,28 @@ class zzd():
 			assert '集合' in sp[2]
 			x = sp[2]['...']
 			gs = sp[2]['集合']
-			for k in sp[2]:
-				print(k,sp[2][k])
+			assert gdata.gsin(gs)
+			if not gdata.spin(x) and '集合判断语句' in sp[2]:
+				self.say('%s是未知的词.您可以在学习模式进行学习'%x, sp[0])
+				return
 			if '集合判断语句' in sp[2]:
 				if '属于判断语句' in sp[2]:
-					if not gdata.spin(x):
-						self.say('%s是未知的词.您可以进入学习模式进行学习'%x, sp[0])
-					elif gdata.getsp(x).be(gs):
+					if gdata.getsp(x).be(gs):
 						self.say(sp[2]['属于断言语句'], sp[0])
 					else:
 						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				elif '包含判断语句' in sp[2]:
-					if not gdata.gsin(x):
-						self.say('%s不是集合.您可以进入学习模式进行学习.'%x, sp[0])
+					if gdata.involved_in(x, gs):
+						self.say(sp[2]['包含断言语句'], sp[0])
 					else:
-						if gdata.involved_in(x, gs):
-							self.say(sp[2]['包含断言语句'], sp[0])
-						else:
-							self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
+						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				else:
-					if gdata.getsp(x).be('集合'):
-						if gdata.involved_in(x, gs):
-							self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
+					if gdata.getsp(x).be('集合') and gdata.involved_in(x, gs):
+						self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
+					if not gdata.getsp(x).be('集合') and gdata.getsp(x).be(gs):
+						self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
 					else:
-						if gdata.getsp(x).be(gs):
-							self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
-					self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
+						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 			else:
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
@@ -298,7 +294,7 @@ class zzd():
 					else:
 						self.say('您的信息与我的知识库冲突。原因:%s'%res[1], sp[0])
 				elif '包含断言语句' in sp[2]:
-					self.say('稍等', sp[0])
+					self.say('包含断言语句稍等', sp[0])
 				else:
 					self.say('稍等', sp[0])
 
@@ -434,16 +430,15 @@ class zzd():
 def desire_thread(core, d):
 	d[0](core,d)
 	
-def main(arg):
+def main(a,A):
 	print('zzd_zzd')
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	a = arg
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
-	g = gdata.getgs('集合语句')
+	g = gdata.getgs(A)
 	sp = g.fensp(phs,True)
 	print('sp[0]:',sp[0])
 	print('sp[1]:',sp[1])
@@ -452,4 +447,4 @@ def main(arg):
 		print(s,sp[2][s])
 	
 if __name__ == '__main__':
-	main(sys.argv[1])
+	main(sys.argv[1], sys.argv[2])
