@@ -1,33 +1,65 @@
 #!/usr/bin/python3 -B
 import itchat
 import os
+import threading 
 import time
 	
-f=open('/tmp/zzdoutput','r')
-wxid=1000
+pos = 0
+getmess = False
+nickname = '人工智障小冬'
+user = None
+username = None
 
 @itchat.msg_register(itchat.content.TEXT)
 def text_reply(msg):
-	global f,wxid
 	wx=msg['Text']
-	os.system('echo %s >> /tmp/zzdwxin'%wx)
-	while True:
+	if msg['User']['NickName'] != nickname:
+		return '您好，我是人工智能小白...'
+	else:
+		os.system('echo %s >> /tmp/zzdwxin'%wx)
+		return ''
+
+def find_friend(nick_name):
+	for friend in itchat.get_friends():
+		if friend['NickName'] == nick_name:
+			return friend
+
+def get_message():
+	global getmess,username,pos
+	while getmess:
+		f=open('/tmp/zzdoutput','r')
+		f.seek(pos, 0)
 		r=f.read()
+		pos = f.tell()
+		f.close()
 		if r:
-			break
-		else:
-			time.sleep(1)
-	return r[4:]
+			print(r)
+			itchat.send(msg=r[4:],toUserName=username)
+		print('.')
+		time.sleep(1)
 
 def main():
-	global f,wxid
-	assert f
-	r = f.readlines()
-	r = r[-1]
-	wxid=int(r[0:4])
-	itchat.auto_login(True)
-	itchat.run()
+	global pos,getmess
+	global nickname,user,username
+	
+	f=open('/tmp/zzdoutput','r')
+	r = f.read()
+	pos = f.tell()
 	f.close()
+	print(r)
+			
+	itchat.auto_login(True)
+	
+	user = find_friend(nickname)
+	username = user['UserName']
+
+	getmess = True
+	t = threading.Thread(target=get_message, args=())
+	t.start()
+	
+	itchat.run()
+	getmess = False
+	t.wait()
 
 if __name__ == "__main__":
 	main()
