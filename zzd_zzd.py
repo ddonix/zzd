@@ -262,9 +262,6 @@ class zzd():
 					gs,x = sp[2]['集合'].split('|')
 				else:
 					x,gs = sp[2]['集合'].split('|')
-			
-			print('gs:',gs)
-			print('x',x)
 			assert gdata.gsin(gs)
 			if not gdata.spin(x) and '集合判断语句' in sp[2]:
 				self.say('%s是未知的词.您可以在学习模式进行学习'%x, sp[0])
@@ -453,8 +450,14 @@ class zzd():
 			except:
 				self.say('错误数学表达式', '')
 		self.say(val, eq)
-	
+
+	#只能有一个问题被回答。如果上一个问题没有回答，则丢弃上一个问题。
+	#这符合人的行为.
 	def ask(self, question):
+		if 'ask' in self.FSM:
+			self.ask_event.set()
+			while 'ask' in self.FSM:
+				time.sleep(0.1)
 		self.FSM['ask']=[question,'']
 		self.ask_event.clear()
 		self.ask_event.wait()
