@@ -42,15 +42,13 @@ def voiceRelease(evt):
 	entry_human.insert(0, waa)
 	enterSen(waa)
 
-def zhdShow(waa, form=''):
+def zhdShow(waa):
 	global autoplay,root
 	if root == None:
 		return
 	assert waa
 	
 	input_layer1.delete(0,'end')
-	if form:
-		input_layer1.insert(0, form)
 	input_layer1.update()
 	
 	entry_zzd.delete(0,'end')

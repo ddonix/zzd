@@ -60,14 +60,13 @@ class zzd():
 		self.add_desire('input',record)
 	
 	def output(self, dest, waa):
-		print('waa[0]',waa[0])
-		print('waa[1]',waa[1])
-		self.show(waa[0], waa[1])
-		if waa[0]:
-			dest.input(self, waa[0])
+		print('waa',waa)
+		self.show(waa)
+		if waa:
+			dest.input(self, waa)
 	
-	def say(self, out, form):
-		self.output(self.friend, (out, form))
+	def say(self, out):
+		self.output(self.friend, out)
 
 	def get_desire(self):
 		if not self.desire:
@@ -124,7 +123,7 @@ class zzd():
 	def _solve_math(self, phrases):
 		sp = gdata.getgs('数学语句').fensp(phrases, True)
 		if not sp:
-			self.say('数学语法不对','')
+			self.say('数学语法不对')
 		else:
 			if '数学判断' in sp[2] or '数学方程' in sp[2]:
 				self.add_desire('math',sp[0])
@@ -133,32 +132,38 @@ class zzd():
 				if sen:
 					self.add_desire('math',sen)
 				else:
-					self.say('数学语法错误', '')
+					self.say('数学语法错误')
 	
 	def _solve_define(self, phrases):
 		sp = gdata.getgs('定义语句').fensp(phrases, True)
 		if sp == None:
-			self.say('定义语法错误','')
+			self.say('定义语法错误')
 		else:
 			assert '定义词' in sp[2]
 			sen = sp[2]['定义词']
 			if sen in gdata._defineDict:
 				explain = gdata._defineDict[sen]
-				self.say('%s是%s'%(sen,explain), sp[0])
+				self.say('%s是%s'%(sen,explain))
 			else:
-				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen, sp[0])
+				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen)
+				ok = self.ask(['选择回答语句'])
+				if ok and '肯定回答语句' in ok[2]:
+					self._command_save(None)
+				else:
+					self.say('请进入调教模式。'%sen)
+					
 	
 	def _solve_command(self, phrases):
 		sp = gdata.getgs('命令语句').fensp(phrases, True)
 		if sp == None:
 			if not self.FSM['verify']:
-				self.say('请先认证身份。','')
+				self.say('请先认证身份。')
 				arg = self.ask(['认证参数','认证参数句'])
 				if arg:
 					self.desire['verify'][1] = True
 					self.desire['verify'][2][1] = arg[2]['认证参数']
 			else:
-				self.say('语法错误。','')
+				self.say('语法错误。')
 			return
 		assert 'zzd命令' in sp[2]
 		if '命令参数' in sp[2]:
@@ -167,17 +172,17 @@ class zzd():
 			arg = ''
 		exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
 		if exe:
-			self.say('还在开发中', sp[0])
+			self.say('还在开发中')
 			return
 		if self.FSM['verify'] == False:
 			if 'zzd认证命令' in sp[2]:
 				self.desire['verify'][1] = True
 				self.desire['verify'][2][1] = arg
 			else:
-				self.say('请先认证身份', sp[0])
+				self.say('请先认证身份')
 			return
 		if 'zzd认证命令' in sp[2]:
-			self.say('请已经认证过身份了.同时服务多人功能正在开发中', '')
+			self.say('请已经认证过身份了.同时服务多人功能正在开发中')
 		elif 'zzd播放命令' in sp[2]:
 			out = self.player.play(arg)
 		elif 'zzd暂停命令' in sp[2]:
@@ -189,68 +194,100 @@ class zzd():
 		elif 'zzd再见命令' in sp[2]:
 			self.add_desire('goodbye', '%s！'%sp[2]['zzd再见命令'])
 		elif 'zzd问候命令' in sp[2]:
-			self.say(sp[2]['zzd问候命令'],'')
+			self.say(sp[2]['zzd问候命令'])
 		elif 'zzd保存命令' in sp[2]:
 			self._command_save(sp)
 		elif 'zzd学习命令' in sp[2] or 'zzd进入命令' in sp[2]:
 			mode = sp[2]['zzd学习命令'] if 'zzd学习命令' in sp[2] else sp[2]['zzd模式定语_学习']
 			if self.FSM['train'] == False:
-				self.say('好的，已进入%s模式！每次最多包含一条信息。'%mode, sp[0])
+				self.say('好的，已进入%s模式！每次最多包含一条信息。'%mode)
 				self.FSM['train'] = True
 			else:
-				self.say('您已经是已%s模式了'%mode, sp[0])
+				self.say('您已经是已%s模式了'%mode)
 		elif 'zzd退出命令' in sp[2]:
 			mode = sp[2]['zzd学习命令'] if 'zzd学习命令' in sp[2] else sp[2]['zzd模式定语_学习']
 			if self.FSM['train'] == True:
-				self.say('好的，已退出%s模式'%mode, sp[0])
+				self.say('好的，已退出%s模式'%mode)
 				self.FSM['train'] = False
 			else:
-				self.say('您并没有在%s模式'%mode, sp[0])
+				self.say('您并没有在%s模式'%mode)
 		else:
-			self.say('不识别的内置命令', '')
+			self.say('不识别的内置命令')
 
 	def _command_save(self, sp):
 		if not (self.infomation_a or self.infomation_A):
 			print(self.infomation_a)
 			print(self.infomation_A)
-			self.say('没有信息需要写入数据库', sp[0])
+			self.say('没有信息需要写入数据库')
 			return
 		if sp and '认证参数' in sp[2]:
 			password = sp[2]['认证参数']
 		else:
-			self.say('请输入管理员口令','')
+			self.say('请输入管理员口令')
 			password = self.ask(['认证参数句','认证参数'])
 			if not password:
-				self.say('您没有输入口令，写入取消。', '')
+				self.say('您没有输入口令，写入取消。')
 				return
 			else:
 				password = password[2]['认证参数']
 		if password != self.managerid:
-			self.say('口令错误，写入取消。', '')
+			self.say('口令错误，写入取消。')
 			return
 		while self.infomation_a:
 			info = self.infomation_a.popitem()
 			if not db.add_database_a_in_A(info[0], info[1]):
-				self.say('%s信息写入失败'%info[0], '')
+				self.say('%s信息写入失败'%info[0])
 				self.infomation_a[info[0]]=info[1]
 				break
 		else:
-			self.say('元素信息写入成功', '')
+			self.say('元素信息写入成功')
 		
 		while self.infomation_A:
 			info = self.infomation_A.popitem()
 			if not db.add_database_A_in_B(info[1], info[0]):
-				self.say('%s信息写入失败'%info[0], '')
+				self.say('%s信息写入失败'%info[0])
 				self.infomation_A[info[0]]=info[1]
 				break
 		else:	
-			self.say('集合信息写入成功', '')
-		
-		
+			self.say('集合信息写入成功')
+	
+	def _solve_set_a(self, x, gs):
+		res = db.add_information_1(x, gs)
+		if res[0] == 0:
+			if x in self.infomation_a:
+				self.infomation_a[x] += '~%s'%gs
+			else:
+				self.infomation_a[x] = gs
+			self.say('好的，我记住了')
+		elif res[0] == 1:
+			self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x,res[1],res[1],gs))
+		else:
+			self.say('该信息与知识库冲突。原因：%s是%s, %s与%s不相容'%(x,res[1],res[1],gs))
+					
+					
+	def _solve_set_a(self, x, gs):
+		if not gdata.spin(x):
+			db.add_information_1(x, '集合')
+			self.infomation_a[x] = '集合'
+		res = db.add_information_2(x, gs)
+		if res[0] == 0:
+			if x in self.infomation_A:
+				self.infomation_A[gs] += '~%s'%x
+			else:
+				self.infomation_A[gs] = x
+			self.say('好的，我记住了')
+		elif res[0] == 1:
+			if x == res[1]:
+				self.say('该信息已在知识库。原因：%s是%s'%(x, gs))
+			else:
+				self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x, res[1], res[1], gs))
+		else:
+			self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]))
+
 	def _solve_set(self, phrases):
 		sp = gdata.getgs('集合语句').fensp(phrases, True)
 		if sp == None:
-			self.say('集合语法不对',' ')
+			self.say('集合语法不对')
 		else:
 			assert '集合' in sp[2]
 			if '|' not in sp[2]['集合']:
@@ -264,7 +301,7 @@ class zzd():
 					x,gs = sp[2]['集合'].split('|')
 			assert gdata.gsin(gs)
 			if not gdata.spin(x) and '集合判断语句' in sp[2]:
-				self.say('%s是未知的词.您可以在学习模式进行学习'%x, sp[0])
+				self.say('%s是未知的词.您可以在学习模式进行学习'%x)
 				return
 			if '集合判断语句' in sp[2]:
 				if '属于判断语句' in sp[2]:
@@ -277,51 +314,33 @@ class zzd():
 					else:
 						res = gdata.getsp(x)._be(gs)
 				if res[0] == 0:
-					self.say('是的', sp[0])
+					self.say('是的')
 				elif res[0] == 1:
-					self.say('错误', sp[0])
+					self.say('错误')
 				else:
-					self.say('对不起，我不知道.需要我上网问问吗？',sp[0])
+					self.say('对不起，我不知道.需要我上网问问吗？')
 					ok = self.ask(['选择回答语句'])
 					if ok and '肯定回答语句' in ok[2]:
-						self.say('我还不会上网，逗你玩呢.哈哈哈','')
+						self.say('我还不会上网，逗你玩呢.哈哈哈')
+					elif ok and '否定回答语句' in ok[2]:
+						self.say('好的')
 			else:
 				if self.FSM['train'] == False:
-					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
+					self.say('对不起，您需进入学习模式才可以增加信息')
 					return
 				if '属于断言语句' in sp[2]:
-					res = db.add_information_1(x, gs)
-					if res[0] == 0:
-						if x in self.infomation_a:
-							self.infomation_a[x] += '~%s'%gs
-						else:
-							self.infomation_a[x] = gs
-						self.say('好的，我记住了', sp[0])
-					elif res[0] == 1:
-						self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x,res[1],res[1],gs), sp[0])
-					else:
-						self.say('该信息与知识库冲突。原因：%s是%s, %s与%s不相容'%(x,res[1],res[1],gs), sp[0])
+					self._solve_set_a(x, gs)
 				elif '包含断言语句' in sp[2]:
-					if not gdata.spin(x):
-						db.add_information_1(x, '集合')
-						self.infomation_a[x] = '集合'
-					res = db.add_information_2(x, gs)
-					if res[0] == 0:
-						if x in self.infomation_A:
-							self.infomation_A[gs] += '~%s'%x
-						else:
-							self.infomation_A[gs] = x
-						self.say('好的，我记住了', sp[0])
-					elif res[0] == 1:
-						if x == res[1]:
-							self.say('该信息已在知识库。原因：%s是%s'%(x, gs), sp[0])
-						else:
-							self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x, res[1], res[1], gs), sp[0])
-					else:
-						self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]), sp[0])
+					self._solve_set_A(x, gs)
 				else:
-					print(x,gs)
-					self.say('%s %s未知断言语句稍等'%(x,gs), sp[0])
+					self.say('我不知道%s是否是集合。是吗'%x)
+					ok = self.ask(['选择回答语句'])
+					if ok and '肯定回答语句' in ok[2]:
+						self._solve_set_A(x, gs)
+					elif ok and '否定回答语句' in ok[2]:
+						self._solve_set_a(x, gs)
+					else:
+						self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
 
 	def _solve_answer(self, phrases):
 		assert 'ask' in self.FSM and not self.FSM['ask'][1]
@@ -337,12 +356,12 @@ class zzd():
 	
 	def _solve_other(self, phrases):
 		if gdata.getgs('称呼').fensp(phrases, True):
-			self.say('我在，有什么为你做的吗','')
+			self.say('我在，有什么为你做的吗')
 		else:
 			s = phrases[0].s
 			for ph in phrases[1:]:
 				s += '~%s'%ph.s
-			self.say('对不起，我处理不利.分词结果是:%s'%s,'')
+			self.say('对不起，我处理不利.分词结果是:%s'%s)
 			n = ['']
 			while phrases:
 				if len(phrases[0].s) == 1 and len(phrases[0].gs) == 1:
@@ -358,7 +377,7 @@ class zzd():
 					rr +='%s '%nc
 			if l:
 				r ='我猜测：%s是新词，您可以进入学习模式进行学习:'%rr
-			self.say(r, '')
+			self.say(r)
 
 				
 	def desire_verify(self, desire):
@@ -369,27 +388,27 @@ class zzd():
 		if desire[2][1] == '':
 			if desire[2][0] > 0:
 				desire[2][0] -= 1
-				self.say('您好，我是小白，请认证身份！','')
+				self.say('您好，我是小白，请认证身份！')
 				self.add_desire('time', (desire, True, time.time()+10))
 				arg = self.ask(['认证参数','认证参数句'])
 				if arg:
 					self.desire['verify'][1] = True
 					self.desire['verify'][2][1] = arg[2]['认证参数']
 			else:
-				self.say('您没有及时认证，我要休息了。','')
+				self.say('您没有及时认证，我要休息了。')
 				self.add_desire('goodbye', '再见')
 		else:
 			if desire[2][1] in gdata._identifyDict:
 				self.friend.name = gdata._identifyDict[desire[2][1]]
 				self.FSM['verify'] = True
-				self.say('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name),'')
+				self.say('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name))
 				if self.desire['time'][1] == True:
 					if len(self.desire['time'][2]) == 1:
 						if self.desire['time'][2][0][0] == self.desire['verify']:
 							self.desire['time'][1] == False
 							self.desire['time'][2] = []
 			else:
-				self.say('认证失败。','')
+				self.say('认证失败。')
 				if desire[2][0] > 0:
 					desire[2][1] == ''
 					desire[2][0] -= 1
@@ -418,13 +437,13 @@ class zzd():
 		desire[1] = False
 		self.player.stop(False)
 		if self.infomation_a or self.infomation_A:
-			self.say('您还有学习信息没有写入数据库,需要写入吗？', '')
+			self.say('您还有学习信息没有写入数据库,需要写入吗？')
 			ok = self.ask(['选择回答语句'])
 			if ok and '肯定回答语句' in ok[2]:
 				self._command_save(None)
 			else:
-				self.say('丢弃学习信息。', '')
-		self.say(desire[2][0],'')
+				self.say('丢弃学习信息。')
+		self.say(desire[2][0])
 		self.desire['time'][1] == False
 		self.FSM['work'] = False
 
@@ -441,15 +460,15 @@ class zzd():
 				val = int(-c.real/c.imag)
 				val = str(val)
 			except:
-				self.say('错误数学表达式', '')
+				self.say('错误数学表达式')
 		else:
 			try:
 				val = eval(eq)
 				val = '对' if type(val) == bool and val else val
 				val = '错' if type(val) == bool and not val else val
 			except:
-				self.say('错误数学表达式', '')
-		self.say(val, eq)
+				self.say('错误数学表达式')
+		self.say(val)
 
 	#只能有一个问题被回答。如果上一个问题没有回答，则丢弃上一个问题。
 	#这符合人的行为.
