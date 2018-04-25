@@ -1,4 +1,5 @@
 #!/usr/bin/python3 -B
+import sets
 import gdata
 
 class seph:
@@ -31,12 +32,19 @@ class seph:
 		assert gs in self.gs
 		self.gs.remove(gs)
 
-	def be(self, gram):
+	#0:是
+	#1:不是
+	#2:不清楚
+	def bebe(self, gram):
 		gs = gdata.getgs(gram)
 		res = gs.contain(self)
 		if res:
-			return True
-		return False
+			return (0,res)
+		for g in self.gs:
+			res = sets.gset.conflict(g, gs)
+			if res:
+				return (1,res[1])
+		return (2,'')
 
 def main():
 	print('element')
