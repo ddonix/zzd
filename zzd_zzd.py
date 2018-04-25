@@ -271,7 +271,7 @@ class zzd():
 			self.say('该信息与知识库冲突。原因：%s是%s, %s与%s不相容'%(x,res[1],res[1],gs))
 					
 					
-	def _solve_set_a(self, x, gs):
+	def _solve_set_A(self, x, gs):
 		if not gdata.spin(x):
 			db.add_information_1(x, '集合')
 			self.infomation_a[x] = '集合'
@@ -339,14 +339,18 @@ class zzd():
 				elif '包含断言语句' in sp[2]:
 					self._solve_set_A(x, gs)
 				else:
-					self.say('我不知道%s是否是集合。是吗'%x)
-					ok = self.ask(['选择回答语句'])
-					if ok and '肯定回答语句' in ok[2]:
-						self._solve_set_A(x, gs)
-					elif ok and '否定回答语句' in ok[2]:
+					if gdata.spin(x):
+						assert not gdata.getsp(x).be('集合')
 						self._solve_set_a(x, gs)
-					else:
-						self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
+					else:	
+						self.say('我不知道%s是否是集合。是吗'%x)
+						ok = self.ask(['选择回答语句'])
+						if ok and '肯定回答语句' in ok[2]:
+							self._solve_set_A(x, gs)
+						elif ok and '否定回答语句' in ok[2]:
+							self._solve_set_a(x, gs)
+						else:
+							self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
 
 	def _solve_answer(self, phrases):
 		assert 'ask' in self.FSM and not self.FSM['ask'][1]
