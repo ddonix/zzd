@@ -308,9 +308,7 @@ class zzd():
 					if not gdata.spin(x):
 						db.add_information_1(x, '集合')
 						self.infomation_a[x] = '集合'
-					
 					res = db.add_information_2(x, gs)
-					print(res)
 					if res[0] == 0:
 						if x in self.infomation_A:
 							self.infomation_A[gs] += '~%s'%x
@@ -322,6 +320,7 @@ class zzd():
 					else:
 						self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]), sp[0])
 				else:
+					print(x,gs)
 					self.say('%s %s未知断言语句稍等'%(x,gs), sp[0])
 
 	def _solve_answer(self, phrases):
