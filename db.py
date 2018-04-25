@@ -185,7 +185,7 @@ def add_information_2(x, gs_A):
 				return res
 		else:
 			gsA.add_plot(x)
-			return (0,'','')
+			return [0]
 	else: 
 		return gsA.add_child(x)
 

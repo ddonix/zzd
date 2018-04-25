@@ -28,18 +28,20 @@ class gset:
 					continue
 				if not (g[0] == '.' or gdata.gsin(g)):
 					gset(g)
-	
+
+#0:成功
+#1:无用
+#2:冲突
 	def __add_child(self, ch):
-		if ch in self.child:
-			assert self in ch.father
-			return True
-		assert not self in ch.father
-		if gset.conflict(self, ch):
-			print('%s and %s is conflict.'%(self.name,ch.name))
-			return False
+		inv = gset.involved_in(ch, self)
+		if inv:
+			return (1, inv.name)
+		con = gset.conflict(self, ch)
+		if con:
+			return (2, con)
 		self.child.append(ch)
 		ch.father.append(self)
-		return True
+		return [0]
 	
 	def add_child(self, ch):
 		assert ch
@@ -67,18 +69,6 @@ class gset:
 		self.plot[name] = p
 		return p
 	
-#0:成功
-#1:无用
-#2:冲突
-	def __add_child(self, ch):
-		if gset.involved_in(ch, self):
-			return (1, ch.name, self.name)
-		if gset.conflict(self, ch):
-			return (2, ch.name, self.name)
-		self.child.append(ch)
-		ch.father.append(self)
-		return (0,'', '')
-	
 	#集合A的父集, 包括自己
 	@classmethod
 	def get_ancset(cls, gs_A):
@@ -101,35 +91,38 @@ class gset:
 		return res
 	
 	
-	#集合A和B的合集是否为空集，是返回True.
-	#合集不为空集或者无法判定，返回False.
+	#集合A和B的合集是否为空集，是返回冲突划分的祖先
+	#合集不为空集或者无法判定，返回None
 	@classmethod
 	def conflict(cls, gs_A, gs_B):
 		if not gs_A.father or not gs_B.father:
-			return False
+			return None
 		for A_fa in gs_A.father:
 			for B_fa in gs_B.father:
 				if A_fa == B_fa:
 					for plot in A_fa.plot:
 						if gs_A in A_fa.plot[plot] and gs_B in A_fa.plot[plot]:
-							return True
+							return (gs_A, gs_B)
 		for fa in gs_A.father:
-			if cls.conflict(fa, gs_B) == True:
-				return True
+			res = cls.conflict(fa, gs_B)
+			if not res:
+				return res
 		for fa in gs_B.father:
-			if cls.conflict(gs_A, fa) == True:
-				return True
-		return False
+			res = cls.conflict(gs_A, fa)
+			if not res:
+				return res
+		return None
 	
 	#集合A包含于集合B 	A<=B
 	@classmethod
 	def involved_in(cls, gs_A, gs_B):
 		if gs_A == gs_B:
-			return True
+			return gs_B
 		for ch in gs_B.child:
-			if cls.involved_in(gs_A, ch):
-				return True
-		return False
+			res = cls.involved_in(gs_A, ch)
+			if res:
+				return ch
+		return None
 	
 	def _addsp(self, sp):
 		if not self.contain(sp):
