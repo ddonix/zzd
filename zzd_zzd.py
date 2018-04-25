@@ -253,7 +253,6 @@ class zzd():
 		else:
 			assert '集合' in sp[2]
 			if '|' not in sp[2]['集合']:
-				print(sp[2])
 				assert '...' in sp[2]
 				x = sp[2]['...']
 				gs = sp[2]['集合']
@@ -264,14 +263,19 @@ class zzd():
 					x,gs = sp[2]['集合'].split('|')
 			
 			print('gs:',gs)
+			print('x',x)
 			assert gdata.gsin(gs)
 			if not gdata.spin(x) and '集合判断语句' in sp[2]:
 				self.say('%s是未知的词.您可以在学习模式进行学习'%x, sp[0])
 				return
 			if '集合判断语句' in sp[2]:
 				if '属于判断语句' in sp[2]:
-					if gdata.getsp(x).be(gs):
-						self.say(sp[2]['属于断言语句'], sp[0])
+					res = gdata.getsp(x)._be(gs)
+					print(res)
+					if res[0] == 0:
+						self.say('是的', sp[0])
+					elif res[0] == 1:
+						self.say('错误', sp[0])
 					else:
 						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				elif '包含判断语句' in sp[2]:
@@ -280,12 +284,20 @@ class zzd():
 					else:
 						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				else:
-					if gdata.getsp(x).be('集合') and gdata.involved_in(x, gs):
-						self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
-					elif not gdata.getsp(x).be('集合') and gdata.getsp(x).be(gs):
-						self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
+					if gdata.getsp(x).be('集合'):
+						res = gdata.involved_in(x, gs)
+						if res:
+							self.say('正确', sp[0])
+						else:
+							self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 					else:
-						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
+						res = gdata.getsp(x)._be(gs)
+						if res[0] == 0:
+							self.say('是的', sp[0])
+						elif res[0] == 1:
+							self.say('错误', sp[0])
+						else:
+							self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 			else:
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])

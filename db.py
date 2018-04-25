@@ -274,7 +274,7 @@ def coreinit():
 			gdata._gset_key[keyword[0]] = keyword[1:]
 			for sp in gdata._spbase_all:
 				for s in gdata._spbase_all[sp]:
-					if gdata._spbase_all[sp][s].bebe(keyword[0])[0] == 0:
+					if gdata._spbase_all[sp][s].be(keyword[0]):
 						gdata._keyword_zzd[s] = keyword[1:]
 		elif keyword[0][0] == '(' and keyword[0][-1] == ')':
 			gs = sets.gset(keyword[0])
@@ -385,7 +385,7 @@ def fenci(waa, point):
 					break
 	return phrases
 	
-def main(a1, a2):
+def main(a1, a2, a3):
 	print('db')
 	gsinit()
 	spinit()
@@ -395,12 +395,13 @@ def main(a1, a2):
 		gdata.checksp(a2)
 	elif a1 == 'gs':
 		gdata.checkgs(a2, True)
-	else:
-		res = add_information_2(a1, a2)
+	elif a1 == 'be':
+		sp = gdata.getsp(a2)
+		res = sp._be(a3)
 		print(res)
 
 if __name__ == '__main__':
-	main(sys.argv[1], sys.argv[2])
+	main(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else '')
 
 '''
 	f= open('千字文','r')

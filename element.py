@@ -31,11 +31,11 @@ class seph:
 	def _removegs(self, gs):
 		assert gs in self.gs
 		self.gs.remove(gs)
-
+	
 	#0:是
 	#1:不是
 	#2:不清楚
-	def bebe(self, gram):
+	def _be(self, gram):
 		gs = gdata.getgs(gram)
 		res = gs.contain(self)
 		if res:
@@ -43,8 +43,16 @@ class seph:
 		for g in self.gs:
 			res = sets.gset.conflict(g, gs)
 			if res:
-				return (1,res[1])
-		return (2,'')
+				return (1, g.name)
+		return [2]
+
+	#True:是
+	#False:不是或者不确定
+	def be(self, gram):
+		gs = gdata.getgs(gram)
+		if gs.contain(self):
+			return True
+		return False
 
 def main():
 	print('element')
