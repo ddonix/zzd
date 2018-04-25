@@ -322,7 +322,7 @@ def fenci(waa, point):
 	znumber =  '0123456789'
 	cnumber =  '零一二三四五六七八九十百千万亿'
 	zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-	zpoint = '，。,.！!？?'
+	zpoint = '，。,.！!？?的地得'
 	if not gdata.legal(waa):
 		raise
 	while waa != '':

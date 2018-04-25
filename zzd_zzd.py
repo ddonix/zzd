@@ -41,6 +41,9 @@ class zzd():
 		self.ask_event = threading.Event()
 		self.ask_event.clear()
 		
+		self.say_event = threading.Event()
+		self.say_event.set()
+		
 	@classmethod
 	def init(cls):
 		db.gsinit()
@@ -66,7 +69,10 @@ class zzd():
 			dest.input(self, waa)
 	
 	def say(self, out):
+		self.say_event.wait()
+		self.say_event.clear()
 		self.output(self.friend, out)
+		self.say_event.set()
 
 	def get_desire(self):
 		if not self.desire:
