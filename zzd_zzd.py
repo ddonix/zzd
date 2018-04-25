@@ -306,9 +306,9 @@ class zzd():
 					res = db.add_information_2(x, gs)
 					if res[0] == 0:
 						if x in self.infomation_A:
-							self.infomation_A[x] += '~%s'%gs
+							self.infomation_A[gs] += '~%s'%x
 						else:
-							self.infomation_A[x] = gs
+							self.infomation_A[gs] = x
 						self.say('好的，我记住了', sp[0])
 					elif res[0] == 1:
 						self.say('您的信息已经在我的知识库里了。原因：%s'%res[1], sp[0])
