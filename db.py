@@ -166,16 +166,30 @@ def _add_information_1(sp, gs):
 		sets.gset(sp.s)
 	return (0, '')
 	
+#x是集合:	x包含于集合A
+#x是划分: 	x是集合A的划分
 #成功返回0，无用返回1，矛盾返回2.
 #原则：1.不能矛盾。鲸鱼原先是哺乳动物，现在不能鸟.因为鸟和哺乳动物冲突.
 #原则：2.不能无用。鲸鱼原先是哺乳动物，现在不能是脊椎动物。因为哺乳动物都是脊椎动物.
-def add_information_2(gs_A, gs_B):#集合A包含于集合B
-	assert gdata.gsin(gs_B)
-	gsB = gdata.getgs(gs_B)
-	if not gdata.gsin(gs_A):
-		if '|' not in gs_A:
-			sets.gset(gs_A)
-	return gsB.add_child(gs_A)
+def add_information_2(x, gs_A):
+	assert gdata.gsin(gs_A)
+	gsA = gdata.getgs(gs_A)
+	if '|' in x:
+		if ':' in x:						#[性别:男人|女人]
+			name = x[1:x.find(':')]
+			plots = x[x.find(':')+1:-1].split('|')
+		else:								#[奇数|偶数]
+			name = x 
+			plots = x[1:-1].split('|')
+		for ch in plots:
+			res = gsA.add_child(ch)
+			if res[0] > 0:
+				return res
+		else:
+			gsA.add_plot(x)
+			return (0,'','')
+	else: 
+		return gsA.add_child(x)
 
 def gsinit():
 	try:
@@ -196,8 +210,6 @@ def gsinit():
 			continue
 		gram = prevgram(v[1])
 		for g in gram:
-			if not ('|' in g or gdata.gsin(g)):
-				sets.gset(g)
 			add_information_2(g, v[0])
 
 

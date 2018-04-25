@@ -41,41 +41,43 @@ class gset:
 		ch.father.append(self)
 		return True
 	
-
 	def add_child(self, ch):
 		assert ch
-		if gdata.gsin(ch):
-			ch = gdata.getgs(ch)
-			return self.__add_child(ch)
-		assert '|' in ch
-		if ':' in ch:						#[性别:男人|女人]
-			name = ch[1:ch.find(':')]
-			plots = ch[ch.find(':')+1:-1].split('|')
+		assert '|' not in ch
+		if not gdata.gsin(ch):
+			gset(ch)
+		ch = gdata.getgs(ch)
+		return self.__add_child(ch)
+	
+	def add_plot(self, plot):
+		assert plot
+		assert '|' in plot
+		if ':' in plot:						#[性别:男人|女人]
+			name = plot[1:plot.find(':')]
+			plots = plot[plot.find(':')+1:-1].split('|')
 		else:								#[奇数|偶数]
-			name = ch
-			plots = ch[1:-1].split('|')
-		plot = set()
-		for p in plots:
-			if not gdata.gsin(p):
-				gset(p)
-			ch = gdata.getgs(p)
-			if not self.__add_child(ch):
-				return False
-			plot.add(ch)
-		self.plot[name]=plot
-		return True
+			name = plot
+			plots = plot[1:-1].split('|')
+		p = set()
+		for gs in plots:
+			assert gdata.gsin(gs)			#必须先创建集合，并让集合成为子集，再进行划分
+			ch = gdata.getgs(gs)
+			assert ch in self.child
+			p.add(ch)
+		self.plot[name] = p
+		return p
 	
 #0:成功
 #1:无用
 #2:冲突
 	def __add_child(self, ch):
 		if gset.involved_in(ch, self):
-			return (1, '%s is %s 的子集.'%(ch.name, self.name))
+			return (1, ch.name, self.name)
 		if gset.conflict(self, ch):
-			return (2, '%s and %s 不相容.'%(self.name,ch.name))
+			return (2, ch.name, self.name)
 		self.child.append(ch)
 		ch.father.append(self)
-		return (0,'')
+		return (0,'', '')
 	
 	#集合A的父集, 包括自己
 	@classmethod
