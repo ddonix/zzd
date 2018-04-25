@@ -152,14 +152,14 @@ def _add_information_1(sp, gs):
 	for g in list(sp.gs):
 		#判断是否无用
 		if sets.gset.involved_in(g, gs):
-			return (1, '%s是%s,而%s是%s的子集'%(sp.s,g.name,g.name,gs.name))
+			return (1, g.name)
 		#判断是否删除
 		if sets.gset.involved_in(gs, g):
 			g._removesp(sp)
 			sp._removegs(g)
 		#判断是否矛盾
 		if sets.gset.conflict(g, gs):
-			return (2, '%s与%s不相容'%(g.name,gs.name))
+			return (2, g.name)
 	gs._addsp(sp)
 	sp._addgs(gs)
 	if gs.name == '集合' and not gdata.gsin(sp.s):

@@ -299,9 +299,9 @@ class zzd():
 							self.infomation_a[x] = gs
 						self.say('好的，我记住了', sp[0])
 					elif res[0] == 1:
-						self.say('您的信息已经在我的知识库里了。原因：%s'%res[1], sp[0])
+						self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x,res[1],res[1],gs), sp[0])
 					else:
-						self.say('您的信息与我的知识库冲突。原因:%s'%res[1], sp[0])
+						self.say('该信息与知识库冲突。原因：%s是%s, %s与%s不相容'%(x,res[1],res[1],gs), sp[0])
 				elif '包含断言语句' in sp[2]:
 					res = db.add_information_2(x, gs)
 					if res[0] == 0:
