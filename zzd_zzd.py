@@ -237,10 +237,10 @@ class zzd():
 			self.say('元素信息写入成功', '')
 		
 		while self.infomation_A:
-			info = self.infomation_a.popitem()
+			info = self.infomation_A.popitem()
 			if not db.add_database_A_in_B(info[1], info[0]):
 				self.say('%s信息写入失败'%info[0], '')
-				self.infomation_a[info[0]]=info[1]
+				self.infomation_A[info[0]]=info[1]
 				break
 		else:	
 			self.say('集合信息写入成功', '')
@@ -263,6 +263,7 @@ class zzd():
 				else:
 					x,gs = sp[2]['集合'].split('|')
 			
+			print('gs:',gs)
 			assert gdata.gsin(gs)
 			if not gdata.spin(x) and '集合判断语句' in sp[2]:
 				self.say('%s是未知的词.您可以在学习模式进行学习'%x, sp[0])

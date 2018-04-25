@@ -4,6 +4,7 @@ import copy
 import sets
 import element
 import gdata
+import sys
 
 #对子集进行排序，子集项多的在后
 #原始子集在前的在前
@@ -161,6 +162,8 @@ def _add_information_1(sp, gs):
 			return (2, '%s与%s不相容'%(g.name,gs.name))
 	gs._addsp(sp)
 	sp._addgs(gs)
+	if gs.name == '集合' and not gdata.gsin(sp.s):
+		sets.gset(sp.s)
 	return (0, '')
 	
 #成功返回0，无用返回1，矛盾返回2.
@@ -372,18 +375,19 @@ def fenci(waa, point):
 					break
 	return phrases
 	
-def main():
+def main(a1, a2):
 	print('db')
 	gsinit()
 	spinit()
 	coreinit()
-#	gdata.checksp('柏拉图')
-	gdata.checkgs('人', True)
-#	add_information_1('苏格拉底', '人')
-#	checksp('苏格拉底')
+
+	if a1 == 'sp':
+		gdata.checksp(a2)
+	else:
+		gdata.checkgs(a2, True)
 
 if __name__ == '__main__':
-	main()
+	main(sys.argv[1], sys.argv[2])
 
 '''
 	f= open('千字文','r')
