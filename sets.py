@@ -53,8 +53,8 @@ class gset:
 		assert plot
 		assert '|' in plot
 		if ':' in plot:						#[性别:男人|女人]
-			name = plot[1:plot.find(':')]
-			plots = plot[plot.find(':')+1:-1].split('|')
+			name = plot[1:-1].split(':')[0]
+			plots = plot[1:-1].split(':')[1].split('|')
 		else:								#[奇数|偶数]
 			name = plot
 			plots = plot[1:-1].split('|')

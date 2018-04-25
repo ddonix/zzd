@@ -176,10 +176,8 @@ def add_information_2(x, gs_A):
 	gsA = gdata.getgs(gs_A)
 	if '|' in x:
 		if ':' in x:						#[性别:男人|女人]
-			name = x[1:x.find(':')]
-			plots = x[x.find(':')+1:-1].split('|')
+			plots = x[1:-1].split(':')[1].split('|')
 		else:								#[奇数|偶数]
-			name = x 
 			plots = x[1:-1].split('|')
 		for ch in plots:
 			res = gsA.add_child(ch)
