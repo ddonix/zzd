@@ -169,6 +169,9 @@ def _add_information_1(sp, gs):
 def add_information_2(gs_A, gs_B):#集合A包含于集合B
 	assert gdata.gsin(gs_B)
 	gsB = gdata.getgs(gs_B)
+	if not gdata.gsin(gs_A):
+		if '|' not in gs_A:
+			sets.gset(gs_A)
 	return gsB.add_child(gs_A)
 
 def gsinit():
@@ -190,17 +193,8 @@ def gsinit():
 			continue
 		gram = prevgram(v[1])
 		for g in gram:
-			if '|' not in g:
-				if not gdata.gsin(g):
-					sets.gset(g)
-			else:
-				if ':' in g:
-					gs = g[g.find(':')+1:-1].split('|')
-				else:
-					gs = g[1:-1].split('|')
-				for gg in gs:
-					if not gdata.gsin(gg):
-						sets.gset(gg)
+			if not ('|' in g or gdata.gsin(g)):
+				sets.gset(g)
 			add_information_2(g, v[0])
 
 
@@ -257,7 +251,7 @@ def coreinit():
 		if not gdata.legal(define[1]):
 			raise TypeError
 		gdata._defineDict[define[0]] = define[1]
-
+	
 	try:
 		cursor = conn.execute("select * from zzd_keyword")
 	except:
@@ -280,16 +274,12 @@ def coreinit():
 			print(keyword[0])
 			raise NameError
 	
-	for key in gdata._keyword_zzd:
-		print('keyword:',key)
-
 	try:
 		cursor = conn.execute("select * from verify")
 	except:
 		raise TypeError
 	for guest in cursor:
 		gdata._identifyDict[guest[0]] = guest[1]
-		print(guest[0],guest[1])
 		
 	try:
 		cursor = conn.execute("select * from mend_add")
@@ -388,7 +378,7 @@ def main():
 	spinit()
 	coreinit()
 #	gdata.checksp('柏拉图')
-	gdata.checksp('人')
+	gdata.checkgs('人', True)
 #	add_information_1('苏格拉底', '人')
 #	checksp('苏格拉底')
 

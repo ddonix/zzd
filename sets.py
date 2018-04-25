@@ -56,6 +56,8 @@ class gset:
 			plots = ch[1:-1].split('|')
 		plot = set()
 		for p in plots:
+			if not gdata.gsin(p):
+				gset(p)
 			ch = gdata.getgs(p)
 			if not self.__add_child(ch):
 				return False
@@ -63,17 +65,17 @@ class gset:
 		self.plot[name]=plot
 		return True
 	
+#0:成功
+#1:无用
+#2:冲突
 	def __add_child(self, ch):
-		if ch in self.child:
-			assert self in ch.father
-			return True
-		assert not self in ch.father
+		if gset.involved_in(ch, self):
+			return (1, '%s is %s 的子集.'%(ch.name, self.name))
 		if gset.conflict(self, ch):
-			print('%s and %s is conflict.'%(self.name,ch.name))
-			return False
+			return (2, '%s and %s 不相容.'%(self.name,ch.name))
 		self.child.append(ch)
 		ch.father.append(self)
-		return True
+		return (0,'')
 	
 	#集合A的父集, 包括自己
 	@classmethod

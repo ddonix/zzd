@@ -279,7 +279,6 @@ class zzd():
 					else:
 						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				else:
-					print(x,gs,'llllllll')
 					if gdata.getsp(x).be('集合') and gdata.involved_in(x, gs):
 						self.say(''.join([ph.s for ph in phrases[0:-1]]), sp[0])
 					elif not gdata.getsp(x).be('集合') and gdata.getsp(x).be(gs):
