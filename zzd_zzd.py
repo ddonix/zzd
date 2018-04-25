@@ -272,33 +272,19 @@ class zzd():
 			if '集合判断语句' in sp[2]:
 				if '属于判断语句' in sp[2]:
 					res = gdata.getsp(x)._be(gs)
-					print(res)
-					if res[0] == 0:
-						self.say('是的', sp[0])
-					elif res[0] == 1:
-						self.say('错误', sp[0])
-					else:
-						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				elif '包含判断语句' in sp[2]:
-					if sets.gset.involved_in(x, gs):
-						self.say(sp[2]['包含断言语句'], sp[0])
-					else:
-						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
+					res = sets.gset.involved_in(x, gs)
 				else:
 					if gdata.getsp(x).be('集合'):
 						res = sets.gset.involved_in(x, gs)
-						if res:
-							self.say('正确', sp[0])
-						else:
-							self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 					else:
 						res = gdata.getsp(x)._be(gs)
-						if res[0] == 0:
-							self.say('是的', sp[0])
-						elif res[0] == 1:
-							self.say('错误', sp[0])
-						else:
-							self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
+				if res[0] == 0:
+					self.say('是的', sp[0])
+				elif res[0] == 1:
+					self.say('错误', sp[0])
+				else:
+					self.say('对不起，我不知道.我上网问问，稍等。',sp[0])
 			else:
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
@@ -324,9 +310,9 @@ class zzd():
 							self.infomation_A[gs] = x
 						self.say('好的，我记住了', sp[0])
 					elif res[0] == 1:
-						self.say('您的信息已经在我的知识库里了。原因：%s是%s, %s是%s'%(sp, res[1], res[1], gs), sp[0])
+						self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(sp, res[1], res[1], gs), sp[0])
 					else:
-						self.say('您的信息与我的知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]), sp[0])
+						self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]), sp[0])
 				else:
 					self.say('%s %s未知断言语句稍等'%(x,gs), sp[0])
 
