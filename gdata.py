@@ -82,18 +82,7 @@ def checksp(sp):
 		for gs in sp.gs:
 			print(gs.name)
 	
-#集合A包含于集合B 	A<=B
-def involved_in(gs_A, gs_B):
-	gsA = getgs(gs_A)
-	gsB = getgs(gs_B)
-	return sets.gset.involved_in(gsA, gsB)
 	
-#集合A包含集合B 	A>=B (B<=A)
-def involved(gs_A, gs_B):
-	gsA = getgs(gs_A)
-	gsB = getgs(gs_B)
-	return sets.gset.involved(gsA, gsB)
-
 def get_ancestor(gs):
 	res = [gs]
 	res.extend(gs.father)

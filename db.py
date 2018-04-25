@@ -151,10 +151,10 @@ def _add_information_1(sp, gs):
 	assert isinstance(sp, element.seph) and isinstance(gs, sets.gset)
 	for g in list(sp.gs):
 		#判断是否无用
-		if sets.gset.involved_in(g, gs):
+		if sets.gset._involved_in(g, gs)[0] == 0:
 			return (1, g.name)
 		#判断是否删除
-		if sets.gset.involved_in(gs, g):
+		if sets.gset._involved_in(gs, g)[0] == 0:
 			g._removesp(sp)
 			sp._removegs(g)
 		#判断是否矛盾
@@ -164,7 +164,7 @@ def _add_information_1(sp, gs):
 	sp._addgs(gs)
 	if gs.name == '集合' and not gdata.gsin(sp.s):
 		sets.gset(sp.s)
-	return (0, '')
+	return [0]
 	
 #x是集合:	x包含于集合A
 #x是划分: 	x是集合A的划分
@@ -398,6 +398,9 @@ def main(a1, a2, a3):
 	elif a1 == 'be':
 		sp = gdata.getsp(a2)
 		res = sp._be(a3)
+		print(res)
+	elif a1 == 'con':
+		res = sets.gset.involved_in(a2,a3)
 		print(res)
 
 if __name__ == '__main__':

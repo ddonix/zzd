@@ -33,9 +33,9 @@ class gset:
 #1:无用
 #2:冲突
 	def __add_child(self, ch):
-		inv = gset.involved_in(ch, self)
-		if inv:
-			return (1, inv.name)
+		inv = gset._involved_in(ch, self)
+		if inv and inv[0] == 0:
+			return (1, inv[1].name)
 		con = gset.conflict(self, ch)
 		if con:
 			return (2, con)
@@ -112,17 +112,28 @@ class gset:
 			if res:
 				return res
 		return None
+
+
+	#集合A包含于集合B 	A<=B
+	@classmethod
+	def involved_in(cls, A, B):
+		gsA = gdata.getgs(A)
+		gsB = gdata.getgs(B)
+		return cls._involved_in(gsA, gsB)
 	
 	#集合A包含于集合B 	A<=B
 	@classmethod
-	def involved_in(cls, gs_A, gs_B):
+	def _involved_in(cls, gs_A, gs_B):
 		if gs_A == gs_B:
-			return gs_B
+			return (0, gs_B)
 		for ch in gs_B.child:
-			res = cls.involved_in(gs_A, ch)
-			if res:
-				return ch
-		return None
+			res = cls._involved_in(gs_A, ch)
+			if res[0] == 0:
+				return res
+		con = gset.conflict(gs_A, gs_B)
+		if con:
+			return (1, con)
+		return [2]
 	
 	def _addsp(self, sp):
 		if not self.contain(sp):

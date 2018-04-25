@@ -6,6 +6,7 @@ import time
 import zmath
 import play
 import sys
+import sets
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -279,13 +280,13 @@ class zzd():
 					else:
 						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				elif '包含判断语句' in sp[2]:
-					if gdata.involved_in(x, gs):
+					if sets.gset.involved_in(x, gs):
 						self.say(sp[2]['包含断言语句'], sp[0])
 					else:
 						self.say('对不起，我不知道.我去百度问问，稍等。',sp[0])
 				else:
 					if gdata.getsp(x).be('集合'):
-						res = gdata.involved_in(x, gs)
+						res = sets.gset.involved_in(x, gs)
 						if res:
 							self.say('正确', sp[0])
 						else:
