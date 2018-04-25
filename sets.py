@@ -2,6 +2,7 @@
 import sqlite3
 import copy
 import gdata
+import ipdb
 
 class gset:
 	def __init__(self, name):
@@ -33,6 +34,8 @@ class gset:
 #1:无用
 #2:冲突
 	def __add_child(self, ch):
+		if ch.name == '好男人':
+			ipdb.set_trace()
 		inv = gset.involved_in(ch, self)
 		if inv:
 			return (1, inv.name)
