@@ -2,7 +2,6 @@
 import sqlite3
 import copy
 import gdata
-import ipdb
 
 class gset:
 	def __init__(self, name):
@@ -34,8 +33,6 @@ class gset:
 #1:无用
 #2:冲突
 	def __add_child(self, ch):
-		if ch.name == '好男人':
-			ipdb.set_trace()
 		inv = gset.involved_in(ch, self)
 		if inv:
 			return (1, inv.name)
@@ -105,14 +102,14 @@ class gset:
 				if A_fa == B_fa:
 					for plot in A_fa.plot:
 						if gs_A in A_fa.plot[plot] and gs_B in A_fa.plot[plot]:
-							return (gs_A, gs_B)
+							return (gs_A.name, gs_B.name)
 		for fa in gs_A.father:
 			res = cls.conflict(fa, gs_B)
-			if not res:
+			if res:
 				return res
 		for fa in gs_B.father:
 			res = cls.conflict(gs_A, fa)
-			if not res:
+			if res:
 				return res
 		return None
 	

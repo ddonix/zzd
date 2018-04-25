@@ -393,8 +393,11 @@ def main(a1, a2):
 
 	if a1 == 'sp':
 		gdata.checksp(a2)
-	else:
+	elif a1 == 'gs':
 		gdata.checkgs(a2, True)
+	else:
+		res = add_information_2(a1, a2)
+		print(res)
 
 if __name__ == '__main__':
 	main(sys.argv[1], sys.argv[2])
