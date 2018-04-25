@@ -129,7 +129,7 @@ class gset:
 		for ch in gs_B.child:
 			res = cls._involved_in(gs_A, ch)
 			if res[0] == 0:
-				return res
+				return (0,ch)
 		con = gset.conflict(gs_A, gs_B)
 		if con:
 			return (1, con)
