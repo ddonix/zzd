@@ -284,7 +284,10 @@ class zzd():
 				elif res[0] == 1:
 					self.say('错误', sp[0])
 				else:
-					self.say('对不起，我不知道.我上网问问，稍等。',sp[0])
+					self.say('对不起，我不知道.需要我上网问问吗？',sp[0])
+					ok = self.ask(['选择回答语句'])
+					if ok and '肯定回答语句' in ok[2]:
+						self.say('我还不会上网，逗你玩呢.哈哈哈','')
 			else:
 				if self.FSM['train'] == False:
 					self.say('对不起，您需进入学习模式才可以增加信息', sp[0])
@@ -302,7 +305,12 @@ class zzd():
 					else:
 						self.say('该信息与知识库冲突。原因：%s是%s, %s与%s不相容'%(x,res[1],res[1],gs), sp[0])
 				elif '包含断言语句' in sp[2]:
+					if not gdata.spin(x):
+						db.add_information_1(x, '集合')
+						self.infomation_a[x] = '集合'
+					
 					res = db.add_information_2(x, gs)
+					print(res)
 					if res[0] == 0:
 						if x in self.infomation_A:
 							self.infomation_A[gs] += '~%s'%x
@@ -310,7 +318,7 @@ class zzd():
 							self.infomation_A[gs] = x
 						self.say('好的，我记住了', sp[0])
 					elif res[0] == 1:
-						self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(sp, res[1], res[1], gs), sp[0])
+						self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x, res[1], res[1], gs), sp[0])
 					else:
 						self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]), sp[0])
 				else:
@@ -332,7 +340,27 @@ class zzd():
 		if gdata.getgs('称呼').fensp(phrases, True):
 			self.say('我在，有什么为你做的吗','')
 		else:
-			self.say('对不起，我还需要学习','')
+			s = phrases[0].s
+			for ph in phrases[1:]:
+				s += '~%s'%ph.s
+			self.say('对不起，我处理不利.分词结果是:%s'%s,'')
+			n = ['']
+			while phrases:
+				if len(phrases[0].s) == 1 and len(phrases[0].gs) == 1:
+					n[-1] += phrases[0].s
+				else:
+					n.append('')
+				phrases = phrases[1:]
+			l = 0
+			rr = ''
+			for nc in n:
+				if nc:
+					l += 1
+					rr +='%s '%nc
+			if l:
+				r ='我猜测：%s是新词，您可以进入学习模式进行学习:'%rr
+			self.say(r, '')
+
 				
 	def desire_verify(self, desire):
 		if self.FSM['verify'] == True:
