@@ -7,6 +7,7 @@ import zmath
 import play
 import sys
 import sets
+import element
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -101,7 +102,7 @@ class zzd():
 		waa = waain['waa']
 		assert self.friend == waain['sour']
 		
-		phrases = db.fenci(waa, False)
+		phrases = element.fenci(waa, False)
 		if 'ask' in self.FSM:
 			if self._solve_answer(phrases):
 				return
@@ -516,7 +517,7 @@ def main(a,A):
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	db.fenci(a, False)
+	element.fenci(a, False)
 	sp = gdata.getsp(a)
 	res = sp.be(A)
 	print(res)
