@@ -49,10 +49,16 @@ class seph:
 	#True:是
 	#False:不是或者不确定
 	def be(self, gram):
-		gs = gdata.getgs(gram)
-		if gs.contain(self):
-			return True
-		return False
+		if gdata.gsin(gram):
+			gs = gdata.getgs(gram)
+			if gs.contain(self):
+				return True
+			return False
+		elif gdata.fnin(gram):
+			fn = gdata.getfn(gram)
+			if fn.ds(self) == True and fn.vs() == '(True False)':
+				return fn.value(self)
+			return False
 
 def main():
 	print('element')

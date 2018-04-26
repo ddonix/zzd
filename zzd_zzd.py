@@ -47,6 +47,7 @@ class zzd():
 	@classmethod
 	def init(cls):
 		db.gsinit()
+		db.funcinit()
 		db.spinit()
 		db.coreinit()
 		
@@ -515,6 +516,15 @@ def main(a,A):
 	zzd.init()
 	zhd = zzd(1, 1)
 	
+	db.fenci(a, False)
+	sp = gdata.getsp(a)
+	res = sp.be(A)
+	print(res)
+	
+	
+if __name__ == '__main__':
+	main(sys.argv[1], sys.argv[2])
+'''
 	phs = db.fenci(a, False)
 	for p in phs:
 		print(p.s,'|')
@@ -525,6 +535,4 @@ def main(a,A):
 	print('sp[2]:',sp[2])
 	for s in sp[2]:
 		print(s,sp[2][s])
-	
-if __name__ == '__main__':
-	main(sys.argv[1], sys.argv[2])
+'''	

@@ -2,6 +2,7 @@
 import sqlite3
 import copy
 import sets
+import function
 import element
 import gdata
 import sys
@@ -210,6 +211,19 @@ def gsinit():
 		for g in gram:
 			add_information_2(g, v[0])
 
+def funcinit():
+	try:
+		conn = sqlite3.connect('./data/grammar.db')
+		cursor = conn.execute("select * from func")
+		grammar = cursor.fetchall()
+		conn.close()
+	except:
+		return NameError
+	for f in grammar:
+		if not f[0]:
+			continue
+		assert not gdata.fnin(f[0])
+		fn = function.func(f[0], f[1])
 
 def spinit():
 	try:
@@ -249,8 +263,6 @@ def spinit():
 			for sp in item:
 				add_information_1(sp, gram)
 	
-
-			
 def coreinit():
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
@@ -388,6 +400,7 @@ def fenci(waa, point):
 def main(a1, a2, a3):
 	print('db')
 	gsinit()
+	funcinit()
 	spinit()
 	coreinit()
 
@@ -405,13 +418,3 @@ def main(a1, a2, a3):
 
 if __name__ == '__main__':
 	main(sys.argv[1], sys.argv[2], sys.argv[3] if len(sys.argv) > 3 else '')
-
-'''
-	f= open('千字文','r')
-	book=f.read()
-	f.close()
-	for v in book:
-		if v != '，' and v != '。' and v != ' ' and v != '\n':
-			if v not in gdata._table_vocable:
-				add_database_a_in_A(v, '普通汉字')
-'''

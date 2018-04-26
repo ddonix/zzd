@@ -3,6 +3,7 @@
 import sets
 import element
 
+_func_all = {}				#所有函数
 _gset_all = {}				#所有集合
 _spbase_all = {}			#所有语句
 _table_vocable = {' '}		#所有字符
@@ -14,11 +15,18 @@ _keyword_zzd = {}			#关键语句
 _mend_add = {}				#增加修复集合
 _mend_replace = {}			#替换修复集合
 
-def getgs(gram):
+def getgs(g):
 	try:
-		return _gset_all[gram]
+		return _gset_all[g]
 	except:
-		print(gram)
+		print(g)
+		raise NameError
+
+def getfn(f):
+	try:
+		return _func_all[f]
+	except:
+		print(f)
 		raise NameError
 
 def getsp(s):
@@ -28,12 +36,15 @@ def getsp(s):
 		print(s)
 		raise NameError
 	
-def gsin(gs):
-	return True if gs in _gset_all else False
+def gsin(g):
+	return True if g in _gset_all else False
+
+def fnin(f):
+	return True if f in _func_all else False
 	
-def spin(sp):
-	if sp[0] in _spbase_all:
-		if sp in _spbase_all[sp[0]]:
+def spin(s):
+	if s[0] in _spbase_all:
+		if s in _spbase_all[s[0]]:
 			return True
 	return False
 	
@@ -53,9 +64,9 @@ def fix(s):
 	
 def addgs(gs):
 	_gset_all[gs.name] = gs
-	
-def addgs(gs):
-	_gset_all[gs.name] = gs
+
+def addfn(fn):
+	_func_all[fn.name] = fn
 
 def addsp(sp):
 	assert len(sp.s) >= 1
