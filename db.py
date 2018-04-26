@@ -252,7 +252,7 @@ def spinit():
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
 	conn.close()
-		
+	
 	#补充所有集合类元素集,例如：集合语句是集合
 	#补充()类集合里面的元素
 	for gram in gdata._gset_all:
