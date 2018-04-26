@@ -4,13 +4,14 @@ import gdata
 import db
 
 class seph:
-	def __init__(self, s):
+	def __init__(self, s, base):
 		assert type(s) == str
 		self.s = s				#sting
 		self.d = []
 		self.gs = set()
 		self.fn = set()
-		gdata.addsp(self)
+		if base:
+			gdata.addsp(self)
 	
 	def _fenci(self, point):
 		znumber =  '0123456789'
@@ -134,8 +135,7 @@ def main():
 	db.fninit()
 	db.spinit()
 	db.coreinit()
-	#sp = seph('一百')
-	sp = seph('12一心一意23work+23*2x 一切一百五十六32')
+	#sp = seph('12一心一意23work+23*2x 一切一百五十六32')
 	sp._fenci(False)
 	print(sp.s, len(sp.gs))
 	for sp in sp.d:
