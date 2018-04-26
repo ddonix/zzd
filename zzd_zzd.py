@@ -7,6 +7,7 @@ import zmath
 import play
 import sys
 import sets
+import ipdb
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -110,6 +111,7 @@ class zzd():
 			return
 		keyword = [x for x in sep.d if x.s in gdata._keyword_zzd]
 		bit = {'math':0,'define':0,'command':0, 'set':0}
+		ipdb.set_trace()
 		for k in keyword:
 			assert k.s in gdata._keyword_zzd
 			weight = gdata._keyword_zzd[k.s][0].split(' ')

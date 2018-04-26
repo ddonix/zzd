@@ -286,7 +286,7 @@ def coreinit():
 			gdata._gset_key[keyword[0]] = keyword[1:]
 			for sp in gdata._spbase_all:
 				for s in gdata._spbase_all[sp]:
-					if gdata._spbase_all[sp][s].be(keyword[0]):
+					if gdata._spbase_all[sp][s].be(keyword[0])[0] == 0:
 						gdata._keyword_zzd[s] = keyword[1:]
 		elif keyword[0][0] == '(' and keyword[0][-1] == ')':
 			gs = sets.gset(keyword[0])
@@ -298,7 +298,9 @@ def coreinit():
 		else:
 			print(keyword[0])
 			raise NameError
-	
+	for k in gdata._keyword_zzd:
+		print(k)
+
 	try:
 		cursor = conn.execute("select * from verify")
 	except:
