@@ -31,7 +31,11 @@ class func:
 		return self.vset
 	
 	def value(self, sp):
-		res = False
-		e = self.f.replace('eval(x)',sp.s)
-		res = eval(e)
-		return res
+		if self.vset == '数' or self.vset == '(True False)':
+			if sp.s.find('eval(x)') != -1:
+				e = self.f.replace('eval(x)',sp.s)
+				return eval(e)
+			else:
+				return None
+		else:
+			return None
