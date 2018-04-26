@@ -7,11 +7,10 @@ class seph:
 	def __init__(self, s):
 		assert type(s) == str
 		self.s = s				#sting
-		self.d = [self]
+		self.d = []
 		self.gs = set()
 		gdata.addsp(self)
 	
-
 	def _fenci(self, point):
 		znumber =  '0123456789'
 		cnumber =  '零一二三四五六七八九十百千万亿'
@@ -27,10 +26,8 @@ class seph:
 				while ss != '' and ss[0] in znumber:
 					s += ss[0]
 					ss = ss[1:]
-				if gdata.spin(s):
-					sp = gdata.getsp(s)
-				else:
-					sp = seph(s)
+				sp = gdata.getsp(s) if gdata.spin(s) else seph(s)
+				if not sp.gs:
 					gs = gdata.getgs('数')
 					sp._addgs(gs)
 					gs._addsp(sp)
@@ -41,10 +38,8 @@ class seph:
 				while ss != '' and ss[0] in zstr:
 					s += ss[0]
 					ss = ss[1:]
-				if gdata.spin(s):
-					sp = gdata.getsp(s)
-				else:
-					sp = seph(s)
+				sp = gdata.getsp(s) if gdata.spin(s) else seph(s)
+				if not sp.gs:
 					gs = gdata.getgs('字符串')
 					sp._addgs(gs)
 					gs._addsp(sp)
@@ -130,7 +125,7 @@ def main():
 	print('element')
 	db.gsinit()
 	db.spinit()
-	sp = seph('12三心二意34+2*x+23>=41我<= 一切的!=时间一百五十苏一book adfd 格拉底再见=2')
+	sp = seph('12一心一意23work+23*2x 一切一百五十六32')
 	sp._fenci(False)
 	for sp in sp.d:
 		print(sp.s)
