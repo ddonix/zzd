@@ -20,7 +20,7 @@ class func:
 		self.f = f[5:]
 
 	def ds(self, sp):
-		return sp.be(self.dset)[0]
+		return sp.be(self.dset)[0] == 0
 	
 	def vs(self):
 		return self.vset
