@@ -14,15 +14,10 @@ class func:
 		
 		self.name = name
 		gdata.addfn(self)
-		print(desc)
 		d,f=desc.split(',')
-		print(d,f)
 		self.dset = d[d.find(':')+1:d.find('-')]
 		self.vset = d[d.find('>')+1:]
-		print(self.dset,self.vset)
 		self.f = f[5:]
-		print(self.f)
-
 
 	def ds(self, sp):
 		return sp.be(self.dset)
@@ -32,10 +27,14 @@ class func:
 	
 	def value(self, sp):
 		if self.vset == '数' or self.vset == '(True False)':
-			if sp.s.find('eval(x)') != -1:
-				e = self.f.replace('eval(x)',sp.s)
+			if self.f.find('eval(x)') != -1:
+				print(self.vset)
+				print(sp.s)
+				e = self.f.replace('eval(x)','(%s)'%sp.s)
+				
+
 				return eval(e)
 			else:
-				return None
+				return False
 		else:
 			return None
