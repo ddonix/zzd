@@ -7,7 +7,6 @@ import zmath
 import play
 import sys
 import sets
-import element
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
@@ -102,14 +101,14 @@ class zzd():
 		waa = waain['waa']
 		assert self.friend == waain['sour']
 		
-		phrases = element.fenci(waa, False)
+		sep = gdata.getsp_ok(waa)
 		if 'ask' in self.FSM:
-			if self._solve_answer(phrases):
+			if self._solve_answer(sep):
 				return
 		if not self.FSM['verify']:
-			self._solve_command(phrases)
+			self._solve_command(sep)
 			return
-		keyword = [x for x in phrases if x.s in gdata._keyword_zzd]
+		keyword = [x for x in sep.d if x.s in gdata._keyword_zzd]
 		bit = {'math':0,'define':0,'command':0, 'set':0}
 		for k in keyword:
 			assert k.s in gdata._keyword_zzd
@@ -119,34 +118,36 @@ class zzd():
 					bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
 		if bit[0][1] == 0:
-			for ph in phrases:
+			for ph in sep.d:
 				if ph.be('集合')[0] == 0:
-					self._solve_set(phrases)
+					self._solve_set(sep)
 					break
 			else:
-				self._solve_other(phrases)
+				self._solve_other(sep)
 		else:
-			zzd.inWaaClass[bit[0][0]](self, phrases)
+			zzd.inWaaClass[bit[0][0]](self, sep)
 		
-	def _solve_math(self, phrases):
-		sp = gdata.getgs('数学语句').fensp(phrases, True)
-		if not sp:
+	def _solve_math(self, sep):
+		res = sep.be('数学语句')
+		if res[0] != 0:
 			self.say('数学语法不对')
 		else:
+			sp = res[1]
 			if '数学判断' in sp[2] or '数学方程' in sp[2]:
 				self.add_desire('math',sp[0])
 			else:
-				sen = zmath.c2math(phrases)
+				sen = zmath.c2math(sep.d)
 				if sen:
 					self.add_desire('math',sen)
 				else:
 					self.say('数学语法错误')
 	
-	def _solve_define(self, phrases):
-		sp = gdata.getgs('定义语句').fensp(phrases, True)
-		if sp == None:
+	def _solve_define(self, sep):
+		res = sep.be('定义语句')
+		if res[0] != 0:
 			self.say('定义语法错误')
 		else:
+			sp = res[1]
 			assert '定义词' in sp[2]
 			sen = sp[2]['定义词']
 			if sen in gdata._defineDict:
@@ -161,9 +162,9 @@ class zzd():
 					self.say('请进入调教模式。'%sen)
 					
 	
-	def _solve_command(self, phrases):
-		sp = gdata.getgs('命令语句').fensp(phrases, True)
-		if sp == None:
+	def _solve_command(self, sep):
+		res = sep.be('命令语句')
+		if res[0] != 0:
 			if not self.FSM['verify']:
 				self.say('请先认证身份。')
 				arg = self.ask(['认证参数','认证参数句'])
@@ -173,6 +174,7 @@ class zzd():
 			else:
 				self.say('语法错误。')
 			return
+		sp = res[1]
 		assert 'zzd命令' in sp[2]
 		if '命令参数' in sp[2]:
 			arg = sp[2]['命令参数']
@@ -292,11 +294,12 @@ class zzd():
 		else:
 			self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]))
 
-	def _solve_set(self, phrases):
-		sp = gdata.getgs('集合语句').fensp(phrases, True)
-		if sp == None:
+	def _solve_set(self, sep):
+		res = sep.be('集合语句')
+		if res[0] != 0:
 			self.say('集合语法不对')
 		else:
+			sp = res[1]
 			assert '集合' in sp[2]
 			if '|' not in sp[2]['集合']:
 				assert '...' in sp[2]
@@ -313,14 +316,14 @@ class zzd():
 				return
 			if '集合判断语句' in sp[2]:
 				if '属于判断语句' in sp[2]:
-					res = gdata.getsp(x)._be(gs)
+					res = gdata.getsp(x).be(gs)
 				elif '包含判断语句' in sp[2]:
 					res = sets.gset.involved_in(x, gs)
 				else:
 					if gdata.getsp(x).be('集合')[0] == 0:
 						res = sets.gset.involved_in(x, gs)
 					else:
-						res = gdata.getsp(x)._be(gs)
+						res = gdata.getsp(x).be(gs)
 				if res[0] == 0:
 					self.say('是的')
 				elif res[0] == 1:
@@ -354,22 +357,23 @@ class zzd():
 						else:
 							self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
 
-	def _solve_answer(self, phrases):
+	def _solve_answer(self, sep):
 		assert 'ask' in self.FSM and not self.FSM['ask'][1]
 		for question in self.FSM['ask'][0]:
 			print('question:',question)
-			sp = gdata.getgs(question).fensp(phrases, True)
-			if sp:
-				self.FSM['ask'][1] = sp
+			res = sep.be(question)
+			if res[0] == 0:
+				self.FSM['ask'][1] = res[1]
 				self.ask_event.set()
 				return True
 		self.ask_event.set()
 		return False
 	
-	def _solve_other(self, phrases):
-		if gdata.getgs('称呼').fensp(phrases, True):
+	def _solve_other(self, sep):
+		if sep.be('称呼')[0] == 0:
 			self.say('我在，有什么为你做的吗')
 		else:
+			phrases = sep.d
 			s = phrases[0].s
 			for ph in phrases[1:]:
 				s += '~%s'%ph.s
