@@ -36,6 +36,18 @@ def getsp(s):
 		print(s)
 		raise NameError
 
+def getsp_ok(s):
+	if spin(s):
+		return _spbase_all[s[0]][s]
+	else:
+		sp = element.seph(s)
+		sp._fenci(False)
+		return sp
+
+def gsin(g):
+	return True if g in _gset_all else False
+
+
 def gsin(g):
 	return True if g in _gset_all else False
 

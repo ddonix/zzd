@@ -517,10 +517,7 @@ def main(a,A):
 	zzd.init()
 	zhd = zzd(1, 1)
 	
-	
-	print(a,A)
-	sp = element.seph(a)
-	sp._fenci(False)
+	sp = gdata.getsp_ok(a)
 	res = sp.be(A)
 	print(res)
 	

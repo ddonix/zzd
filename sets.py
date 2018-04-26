@@ -259,7 +259,6 @@ class gset:
 		return res if res and not res[1] else None
 	
 	def _fensp(self, phrases, mend):
-		print('self.name:',self.name)
 		if phrases and phrases[0] in self.sp:
 			return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 		if self.child != []:
@@ -272,7 +271,6 @@ class gset:
 			if not ress:
 				return None
 			ress.sort(key=lambda x:len(x[1]))
-			print(ress)
 			return ress[0]
 		else:
 			if self.name[0] == '(' and self.name[-1] == ')':

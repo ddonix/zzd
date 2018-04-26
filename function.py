@@ -20,7 +20,7 @@ class func:
 		self.f = f[5:]
 
 	def ds(self, sp):
-		return sp.be(self.dset)
+		return sp.be(self.dset)[0]
 	
 	def vs(self):
 		return self.vset
@@ -31,8 +31,6 @@ class func:
 				print(self.vset)
 				print(sp.s)
 				e = self.f.replace('eval(x)','(%s)'%sp.s)
-				
-
 				return eval(e)
 			else:
 				return False

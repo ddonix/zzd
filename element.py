@@ -4,20 +4,21 @@ import gdata
 import db
 
 class seph:
-	def __init__(self, s, base):
+	def __init__(self, s):
 		assert type(s) == str
 		self.s = s				#sting
 		self.d = []
 		self.gs = set()
 		self.fn = set()
-		if base:
-			gdata.addsp(self)
+		gdata.addsp(self)
 	
 	def _fenci(self, point):
 		znumber =  '0123456789'
 		cnumber =  '零一二三四五六七八九十百千万亿'
 		zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 		zpoint = '，。,.！!？?的地得'
+		if self.gs or self.d:
+			return
 		ss = self.s
 		while ss != '':
 			if ss[0] == ' ':
@@ -114,20 +115,24 @@ class seph:
 	def be(self, gram):
 		if gdata.gsin(gram):
 			gs = gdata.getgs(gram)
-			if gs.contain(self):
-				return True
+			res = gs.contain(self)
+			if res:
+				return (True,res)
+			sp2 = None
 			if self.d:
 				sp2 = gs.fensp(self.d, True)
-				if sp2:
-					return True
-				return False
+			elif self.gs:
+				sp2 = gs.fensp([self], True)
+			if sp2:
+				return (True,sp2)
+			return [False]
 		elif gdata.fnin(gram):
-			#fn = gdata.getfn(gram)
-			#if fn.ds(self) == True and fn.vs() == '(True False)':
-			#	return fn.value(self)
-			return False
+			fn = gdata.getfn(gram)
+			if fn.ds(self) == True and fn.vs() == '(True False)':
+				return [fn.value(self),{}]
+			return [False]
 		else:
-			return False
+			return [False]
 
 def main():
 	print('element')
@@ -135,7 +140,14 @@ def main():
 	db.fninit()
 	db.spinit()
 	db.coreinit()
-	#sp = seph('12一心一意23work+23*2x 一切一百五十六32')
+	
+	sp = seph('12一心一意23work+23*2x 一切一百五十六32')
+	sp._fenci(False)
+	print(sp.s, len(sp.gs))
+	for sp in sp.d:
+		print(sp.s, len(sp.gs))
+	
+	sp = gdata.getsp_ok('一百')
 	sp._fenci(False)
 	print(sp.s, len(sp.gs))
 	for sp in sp.d:
