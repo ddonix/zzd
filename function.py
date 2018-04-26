@@ -4,23 +4,34 @@ import copy
 import gdata
 
 class func:
-	def __init__(self, name, define):
+	def __init__(self, name, desc):
 		assert type(name) == str
 		assert name
-		assert not '|' in name
+		assert 'f' in desc
+		assert ':' in desc
+		assert '->' in desc
 		assert not gdata.fnin(name)
 		
 		self.name = name
 		gdata.addfn(self)
-		print(define)
+		print(desc)
+		d,f=desc.split(',')
+		print(d,f)
+		self.dset = d[d.find(':')+1:d.find('-')]
+		self.vset = d[d.find('>')+1:]
+		print(self.dset,self.vset)
+		self.f = f[5:]
+		print(self.f)
+
 
 	def ds(self, sp):
-		return sp.be('数')
+		return sp.be(self.dset)
 	
 	def vs(self):
-		return '(True False)'
+		return self.vset
 	
 	def value(self, sp):
 		res = False
-		x = eval(sp.s)
-		return x%2==0
+		e = self.f.replace('eval(x)',sp.s)
+		res = eval(e)
+		return res
