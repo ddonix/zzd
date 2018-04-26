@@ -211,7 +211,7 @@ def gsinit():
 		for g in gram:
 			add_information_2(g, v[0])
 
-def funcinit():
+def fninit():
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
 		cursor = conn.execute("select * from func")
@@ -331,7 +331,7 @@ def coreinit():
 def main(a1, a2, a3):
 	print('db')
 	gsinit()
-	funcinit()
+	fninit()
 	spinit()
 	coreinit()
 

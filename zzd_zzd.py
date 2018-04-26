@@ -48,7 +48,7 @@ class zzd():
 	@classmethod
 	def init(cls):
 		db.gsinit()
-		db.funcinit()
+		db.fninit()
 		db.spinit()
 		db.coreinit()
 		
@@ -517,11 +517,12 @@ def main(a,A):
 	zzd.init()
 	zhd = zzd(1, 1)
 	
+	
+	print(a,A)
 	sp = element.seph(a)
 	sp._fenci(False)
 	res = sp.be(A)
 	print(res)
-	
 	
 if __name__ == '__main__':
 	main(sys.argv[1], sys.argv[2])

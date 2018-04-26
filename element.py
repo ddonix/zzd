@@ -9,6 +9,7 @@ class seph:
 		self.s = s				#sting
 		self.d = []
 		self.gs = set()
+		self.fn = set()
 		gdata.addsp(self)
 	
 	def _fenci(self, point):
@@ -60,6 +61,8 @@ class seph:
 			else:
 				for i in range(min(8,len(ss)),1,-1):
 					if gdata.spin(ss[0:i]):
+						if gdata.getsp(ss[0:i]) == self:
+							continue
 						self.d.append(gdata.getsp(ss[0:i]))
 						ss = ss[i:]
 						break
@@ -74,14 +77,14 @@ class seph:
 						while ss != '' and ss[0] in cnumber:
 							s += ss[0]
 							ss = ss[1:]
-						if gdata.spin(s):
-							sp = gdata.getsp(s)
-						else:
-							sp = seph(s)
+						sp = gdata.getsp(s) if gdata.spin(s) else seph(s)
+						if not sp.gs:
 							gs = gdata.getgs('汉语数')
 							sp._addgs(gs)
 							gs._addsp(sp)
 						self.d.append(sp)
+		if len(self.d) == 1:
+			self.d = []
 
 	def _addgs(self, gs):
 		assert not gs in self.gs
@@ -112,11 +115,15 @@ class seph:
 			gs = gdata.getgs(gram)
 			if gs.contain(self):
 				return True
-			return False
+			if self.d:
+				sp2 = gs.fensp(self.d, True)
+				if sp2:
+					return True
+				return False
 		elif gdata.fnin(gram):
-			fn = gdata.getfn(gram)
-			if fn.ds(self) == True and fn.vs() == '(True False)':
-				return fn.value(self)
+			#fn = gdata.getfn(gram)
+			#if fn.ds(self) == True and fn.vs() == '(True False)':
+			#	return fn.value(self)
 			return False
 		else:
 			return False
@@ -124,11 +131,15 @@ class seph:
 def main():
 	print('element')
 	db.gsinit()
+	db.fninit()
 	db.spinit()
+	db.coreinit()
+	#sp = seph('一百')
 	sp = seph('12一心一意23work+23*2x 一切一百五十六32')
 	sp._fenci(False)
+	print(sp.s, len(sp.gs))
 	for sp in sp.d:
-		print(sp.s)
+		print(sp.s, len(sp.gs))
 
 if __name__ == '__main__':
 	main()
