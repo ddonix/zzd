@@ -100,7 +100,8 @@ class seph:
 	#False:不是或者不确定
 	def be(self, gram):
 		if gdata.getgs('集合').contain(self):
-			return [2]
+			res = sets.gset.involved_in(self.s, gram)
+			return res
 		if gdata.gsin(gram):
 			gs = gdata.getgs(gram)
 			res = gs.contain(self)

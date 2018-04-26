@@ -46,25 +46,25 @@ def c2math(phrases):
 	x = False
 	rv = False
 	for ph in phrases:
-		if ph.be('汉语变量'):
+		if ph.be('汉语变量')[0] == 0:
 			x = True
 			break
 	for i,ph in enumerate(phrases):
-		if ph.be('汉语数'):
+		if ph.be('汉语数')[0] == 0:
 			if not rv:
 				res.append(str(transNumber(ph.s)))
 			else:
 				t = res[-2]
 				res[-2] = str(transNumber(ph.s))
 				res.append(t)
-		if ph.be('数'):
+		if ph.be('数')[0] == 0:
 			if not rv:
 				res.append(ph.s)
 			else:
 				t = res[-2]
 				res[-2] = transNumber(ph.s)
 				res.append(t)
-		if ph.be('汉语变量'):
+		if ph.be('汉语变量')[0] == 0:
 			if not rv:
 				res.append('x')
 			else:
@@ -72,7 +72,7 @@ def c2math(phrases):
 				res[-2] = 'x'
 				res.append(t)
 				
-		if ph.be('汉语运算符'):
+		if ph.be('汉语运算符')[0] == 0:
 			if ph.s in tran1:
 				rv = False
 				res.append(tran1[ph.s])
@@ -80,7 +80,7 @@ def c2math(phrases):
 				rv = True
 				print(ph.s)
 				res.append(tran2[ph.s])
-		if ph.be('汉语赋值符'):
+		if ph.be('汉语赋值符')[0] == 0:
 			if x:
 				res.append('=')
 			else:

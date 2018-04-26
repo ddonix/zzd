@@ -120,7 +120,7 @@ class zzd():
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
 		if bit[0][1] == 0:
 			for ph in phrases:
-				if ph.be('集合'):
+				if ph.be('集合')[0] == 0:
 					self._solve_set(phrases)
 					break
 			else:
@@ -317,7 +317,7 @@ class zzd():
 				elif '包含判断语句' in sp[2]:
 					res = sets.gset.involved_in(x, gs)
 				else:
-					if gdata.getsp(x).be('集合'):
+					if gdata.getsp(x).be('集合')[0] == 0:
 						res = sets.gset.involved_in(x, gs)
 					else:
 						res = gdata.getsp(x)._be(gs)
@@ -342,7 +342,7 @@ class zzd():
 					self._solve_set_A(x, gs)
 				else:
 					if gdata.spin(x):
-						assert not gdata.getsp(x).be('集合')
+						assert not gdata.getsp(x).be('集合')[0] == 0
 						self._solve_set_a(x, gs)
 					else:	
 						self.say('我不知道%s是否是集合。是吗'%x)
