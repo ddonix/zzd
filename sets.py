@@ -236,11 +236,11 @@ class gset:
 			elif gram == '...':
 				tc = ''
 				if i < len(frame)-1:
-					while phrases and not (phrases[0].be('分隔词')) and not (phrases[0].be(frame[i+1])):
+					while phrases and (phrases[0].be('分隔词')[0] != 0) and (phrases[0].be(frame[i+1]) != 0):
 						tc += phrases[0].s
 						phrases = phrases[1:]
 				else:
-					while phrases and not (phrases[0].be('分隔词')):
+					while phrases and (phrases[0].be('分隔词')[0] != 0):
 						tc += phrases[0].s
 						phrases = phrases[1:]
 				gset._addkey(key, '...', tc)
@@ -259,6 +259,7 @@ class gset:
 		return res if res and not res[1] else None
 	
 	def _fensp(self, phrases, mend):
+		print('self.name:',self.name)
 		if phrases and phrases[0] in self.sp:
 			return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
 		if self.child != []:

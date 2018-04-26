@@ -99,6 +99,8 @@ class seph:
 	#True:是
 	#False:不是或者不确定
 	def be(self, gram):
+		if gdata.getgs('集合').contain(self):
+			return [2]
 		if gdata.gsin(gram):
 			gs = gdata.getgs(gram)
 			res = gs.contain(self)
