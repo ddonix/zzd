@@ -96,20 +96,6 @@ class seph:
 		assert gs in self.gs
 		self.gs.remove(gs)
 	
-	#0:是
-	#1:不是
-	#2:不清楚
-	def _be(self, gram):
-		gs = gdata.getgs(gram)
-		res = gs.contain(self)
-		if res:
-			return (0,res)
-		for g in self.gs:
-			res = sets.gset.conflict(g, gs)
-			if res:
-				return (1, g.name)
-		return [2]
-
 	#True:是
 	#False:不是或者不确定
 	def be(self, gram):
@@ -118,21 +104,28 @@ class seph:
 			res = gs.contain(self)
 			if res:
 				return (0,res)
-			sp2 = None
+			for g in self.gs:
+				res = sets.gset.conflict(g, gs)
+				if res:
+					return (1, g.name)
+			res = None
 			if self.d:
-				sp2 = gs.fensp(self.d, True)
+				res = gs.fensp(self.d, True)
 			elif self.gs:
-				sp2 = gs.fensp([self], True)
-			if sp2:
-				return (0, sp2)
-			return [False]
+				res = gs.fensp([self], True)
+			if res:
+				return (0, res)
+			return [2]
 		elif gdata.fnin(gram):
 			fn = gdata.getfn(gram)
 			if fn.ds(self) == True and fn.vs() == '(True False)':
-				return [fn.value(self),{}]
-			return [False]
+				if fn.value(self):
+					return [0,fn]
+				else:
+					return [1,fn]
+			return [2]
 		else:
-			return [False]
+			return [2]
 
 def main():
 	print('element')
