@@ -236,7 +236,7 @@ class gset:
 			elif gram == '...':
 				tc = ''
 				if i < len(frame)-1:
-					while phrases and (phrases[0].be('分隔词')[0] != 0) and (phrases[0].be(frame[i+1]) != 0):
+					while phrases and (phrases[0].be('分隔词')[0] != 0) and (phrases[0].be(frame[i+1])[0] != 0):
 						tc += phrases[0].s
 						phrases = phrases[1:]
 				else:
