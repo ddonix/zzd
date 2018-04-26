@@ -35,7 +35,7 @@ def getsp(s):
 	except:
 		print(s)
 		raise NameError
-	
+
 def gsin(g):
 	return True if g in _gset_all else False
 

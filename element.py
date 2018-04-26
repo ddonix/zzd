@@ -11,25 +11,22 @@ class seph:
 		self.gs = set()
 		gdata.addsp(self)
 	
-	#返回False，说明这条信息是多余的。
-	#返回True, 说明这条信息是有用的。
 
 	def _fenci(self, point):
 		znumber =  '0123456789'
 		cnumber =  '零一二三四五六七八九十百千万亿'
 		zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 		zpoint = '，。,.！!？?的地得'
-		waa = self.s
-		
-		while waa != '':
-			if waa[0] == ' ':
-				waa = waa[1:]
-			elif waa[0] in znumber:
-				s = waa[0]
-				waa = waa[1:]
-				while waa != '' and waa[0] in znumber:
-					s += waa[0]
-					waa = waa[1:]
+		ss = self.s
+		while ss != '':
+			if ss[0] == ' ':
+				ss = ss[1:]
+			elif ss[0] in znumber:
+				s = ss[0]
+				ss = ss[1:]
+				while ss != '' and ss[0] in znumber:
+					s += ss[0]
+					ss = ss[1:]
 				if gdata.spin(s):
 					sp = gdata.getsp(s)
 				else:
@@ -38,47 +35,58 @@ class seph:
 					sp._addgs(gs)
 					gs._addsp(sp)
 				self.d.append(sp)
-			elif waa[0] in cnumber:
-				s = waa[0]
-				waa = waa[1:]
-				while waa != '' and waa[0] in cnumber:
-					s += waa[0]
-					waa = waa[1:]
+			elif ss[0] in zstr[10:]:
+				s = ss[0]
+				ss = ss[1:]
+				while ss != '' and ss[0] in zstr:
+					s += ss[0]
+					ss = ss[1:]
 				if gdata.spin(s):
 					sp = gdata.getsp(s)
 				else:
 					sp = seph(s)
-					gs = gdata.getgs('汉语数')
+					gs = gdata.getgs('字符串')
 					sp._addgs(gs)
 					gs._addsp(sp)
 				self.d.append(sp)
-			elif waa[0] in zstr[10:]:
-				s = waa[0]
-				waa = waa[1:]
-				while waa != '' and waa[0] in zstr:
-					s += waa[0]
-					waa = waa[1:]
-				if gdata.spin(s):
-					sp = gdata.getsp(s)
-				else:
-					sp = seph(s)
-					gs = gdata.getgs('汉语数')
-					sp._addgs(gs)
-					gs._addsp(sp)
-				self.d.append(sp)
-			elif waa[0:2] == '!=':
+			elif ss[0:2] == '!=':
 				self.d.append(gdata.getsp('!='))
-				waa = waa[2:]
-			elif waa[0] in zpoint:
+				ss = ss[2:]
+			elif ss[0:2] == '>=':
+				self.d.append(gdata.getsp('>='))
+				ss = ss[2:]
+			elif ss[0:2] == '<=':
+				self.d.append(gdata.getsp('<='))
+				ss = ss[2:]
+			elif ss[0] in zpoint:
 				if point:
-					self.d.append(gdata.getsp(waa[0]))
-				waa = waa[1:]
+					self.d.append(gdata.getsp(ss[0]))
+				ss = ss[1:]
 			else:
-				for i in range(min(8,len(waa)),0,-1):
-					if gdata.spin(waa[0:i]):
-						self.d.append(gdata.getsp(waa[0:i]))
-						waa = waa[i:]
+				for i in range(min(8,len(ss)),1,-1):
+					if gdata.spin(ss[0:i]):
+						self.d.append(gdata.getsp(ss[0:i]))
+						ss = ss[i:]
 						break
+				else:
+					if ss[0] not in cnumber:
+						assert gdata.spin(ss[0])
+						self.d.append(gdata.getsp(ss[0]))
+						ss = ss[1:]
+					else:
+						s = ss[0]
+						ss = ss[1:]
+						while ss != '' and ss[0] in cnumber:
+							s += ss[0]
+							ss = ss[1:]
+						if gdata.spin(s):
+							sp = gdata.getsp(s)
+						else:
+							sp = seph(s)
+							gs = gdata.getgs('汉语数')
+							sp._addgs(gs)
+							gs._addsp(sp)
+						self.d.append(sp)
 
 	def _addgs(self, gs):
 		assert not gs in self.gs
@@ -120,8 +128,9 @@ class seph:
 
 def main():
 	print('element')
+	db.gsinit()
 	db.spinit()
-	sp = seph('1234+2*x+2341我的时间苏格拉底再见=2')
+	sp = seph('12三心二意34+2*x+23>=41我<= 一切的!=时间一百五十苏一book adfd 格拉底再见=2')
 	sp._fenci(False)
 	for sp in sp.d:
 		print(sp.s)
