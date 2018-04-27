@@ -9,7 +9,7 @@ class seph:
 		self.s = s				#sting
 		self.d = []
 		self.gs = set()
-		self.fn = set()
+		self.fn = {}
 		gdata.addsp(self)
 	
 	def _fenci(self, point):
@@ -87,7 +87,14 @@ class seph:
 						self.d.append(sp)
 		if len(self.d) == 1:
 			self.d = []
-
+	
+	def addfn(self, fn):
+		fn = fn.split('~')
+		for f in fn:
+			name,value=f.split(':')
+			self.fn[name]=value
+		print(self.fn)
+	
 	def _addgs(self, gs):
 		assert not gs in self.gs
 		self.gs.add(gs)
@@ -124,7 +131,7 @@ class seph:
 			return [2]
 		elif gdata.fnin(gram):
 			fn = gdata.getfn(gram)							#1234是偶数吗？
-			if fn.ds(self) == True and fn.vs(self) == '(True False)':
+			if fn.ds(self) == True and fn.vs(self) == 'bool':
 				if fn.value_a(self):
 					return (0,fn)
 				else:
@@ -140,8 +147,8 @@ class seph:
 			for gs in self.gs:
 				for name in gs.fn:
 					print('fn.name',gs.fn[name])
-					if gs.fn[name].judge_a(self, gram)[0] == 0:
-						return (0,[],gs.fn[name])
+					res = gs.fn[name].judge_a(self, gram)
+					return res
 			return [2]
 
 def main():

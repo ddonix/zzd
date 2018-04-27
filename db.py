@@ -242,6 +242,8 @@ def spinit():
 		for g in v[1].split('~') if v[1] else []:
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
+		if v[2]:
+			sp.addfn(v[2])
 	try:
 		cursor = conn.execute("select * from table_phrase")
 	except:
@@ -255,6 +257,8 @@ def spinit():
 		for g in v[1].split('~') if v[1] else []:
 			if not (g == '' or g == None):
 				add_information_1(v[0], g)
+		if v[2]:
+			sp.addfn(v[2])
 	conn.close()
 	
 	#补充所有集合类元素集,例如：集合语句是集合
