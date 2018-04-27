@@ -266,18 +266,6 @@ def spinit():
 def coreinit():
 	try:
 		conn = sqlite3.connect('./data/grammar.db')
-		cursor = conn.execute("select * from define")
-	except:
-		raise NameError
-	
-	for define in cursor:
-		if not gdata.legal(define[0]):
-			raise TypeError
-		if not gdata.legal(define[1]):
-			raise TypeError
-		gdata._defineDict[define[0]] = define[1]
-	
-	try:
 		cursor = conn.execute("select * from zzd_keyword")
 	except:
 		raise NameError

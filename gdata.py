@@ -9,7 +9,6 @@ _table_vocable = {' '}		#所有字符
 _spbase_all = {}			#所有语句
 	
 _identifyDict = {}			#身份认证
-_defineDict = {}			#定义
 _gset_key = {}				#关键集合
 _keyword_zzd = {}			#关键语句
 _mend_add = {}				#增加修复集合

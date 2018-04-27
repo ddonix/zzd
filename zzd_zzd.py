@@ -54,9 +54,10 @@ class zzd():
 		
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
 		cls.inWaaClass['command'] = zzd._solve_command					#command
+		cls.inWaaClass['query'] = zzd._solve_query						#query
 		cls.inWaaClass['judge'] = zzd._solve_judge						#judge
 		cls.inWaaClass['affirm'] = zzd._solve_affirm					#affirm
-		cls.inWaaClass['define'] = zzd._solve_define					#define
+		cls.inWaaClass['query'] = zzd._solve_query						#query
 		
 	#运行在root进程
 	def input(self, sour, waa):
@@ -113,7 +114,7 @@ class zzd():
 		keyword = [x for x in sep.d if x.s in gdata._keyword_zzd]
 		if sep.s in gdata._keyword_zzd:
 			keyword.append(sep)
-		bit = {'math':0,'define':0,'judge':0, 'command':0, 'affirm':0}
+		bit = {'math':0, 'query':0, 'judge':0, 'command':0, 'affirm':0}
 		for k in keyword:
 			assert k.s in gdata._keyword_zzd
 			weight = gdata._keyword_zzd[k.s][0].split(' ')
@@ -133,33 +134,13 @@ class zzd():
 		else:
 			adapter = res[1][2]
 			if '数学判断' in adapter or '数学方程' in adapter:
-				self.add_desire('math',sp[0])
+				self.add_desire('math',res[1][0])
 			else:
 				sen = zmath.c2math(sep.d)
 				if sen:
 					self.add_desire('math',sen)
 				else:
 					self.say('数学语法错误')
-	
-	def _solve_define(self, sep):
-		res = sep.be('定义语句')
-		if res[0] != 0:
-			self.say('定义语法错误')
-		else:
-			adapter = res[1][2]
-			assert '定义词' in adapter
-			sen = adapter['定义词']
-			if sen in gdata._defineDict:
-				explain = gdata._defineDict[sen]
-				self.say('%s是%s'%(sen,explain))
-			else:
-				self.say('对不起，我不知道什么是%s。请进入调教模式。'%sen)
-				ok = self.ask(['选择回答语句'])
-				if ok and '肯定回答语句' in ok[2]:
-					self._command_save(None)
-				else:
-					self.say('请进入调教模式。'%sen)
-					
 	
 	def _solve_command(self, sep):
 		res = sep.be('命令语句')
@@ -293,6 +274,16 @@ class zzd():
 		else:
 			self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]))
 	
+	def _solve_query(self, sep):
+		res = sep.be('询问语句')
+		if res[0] != 0:
+			self.say('断言语法不对')
+		else:
+			adapter = res[1][2]
+			for a in adapter:
+				print(a,adapter[a])
+
+
 	def _solve_judge(self, sep):
 		res = sep.be('判断语句')
 		if res[0] != 0:
@@ -488,6 +479,7 @@ class zzd():
 		if not desire[2]:
 			desire[1] = False
 		
+		print(eq)
 		if eq.find('x') != -1:
 			eq1 = eq.replace("=","-(")+")"
 			try:
