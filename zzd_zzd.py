@@ -308,7 +308,7 @@ class zzd():
 			if not gdata.spin(x1):
 				self.say('%s是未知的词.您可以在学习模式进行学习'%x)
 			if not (gdata.gsin(x2) or gdata.fnin(x2)):
-				self.say('%s是未知的集合或者函数.您可以在学习模式进行学习'%x)
+				self.say('%s是未知的集合或者函数.您可以在学习模式进行学习'%x2)
 			if not gdata.spin(x1) or (not (gdata.gsin(x2) or gdata.fnin(x2))):
 				return
 			res = gdata.getsp_ok(x1).be(x2)
