@@ -7,7 +7,6 @@ _func_all = {}				#所有函数
 _gset_all = {}				#所有集合
 _table_vocable = {' '}		#所有字符
 _spbase_all = {}			#所有语句
-	
 _identifyDict = {}			#身份认证
 _gset_key = {}				#关键集合
 _keyword_zzd = {}			#关键语句
