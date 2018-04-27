@@ -101,7 +101,7 @@ class seph:
 	def be(self, gram):
 		if gdata.getgs('集合').contain(self):
 			if gram == '集合':
-				return [0]
+				return (0,(self.s, [],{'集合':self.s}))
 			else:
 				res = sets.gset.involved_in(self.s, gram)
 				return res
@@ -126,9 +126,9 @@ class seph:
 			fn = gdata.getfn(gram)
 			if fn.ds(self) == True and fn.vs() == '(True False)':
 				if fn.value(self):
-					return [0,fn]
+					return (0,fn)
 				else:
-					return [1,fn]
+					return (1,fn)
 			return [2]
 		else:
 			return [2]

@@ -34,7 +34,7 @@ class player:
 		if self.FSM['music'] == True:
 			self.stop(True)
 		if arg == '':
-			self.zhd.say('播放什么歌曲','')
+			self.zhd.say('播放什么歌曲')
 			arg = self.zhd.ask(['命令参数'])
 			if not arg:
 				return
@@ -44,30 +44,30 @@ class player:
 		else:
 			self.list = ['%s.mp3'%arg[1:-1]]
 		self.playflag = True
-		self.zhd.say('好的','')
+		self.zhd.say('好的')
 		self.event.wait()
 		t = threading.Thread(target=mplayer_thread, args=(self,))
 		t.start()
 	
 	def con(self):
 		if self.FSM['music'] == False:
-			return self.zhd.say('没有歌曲在播放','')
+			return self.zhd.say('没有歌曲在播放')
 		if self.FSM['pause'] == False:
-			return self.zhd.say('正在播放','')
+			return self.zhd.say('正在播放')
 		assert os.path.exists('/tmp/mfifo')
 		os.system('echo pause >> /tmp/mfifo')
 		self.FSM['pause'] = False
-		self.zhd.say('好的','')
+		self.zhd.say('好的')
 	
 	def pause(self):
 		if self.FSM['music'] == False:
-			return self.zhd.say('没有歌曲在播放', '')
+			return self.zhd.say('没有歌曲在播放')
 		if self.FSM['pause'] == True:
-			return self.zhd.say('播放已经暂停', '')
+			return self.zhd.say('播放已经暂停')
 		assert os.path.exists('/tmp/mfifo')
 		os.system('echo pause >> /tmp/mfifo')
 		self.FSM['pause'] = True
-		self.zhd.say('好的','')
+		self.zhd.say('好的')
 	
 	def next(self):
 		pass
@@ -75,14 +75,14 @@ class player:
 	def stop(self, echo):
 		if self.FSM['music'] == False:
 			if echo:
-				self.zhd.say('没有歌曲在播放', '')
+				self.zhd.say('没有歌曲在播放')
 			return
 		self.playflag = False
 		os.system('echo quit >> /tmp/mfifo')
 		self.FSM['musci'] = False
 		self.FSM['pause'] = False
 		if echo:
-			self.zhd.say('好的','')
+			self.zhd.say('好的')
 
 def main():
 	print('play')
