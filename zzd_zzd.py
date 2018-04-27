@@ -131,8 +131,8 @@ class zzd():
 		if res[0] != 0:
 			self.say('数学语法不对')
 		else:
-			sp = res[1]
-			if '数学判断' in sp[2] or '数学方程' in sp[2]:
+			adapter = res[1][2]
+			if '数学判断' in adapter or '数学方程' in adapter:
 				self.add_desire('math',sp[0])
 			else:
 				sen = zmath.c2math(sep.d)
@@ -141,23 +141,14 @@ class zzd():
 				else:
 					self.say('数学语法错误')
 	
-	def _solve_judge(self, sep):
-		res = sep.be('判断语句')
-		if res[0] != 0:
-			self.say('判断语法错误')
-		else:
-			sp = res[1]
-			for k in sp[2]:
-				print(k,sp[2][k])
-	
 	def _solve_define(self, sep):
 		res = sep.be('定义语句')
 		if res[0] != 0:
 			self.say('定义语法错误')
 		else:
-			sp = res[1]
-			assert '定义词' in sp[2]
-			sen = sp[2]['定义词']
+			adapter = res[1][2]
+			assert '定义词' in adapter
+			sen = adapter['定义词']
 			if sen in gdata._defineDict:
 				explain = gdata._defineDict[sen]
 				self.say('%s是%s'%(sen,explain))
@@ -182,48 +173,48 @@ class zzd():
 			else:
 				self.say('语法错误。')
 			return
-		sp = res[1]
-		assert 'zzd命令' in sp[2]
-		if '命令参数' in sp[2]:
-			arg = sp[2]['命令参数']
+		adapter = res[1][2]
+		assert 'zzd命令' in adapter
+		if '命令参数' in adapter:
+			arg = adapter['命令参数']
 		else:
 			arg = ''
-		exe = gdata._keyword_zzd[sp[2]['zzd命令']][1]
+		exe = gdata._keyword_zzd[adapter['zzd命令']][1]
 		if exe:
 			self.say('还在开发中')
 			return
 		if self.FSM['verify'] == False:
-			if 'zzd认证命令' in sp[2]:
+			if 'zzd认证命令' in adapter:
 				self.desire['verify'][1] = True
 				self.desire['verify'][2][1] = arg
 			else:
 				self.say('请先认证身份')
 			return
-		if 'zzd认证命令' in sp[2]:
+		if 'zzd认证命令' in adapter:
 			self.say('请已经认证过身份了.同时服务多人功能正在开发中')
-		elif 'zzd播放命令' in sp[2]:
+		elif 'zzd播放命令' in adapter:
 			out = self.player.play(arg)
-		elif 'zzd暂停命令' in sp[2]:
+		elif 'zzd暂停命令' in adapter:
 			out = self.player.pause()
-		elif 'zzd继续命令' in  sp[2]:
+		elif 'zzd继续命令' in  adapter:
 			out = self.player.con()
-		elif 'zzd停止命令' in sp[2]:
+		elif 'zzd停止命令' in adapter:
 			out = self.player.stop(True)
-		elif 'zzd再见命令' in sp[2]:
-			self.add_desire('goodbye', '%s！'%sp[2]['zzd再见命令'])
-		elif 'zzd问候命令' in sp[2]:
-			self.say(sp[2]['zzd问候命令'])
-		elif 'zzd保存命令' in sp[2]:
+		elif 'zzd再见命令' in adapter:
+			self.add_desire('goodbye', '%s！'%adapter['zzd再见命令'])
+		elif 'zzd问候命令' in adapter:
+			self.say(adapter['zzd问候命令'])
+		elif 'zzd保存命令' in adapter:
 			self._command_save(sp)
-		elif 'zzd学习命令' in sp[2] or 'zzd进入命令' in sp[2]:
-			mode = sp[2]['zzd学习命令'] if 'zzd学习命令' in sp[2] else sp[2]['zzd模式定语_学习']
+		elif 'zzd学习命令' in adapter or 'zzd进入命令' in adapter:
+			mode = adapter['zzd学习命令'] if 'zzd学习命令' in adapter else adapter['zzd模式定语_学习']
 			if self.FSM['train'] == False:
 				self.say('好的，已进入%s模式！每次最多包含一条信息。'%mode)
 				self.FSM['train'] = True
 			else:
 				self.say('您已经是已%s模式了'%mode)
-		elif 'zzd退出命令' in sp[2]:
-			mode = sp[2]['zzd学习命令'] if 'zzd学习命令' in sp[2] else sp[2]['zzd模式定语_学习']
+		elif 'zzd退出命令' in adapter:
+			mode = adapter['zzd学习命令'] if 'zzd学习命令' in adapter else adapter['zzd模式定语_学习']
 			if self.FSM['train'] == True:
 				self.say('好的，已退出%s模式'%mode)
 				self.FSM['train'] = False
@@ -238,8 +229,8 @@ class zzd():
 			print(self.infomation_A)
 			self.say('没有信息需要写入数据库')
 			return
-		if sp and '认证参数' in sp[2]:
-			password = sp[2]['认证参数']
+		if sp and '认证参数' in adapter:
+			password = adapter['认证参数']
 		else:
 			self.say('请输入管理员口令')
 			password = self.ask(['认证参数句','认证参数'])
@@ -307,31 +298,30 @@ class zzd():
 		if res[0] != 0:
 			self.say('判断语法不对')
 		else:
-			sp = res[1]
-			assert '集合判断语句' in sp[2]
-			assert '集合' in sp[2]
-			if '|' not in sp[2]['集合']:
-				assert '...' in sp[2]
-				x = sp[2]['...']
-				gs = sp[2]['集合']
+			adapter = res[1][2]
+			if '集合' not in adapter:
+				assert '...' in adapter
+				assert '|' in adapter['...']
+				x1,x2 = adapter['...'].split('|')
 			else:
-				if '(包含)' in sp[2]:
-					gs,x = sp[2]['集合'].split('|')
+				assert '集合判断语句' in adapter
+				assert '集合' in adapter
+				if '|' not in adapter['集合']:
+					assert '...' in adapter
+					x1 = adapter['...']
+					x2 = adapter['集合']
 				else:
-					x,gs = sp[2]['集合'].split('|')
-			assert gdata.gsin(gs)
-			if not gdata.spin(x):
+					if '(包含)' in adapter:
+						x2,x1 = adapter['集合'].split('|')
+					else:
+						x1,x2 = adapter['集合'].split('|')
+			if not gdata.spin(x1):
 				self.say('%s是未知的词.您可以在学习模式进行学习'%x)
+			if not (gdata.gsin(x2) or gdata.fnin(x2)):
+				self.say('%s是未知的集合或者函数.您可以在学习模式进行学习'%x)
+			if not gdata.spin(x1) or (not (gdata.gsin(x2) or gdata.fnin(x2))):
 				return
-			if '属于判断语句' in sp[2]:
-				res = gdata.getsp(x).be(gs)
-			elif '包含判断语句' in sp[2]:
-				res = sets.gset.involved_in(x, gs)
-			else:
-				if gdata.getsp(x).be('集合')[0] == 0:
-					res = sets.gset.involved_in(x, gs)
-				else:
-					res = gdata.getsp(x).be(gs)
+			res = gdata.getsp_ok(x1).be(x2)
 			if res[0] == 0:
 				self.say('是的')
 			elif res[0] == 1:
@@ -349,25 +339,25 @@ class zzd():
 		if res[0] != 0:
 			self.say('断言语法不对')
 		else:
-			sp = res[1]
-			assert '集合断言语句' in sp[2]
-			assert '集合' in sp[2]
-			if '|' not in sp[2]['集合']:
-				assert '...' in sp[2]
-				x = sp[2]['...']
-				gs = sp[2]['集合']
+			adapter = res[1][2]
+			assert '集合断言语句' in adapter
+			assert '集合' in adapter
+			if '|' not in adapter['集合']:
+				assert '...' in adapter
+				x = adapter['...']
+				gs = adapter['集合']
 			else:
-				if '(包含)' in sp[2]:
-					gs,x = sp[2]['集合'].split('|')
+				if '(包含)' in adapter:
+					gs,x = adapter['集合'].split('|')
 				else:
-					x,gs = sp[2]['集合'].split('|')
+					x,gs = adapter['集合'].split('|')
 			assert gdata.gsin(gs)
 			if self.FSM['train'] == False:
 				self.say('对不起，您需进入学习模式才可以增加信息')
 				return
-			if '属于断言语句' in sp[2]:
+			if '属于断言语句' in adapter:
 				self._solve_set_a(x, gs)
-			elif '包含断言语句' in sp[2]:
+			elif '包含断言语句' in adapter:
 				self._solve_set_A(x, gs)
 			else:
 				if gdata.spin(x):
@@ -566,7 +556,7 @@ if __name__ == '__main__':
 	sp = g.fensp(phs,True)
 	print('sp[0]:',sp[0])
 	print('sp[1]:',sp[1])
-	print('sp[2]:',sp[2])
-	for s in sp[2]:
-		print(s,sp[2][s])
+	print('adapter:',adapter)
+	for s in adapter:
+		print(s,adapter[s])
 '''	
