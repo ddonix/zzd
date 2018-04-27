@@ -306,7 +306,7 @@ class zzd():
 					else:
 						x1,x2 = adapter['集合'].split('|')
 			if not gdata.spin(x1):
-				self.say('%s是未知的词.您可以在学习模式进行学习'%x)
+				self.say('%s是未知的词.您可以在学习模式进行学习'%x1)
 				return
 			res = gdata.getsp(x1).be(x2)
 			if res[0] == 0:
