@@ -53,6 +53,7 @@ class zzd():
 		db.coreinit()
 		
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
+		cls.inWaaClass['judge'] = zzd._solve_judge						#judge
 		cls.inWaaClass['define'] = zzd._solve_define					#define
 		cls.inWaaClass['command'] = zzd._solve_command					#command
 		cls.inWaaClass['set'] = zzd._solve_set							#set
@@ -112,7 +113,7 @@ class zzd():
 		keyword = [x for x in sep.d if x.s in gdata._keyword_zzd]
 		if sep.s in gdata._keyword_zzd:
 			keyword.append(sep)
-		bit = {'math':0,'define':0,'command':0, 'set':0}
+		bit = {'math':0,'define':0,'judge':0, 'command':0, 'set':0}
 		for k in keyword:
 			assert k.s in gdata._keyword_zzd
 			weight = gdata._keyword_zzd[k.s][0].split(' ')
@@ -144,6 +145,15 @@ class zzd():
 					self.add_desire('math',sen)
 				else:
 					self.say('数学语法错误')
+	
+	def _solve_judge(self, sep):
+		res = sep.be('判断语句')
+		if res[0] != 0:
+			self.say('判断语法错误')
+		else:
+			sp = res[1]
+			for k in sp[2]:
+				print(k,sp[2][k])
 	
 	def _solve_define(self, sep):
 		res = sep.be('定义语句')
