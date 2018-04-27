@@ -136,7 +136,7 @@ class seph:
 					return (0,fn)
 				else:
 					return (1,fn)
-			return [2]
+			return [2,'完全无知阿']
 		#苏格拉底是男人吗？
 		#苏格拉底是男的吗?
 		#苏格拉底是男的人吗？
@@ -147,9 +147,8 @@ class seph:
 			for gs in self.gs:
 				for name in gs.fn:
 					print('fn.name',gs.fn[name])
-					res = gs.fn[name].judge_a(self, gram)
-					return res
-			return [2]
+					return gs.fn[name].judge_a(self, gram)
+			return [2,'我完全不知道']
 
 def main():
 	print('element')

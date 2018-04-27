@@ -307,17 +307,14 @@ class zzd():
 						x1,x2 = adapter['集合'].split('|')
 			if not gdata.spin(x1):
 				self.say('%s是未知的词.您可以在学习模式进行学习'%x)
-			if not (gdata.gsin(x2) or gdata.fnin(x2)):
-				self.say('%s是未知的集合或者函数.您可以在学习模式进行学习'%x2)
-			if not gdata.spin(x1) or (not (gdata.gsin(x2) or gdata.fnin(x2))):
 				return
-			res = gdata.getsp_ok(x1).be(x2)
+			res = gdata.getsp(x1).be(x2)
 			if res[0] == 0:
 				self.say('是的')
 			elif res[0] == 1:
 				self.say('错误')
 			else:
-				self.say('对不起，我不知道.需要我上网问问吗？')
+				self.say('%s.需要我上网问问吗？'%res[1])
 				ok = self.ask(['选择回答语句'])
 				if ok and '肯定回答语句' in ok[2]:
 					self.say('我还不会上网，逗你玩呢.哈哈哈')
