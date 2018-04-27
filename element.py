@@ -16,7 +16,7 @@ class seph:
 		znumber =  '0123456789'
 		cnumber =  '零一二三四五六七八九十百千万亿'
 		zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
-		zpoint = '，。,.！!？?的地得'
+		zpoint = '，。,.！!？?'
 		if self.gs:
 			return
 		ss = self.s
@@ -103,8 +103,18 @@ class seph:
 		assert gs in self.gs
 		self.gs.remove(gs)
 	
-	#True:是
-	#False:不是或者不确定
+	#0:是
+	#1:不是
+	#2:不确定
+	def affirm(self, gram):
+		if self.be('集合')[0] == 0:
+			return (False,'我不知道%s'%gram)
+		return (False,'我不知道%s'%gram)
+	
+	
+	#0:是
+	#1:不是
+	#2:不确定
 	def be(self, gram):
 		if gdata.getgs('集合').contain(self):
 			if gram == '集合':								#人是集合吗？
@@ -149,6 +159,7 @@ class seph:
 					print('fn.name',gs.fn[name])
 					return gs.fn[name].judge_a(self, gram)
 			return [2,'我完全不知道']
+
 
 def main():
 	print('element')

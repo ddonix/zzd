@@ -13,6 +13,7 @@ class zzd():
 	inWaaClass = {}		#输入语句类型
 	infomation_a = {} # 'a':'A' a属于A
 	infomation_A = {} # 'A':'B' A包含B
+	infomation_a_fn = {} # 'a':a有fn信息
 	def __init__(self, show, friend):
 		assert show and friend
 		self.show = show
@@ -240,9 +241,6 @@ class zzd():
 		else:	
 			self.say('集合信息写入成功')
 	
-	def _solve_affirm_fn(self, x, fn):
-		self.say('增加函数信息. %s是%s'%(x,fn))
-	
 	def _solve_set_a(self, x, gs):
 		res = db.add_information_1(x, gs)
 		if res[0] == 0:
@@ -332,9 +330,17 @@ class zzd():
 				assert '...' in adapter
 				assert '|' in adapter['...']
 				x,fn=adapter['...'].split('|')
-				self._solve_affirm_fn(x,fn)
+				if not gdata.spin(x):
+					self.say('%s是未知词。请先定义.')
+				else:
+					sp = gdata.getsp(x)
+					res = sp.affirm(fn)
+					if res[0] == True:
+						self.say('好的，我记住了')
+						self.infomation_a_fn.append(res[1])
+					else:
+						self.say(res[1])
 				return
-			
 			assert '集合断言语句' in adapter
 			assert '集合' in adapter
 			if '|' not in adapter['集合']:
