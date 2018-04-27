@@ -53,10 +53,10 @@ class zzd():
 		db.coreinit()
 		
 		cls.inWaaClass['math'] =  zzd._solve_math						#math
-		cls.inWaaClass['judge'] = zzd._solve_judge						#judge
-		cls.inWaaClass['define'] = zzd._solve_define					#define
 		cls.inWaaClass['command'] = zzd._solve_command					#command
-		cls.inWaaClass['set'] = zzd._solve_set							#set
+		cls.inWaaClass['judge'] = zzd._solve_judge						#judge
+		cls.inWaaClass['affirm'] = zzd._solve_affirm					#affirm
+		cls.inWaaClass['define'] = zzd._solve_define					#define
 		
 	#运行在root进程
 	def input(self, sour, waa):
@@ -113,7 +113,7 @@ class zzd():
 		keyword = [x for x in sep.d if x.s in gdata._keyword_zzd]
 		if sep.s in gdata._keyword_zzd:
 			keyword.append(sep)
-		bit = {'math':0,'define':0,'judge':0, 'command':0, 'set':0}
+		bit = {'math':0,'define':0,'judge':0, 'command':0, 'affirm':0}
 		for k in keyword:
 			assert k.s in gdata._keyword_zzd
 			weight = gdata._keyword_zzd[k.s][0].split(' ')
@@ -122,12 +122,7 @@ class zzd():
 					bit[weight[i]] += int(weight[i+1])
 		bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
 		if bit[0][1] == 0:
-			for ph in sep.d:
-				if ph.be('集合')[0] == 0:
-					self._solve_set(sep)
-					break
-			else:
-				self._solve_other(sep)
+			self._solve_other(sep)
 		else:
 			zzd.inWaaClass[bit[0][0]](self, sep)
 		
@@ -306,14 +301,14 @@ class zzd():
 				self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x, res[1], res[1], gs))
 		else:
 			self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]))
-
-	def _solve_set(self, sep):
-		res = sep.be('集合语句')
+	
+	def _solve_judge(self, sep):
+		res = sep.be('判断语句')
 		if res[0] != 0:
-			self.say('集合语法不对')
+			self.say('判断语法不对')
 		else:
 			sp = res[1]
-			ipdb.set_trace()
+			assert '集合判断语句' in sp[2]
 			assert '集合' in sp[2]
 			if '|' not in sp[2]['集合']:
 				assert '...' in sp[2]
@@ -325,51 +320,68 @@ class zzd():
 				else:
 					x,gs = sp[2]['集合'].split('|')
 			assert gdata.gsin(gs)
-			if not gdata.spin(x) and '集合判断语句' in sp[2]:
+			if not gdata.spin(x):
 				self.say('%s是未知的词.您可以在学习模式进行学习'%x)
 				return
-			if '集合判断语句' in sp[2]:
-				if '属于判断语句' in sp[2]:
-					res = gdata.getsp(x).be(gs)
-				elif '包含判断语句' in sp[2]:
+			if '属于判断语句' in sp[2]:
+				res = gdata.getsp(x).be(gs)
+			elif '包含判断语句' in sp[2]:
+				res = sets.gset.involved_in(x, gs)
+			else:
+				if gdata.getsp(x).be('集合')[0] == 0:
 					res = sets.gset.involved_in(x, gs)
 				else:
-					if gdata.getsp(x).be('集合')[0] == 0:
-						res = sets.gset.involved_in(x, gs)
-					else:
-						res = gdata.getsp(x).be(gs)
-				if res[0] == 0:
-					self.say('是的')
-				elif res[0] == 1:
-					self.say('错误')
+					res = gdata.getsp(x).be(gs)
+			if res[0] == 0:
+				self.say('是的')
+			elif res[0] == 1:
+				self.say('错误')
+			else:
+				self.say('对不起，我不知道.需要我上网问问吗？')
+				ok = self.ask(['选择回答语句'])
+				if ok and '肯定回答语句' in ok[2]:
+					self.say('我还不会上网，逗你玩呢.哈哈哈')
+				elif ok and '否定回答语句' in ok[2]:
+					self.say('好的')
+
+	def _solve_affirm(self, sep):
+		res = sep.be('断言语句')
+		if res[0] != 0:
+			self.say('断言语法不对')
+		else:
+			sp = res[1]
+			assert '集合断言语句' in sp[2]
+			assert '集合' in sp[2]
+			if '|' not in sp[2]['集合']:
+				assert '...' in sp[2]
+				x = sp[2]['...']
+				gs = sp[2]['集合']
+			else:
+				if '(包含)' in sp[2]:
+					gs,x = sp[2]['集合'].split('|')
 				else:
-					self.say('对不起，我不知道.需要我上网问问吗？')
+					x,gs = sp[2]['集合'].split('|')
+			assert gdata.gsin(gs)
+			if self.FSM['train'] == False:
+				self.say('对不起，您需进入学习模式才可以增加信息')
+				return
+			if '属于断言语句' in sp[2]:
+				self._solve_set_a(x, gs)
+			elif '包含断言语句' in sp[2]:
+				self._solve_set_A(x, gs)
+			else:
+				if gdata.spin(x):
+					assert not gdata.getsp(x).be('集合')[0] == 0
+					self._solve_set_a(x, gs)
+				else:	
+					self.say('我不知道%s是否是集合。是吗'%x)
 					ok = self.ask(['选择回答语句'])
 					if ok and '肯定回答语句' in ok[2]:
-						self.say('我还不会上网，逗你玩呢.哈哈哈')
+						self._solve_set_A(x, gs)
 					elif ok and '否定回答语句' in ok[2]:
-						self.say('好的')
-			else:
-				if self.FSM['train'] == False:
-					self.say('对不起，您需进入学习模式才可以增加信息')
-					return
-				if '属于断言语句' in sp[2]:
-					self._solve_set_a(x, gs)
-				elif '包含断言语句' in sp[2]:
-					self._solve_set_A(x, gs)
-				else:
-					if gdata.spin(x):
-						assert not gdata.getsp(x).be('集合')[0] == 0
 						self._solve_set_a(x, gs)
-					else:	
-						self.say('我不知道%s是否是集合。是吗'%x)
-						ok = self.ask(['选择回答语句'])
-						if ok and '肯定回答语句' in ok[2]:
-							self._solve_set_A(x, gs)
-						elif ok and '否定回答语句' in ok[2]:
-							self._solve_set_a(x, gs)
-						else:
-							self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
+					else:
+						self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
 
 	def _solve_answer(self, sep):
 		assert 'ask' in self.FSM and not self.FSM['ask'][1]
@@ -386,29 +398,32 @@ class zzd():
 	def _solve_other(self, sep):
 		if sep.be('称呼')[0] == 0:
 			self.say('我在，有什么为你做的吗')
-		else:
-			phrases = sep.d if sep.d else [sep]
-			s = phrases[0].s
-			for ph in phrases[1:]:
-				s += '~%s'%ph.s
-			self.say('对不起，我处理不利.分词结果是:%s'%s)
-			n = ['']
-			while phrases:
-				if len(phrases[0].s) == 1 and len(phrases[0].gs) == 1:
-					n[-1] += phrases[0].s
-				else:
-					n.append('')
-				phrases = phrases[1:]
-			l = 0
-			rr = ''
-			for nc in n:
-				if nc:
-					l += 1
-					rr +='%s '%nc
-			if l:
-				r ='我猜测：%s是新词，您可以进入学习模式进行学习:'%rr
-			self.say(r)
-
+			return
+		for ph in sep.d:
+			if ph.be('集合')[0] == 0:
+				self._solve_affirm(sep)
+				return
+		phrases = sep.d if sep.d else [sep]
+		s = phrases[0].s
+		for ph in phrases[1:]:
+			s += '~%s'%ph.s
+		self.say('对不起，我处理不利.分词结果是:%s'%s)
+		n = ['']
+		while phrases:
+			if len(phrases[0].s) == 1 and len(phrases[0].gs) == 1:
+				n[-1] += phrases[0].s
+			else:
+				n.append('')
+			phrases = phrases[1:]
+		l = 0
+		rr = ''
+		for nc in n:
+			if nc:
+				l += 1
+				rr +='%s '%nc
+		if l:
+			r ='我猜测：%s是新词，您可以进入学习模式进行学习:'%rr
+		self.say(r)
 				
 	def desire_verify(self, desire):
 		if self.FSM['verify'] == True:
