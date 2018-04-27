@@ -17,7 +17,7 @@ class seph:
 		cnumber =  '零一二三四五六七八九十百千万亿'
 		zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
 		zpoint = '，。,.！!？?的地得'
-		if self.gs or self.d:
+		if self.gs:
 			return
 		ss = self.s
 		while ss != '':
@@ -109,7 +109,7 @@ class seph:
 			gs = gdata.getgs(gram)
 			res = gs.contain(self)
 			if res:
-				return (0,res)
+				return (0,(self.s, [], {gram:self.s}))
 			for g in self.gs:
 				res = sets.gset.conflict(g, gs)
 				if res:

@@ -110,8 +110,9 @@ class zzd():
 			self._solve_command(sep)
 			return
 		keyword = [x for x in sep.d if x.s in gdata._keyword_zzd]
+		if sep.s in gdata._keyword_zzd:
+			keyword.append(sep)
 		bit = {'math':0,'define':0,'command':0, 'set':0}
-		ipdb.set_trace()
 		for k in keyword:
 			assert k.s in gdata._keyword_zzd
 			weight = gdata._keyword_zzd[k.s][0].split(' ')
@@ -302,6 +303,7 @@ class zzd():
 			self.say('集合语法不对')
 		else:
 			sp = res[1]
+			ipdb.set_trace()
 			assert '集合' in sp[2]
 			if '|' not in sp[2]['集合']:
 				assert '...' in sp[2]
@@ -375,7 +377,7 @@ class zzd():
 		if sep.be('称呼')[0] == 0:
 			self.say('我在，有什么为你做的吗')
 		else:
-			phrases = sep.d
+			phrases = sep.d if sep.d else [sep]
 			s = phrases[0].s
 			for ph in phrases[1:]:
 				s += '~%s'%ph.s
@@ -499,6 +501,8 @@ class zzd():
 		self.ask_event.clear()
 		self.ask_event.wait()
 		res = self.FSM.pop('ask')[1]
+		print(res)
+		print(res[0])
 		return res
 	
 	def live(self):

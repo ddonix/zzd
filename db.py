@@ -300,7 +300,6 @@ def coreinit():
 			raise NameError
 	for k in gdata._keyword_zzd:
 		print(k)
-
 	try:
 		cursor = conn.execute("select * from verify")
 	except:
