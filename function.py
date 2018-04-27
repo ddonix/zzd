@@ -18,6 +18,7 @@ class func:
 		self.dset = d[d.find(':')+1:d.find('-')]
 		self.vset = d[d.find('>')+1:]
 		self.f = f[5:]
+		print(self.f)
 
 	def ds(self, sp):
 		return sp.be(self.dset)[0] == 0
