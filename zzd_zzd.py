@@ -240,6 +240,9 @@ class zzd():
 		else:	
 			self.say('集合信息写入成功')
 	
+	def _solve_affirm_fn(self, x, fn):
+		self.say('增加函数信息. %s是%s'%(x,fn))
+	
 	def _solve_set_a(self, x, gs):
 		res = db.add_information_1(x, gs)
 		if res[0] == 0:
@@ -252,7 +255,6 @@ class zzd():
 			self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x,res[1],res[1],gs))
 		else:
 			self.say('该信息与知识库冲突。原因：%s是%s, %s与%s不相容'%(x,res[1],res[1],gs))
-					
 					
 	def _solve_set_A(self, x, gs):
 		if not gdata.spin(x):
@@ -276,12 +278,11 @@ class zzd():
 	def _solve_query(self, sep):
 		res = sep.be('询问语句')
 		if res[0] != 0:
-			self.say('断言语法不对')
+			self.say('询问语法不对')
 		else:
 			adapter = res[1][2]
 			for a in adapter:
 				print(a,adapter[a])
-
 
 	def _solve_judge(self, sep):
 		res = sep.be('判断语句')
@@ -327,6 +328,13 @@ class zzd():
 			self.say('断言语法不对')
 		else:
 			adapter = res[1][2]
+			if '待定断言语句' in adapter:
+				assert '...' in adapter
+				assert '|' in adapter['...']
+				x,fn=adapter['...'].split('|')
+				self._solve_affirm_fn(x,fn)
+				return
+			
 			assert '集合断言语句' in adapter
 			assert '集合' in adapter
 			if '|' not in adapter['集合']:
