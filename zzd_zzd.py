@@ -7,7 +7,6 @@ import zmath
 import play
 import sys
 import sets
-import ipdb
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():

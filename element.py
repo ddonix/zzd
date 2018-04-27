@@ -100,37 +100,40 @@ class seph:
 	#False:不是或者不确定
 	def be(self, gram):
 		if gdata.getgs('集合').contain(self):
-			if gram == '集合':
+			if gram == '集合':								#人是集合吗？
 				return (0,(self.s, [],{'集合':self.s}))
 			else:
-				res = sets.gset.involved_in(self.s, gram)
+				res = sets.gset.involved_in(self.s, gram)	#人会死吗？
 				return res
 		if gdata.gsin(gram):
 			gs = gdata.getgs(gram)
 			res = gs.contain(self)
 			if res:
-				return (0,(self.s, [], {gram:self.s}))
+				return (0,(self.s, [], {gram:self.s}))		#苏格拉底是人吗？
 			for g in self.gs:
-				res = sets.gset.conflict(g, gs)
+				res = sets.gset.conflict(g, gs)				#苏格拉底是鸟吗？（苏格拉底是人，人与鸟冲突）
 				if res:
 					return (1, g.name)
 			res = None
 			if self.d:
-				res = gs.fensp(self.d, True)
+				res = gs.fensp(self.d, True)				#播放歌曲是命令语句吗？
 			elif self.gs:
-				res = gs.fensp([self], True)
+				res = gs.fensp([self], True)				#1234是数吗？
 			if res:
 				return (0, res)
 			return [2]
 		elif gdata.fnin(gram):
-			fn = gdata.getfn(gram)
+			fn = gdata.getfn(gram)							#1234是偶数吗？
 			if fn.ds(self) == True and fn.vs() == '(True False)':
 				if fn.value(self):
 					return (0,fn)
 				else:
 					return (1,fn)
 			return [2]
+		#苏格拉底是男人吗？
+		#苏格拉底是人，人有性别，性别分男女，苏格拉底是男人吗等价于苏格拉底的性别是男吗？
 		else:
+			print(self.s,gram)
 			return [2]
 
 def main():
