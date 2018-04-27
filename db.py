@@ -210,6 +210,8 @@ def gsinit():
 		gram = prevgram(v[1])
 		for g in gram:
 			add_information_2(g, v[0])
+		if v[2]:	
+			gs.fn[v[2]] = gdata.getfn(v[2])
 
 def fninit():
 	try:
@@ -224,6 +226,8 @@ def fninit():
 			continue
 		assert not gdata.fnin(f[0])
 		fn = function.func(f[0], f[1])
+	for f in gdata._func_all:
+		print(f,gdata.getfn(f))
 
 def spinit():
 	try:
@@ -286,8 +290,7 @@ def coreinit():
 		else:
 			print(keyword[0])
 			raise NameError
-	for k in gdata._keyword_zzd:
-		print(k)
+	
 	try:
 		cursor = conn.execute("select * from verify")
 	except:
@@ -319,8 +322,8 @@ def coreinit():
 
 def main(a1, a2, a3):
 	print('db')
-	gsinit()
 	fninit()
+	gsinit()
 	spinit()
 	coreinit()
 

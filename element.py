@@ -124,16 +124,24 @@ class seph:
 			return [2]
 		elif gdata.fnin(gram):
 			fn = gdata.getfn(gram)							#1234是偶数吗？
-			if fn.ds(self) == True and fn.vs() == '(True False)':
-				if fn.value(self):
+			if fn.ds(self) == True and fn.vs(self) == '(True False)':
+				if fn.value_a(self):
 					return (0,fn)
 				else:
 					return (1,fn)
 			return [2]
 		#苏格拉底是男人吗？
-		#苏格拉底是人，人有性别，性别分男女，苏格拉底是男人吗等价于苏格拉底的性别是男吗？
+		#苏格拉底是男的吗?
+		#苏格拉底是男的人吗？
+		#苏格拉底的性别是男吗?
+		#苏格拉底是人，人有性别，性别把人分男女，苏格拉底是男人吗等价于苏格拉底的性别是男吗？
 		else:
-			print(self.s,gram)
+			print('else:', self.s,gram)
+			for gs in self.gs:
+				for name in gs.fn:
+					print('fn.name',gs.fn[name])
+					if gs.fn[name].judge_a(self, gram)[0] == 0:
+						return (0,[],gs.fn[name])
 			return [2]
 
 def main():

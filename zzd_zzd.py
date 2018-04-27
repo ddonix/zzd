@@ -46,8 +46,8 @@ class zzd():
 		
 	@classmethod
 	def init(cls):
-		db.gsinit()
 		db.fninit()
+		db.gsinit()
 		db.spinit()
 		db.coreinit()
 		

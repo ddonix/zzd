@@ -14,26 +14,42 @@ class func:
 		
 		self.name = name
 		gdata.addfn(self)
-		d,f=desc.split(',')
-		self.dset = d[d.find(':')+1:d.find('-')]
-		self.vset = d[d.find('>')+1:]
-		self.f = f[5:]
-		print(self.f)
+		
+		self.func = set()
+		desc = desc.split('~')
+		for des in desc:
+			d,f=des.split(',')
+			dset = d[d.find(':')+1:d.find('-')]
+			vset = d[d.find('>')+1:]
+			fn = f[2:]
+			self.func.add((dset,vset,fn))
 
 	def ds(self, sp):
-		return sp.be(self.dset)[0] == 0
+		for f in self.func:
+			if sp.be(f[0])[0] == 0:
+				return True
+		return False
 	
-	def vs(self):
-		return self.vset
+	def vs(self, sp):
+		for f in self.func:
+			if sp.be(f[0])[0] == 0:
+				return f[1]
+		return None
 	
-	def value(self, sp):
-		if self.vset == '数' or self.vset == '(True False)':
-			if self.f.find('eval(x)') != -1:
-				print(self.vset)
-				print(sp.s)
-				e = self.f.replace('eval(x)','(%s)'%sp.s)
+	#取值或者判断真假的函数
+	def value_a(self, sp):
+		for f in self.func:
+			if f[1] == '数' or f[1] == '(True False)':
+				if f[2].find('eval(x)') != -1:
+					e = f[2].replace('eval(x)','(%s)'%sp.s)
+				else:
+					e = f[2]
 				return eval(e)
-			else:
-				return False
-		else:
-			return None
+		return False
+	
+	def judge_a(self, sp, desp):
+		print('sp.s, desp', sp.s, desp)
+		return [2]
+	
+	def value_A(self, gs):
+		return None
