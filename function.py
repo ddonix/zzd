@@ -3,6 +3,7 @@ import sqlite3
 import copy
 import gdata
 
+_fns_all = {}
 class func:
 	def __init__(self, name, desc):
 		assert type(name) == str
@@ -23,20 +24,21 @@ class func:
 			vset = d[d.find('>')+1:]
 			fn = f[2:]
 			self.func.add((dset,vset,fn))
-			print(vset)
 			if vset[0] == '(' and vset[-1] == ')':
-				self.plot = {}
+				if dset not in _fns_all:
+					_fns_all[dset]={}
+				_fns_all[dset][self.name]={}
 				for v in vset[1:-1].split(' '):
-					self.plot[v] = set()
-					self.plot[v].add('%s'%v)
-					self.plot[v].add('%s性'%v)
-					self.plot[v].add('%s类'%v)
-					self.plot[v].add('%s%s'%(v,dset))
-					self.plot[v].add('%s的%s'%(v,dset))
-					self.plot[v].add('%s%s的%s'%(self.name, v,dset))
-					self.plot[v].add('%s是%s的%s'%(self.name, v,dset))
-					self.plot[v].add('%s为%s的%s'%(self.name, v,dset))
-				print(self.plot)
+					_fns_all[dset][self.name][v]=set()
+					_fns_all[dset][self.name][v].add('%s的'%v)
+					_fns_all[dset][self.name][v].add('%s性'%v)
+					_fns_all[dset][self.name][v].add('%s类'%v)
+					_fns_all[dset][self.name][v].add('%s%s'%(v,dset))
+					_fns_all[dset][self.name][v].add('%s的%s'%(v,dset))
+					_fns_all[dset][self.name][v].add('%s%s的%s'%(self.name, v,dset))
+					_fns_all[dset][self.name][v].add('%s是%s的%s'%(self.name, v,dset))
+					_fns_all[dset][self.name][v].add('%s为%s的%s'%(self.name, v,dset))
+				print(_fns_all)
 				
 	def ds(self, sp):
 		for f in self.func:
@@ -70,18 +72,8 @@ class func:
 				continue
 			if f[1][0] != '(' or f[1][-1] != ')':
 				continue
-			print('f:',f[0],f[1],f[2])
 			if not f[2]:	#没有推理
-				for p in self.plot:
-					if desp in self.plot[p]:
-						if self.name in sp.fn:
-							if sp.fn[self.name] == p:
-								return (0,[],{self.name:p})
-							else:
-								return (1,[],{self.name:sp.fn[self.name]})
-						else:
-							return [2,'%s的%s未知'%(sp.s,self.name)]
-				return [2,'%s是未知的词'%desp]
+				return [2,'现在还不会推理']
 			else:			#有推理
 				return [2,'现在还不会推理']
 		return [2,'%s是未知的词'%desp]
