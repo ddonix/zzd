@@ -18,7 +18,7 @@ class gset:
 		self.sp = set()		#元素集合，这个集合里的元素不属于任何子集.
 							
 		self.fn = {}		#集合的函数集合
-		self.plot = {}		#匿名划分:自然数划分为[奇数|偶数],子集为奇数，偶数.
+		self.plot = []		#匿名划分:自然数划分为[奇数|偶数],子集为奇数，偶数.
 		
 		#形如[A B]的集合,[]不允许递归.
 		if name[0] == '[' and name[-1] == ']':
@@ -54,19 +54,15 @@ class gset:
 	def add_plot(self, plot):
 		assert plot
 		assert '|' in plot
-		if ':' in plot:						#[性别:男人|女人]
-			name = plot[1:-1].split(':')[0]
-			plots = plot[1:-1].split(':')[1].split('|')
-		else:								#[奇数|偶数]
-			name = plot
-			plots = plot[1:-1].split('|')
+		name = plot
+		plots = plot[1:-1].split('|')
 		p = set()
 		for gs in plots:
 			assert gdata.gsin(gs)			#必须先创建集合，并让集合成为子集，再进行划分
 			ch = gdata.getgs(gs)
 			assert ch in self.child
 			p.add(ch)
-		self.plot[name] = p
+		self.plot.append(p)
 		return p
 	
 	#集合A的父集, 包括自己
@@ -101,7 +97,7 @@ class gset:
 			for B_fa in gs_B.father:
 				if A_fa == B_fa:
 					for plot in A_fa.plot:
-						if gs_A in A_fa.plot[plot] and gs_B in A_fa.plot[plot]:
+						if gs_A in plot and gs_B in plot:
 							return (gs_A.name, gs_B.name)
 		for fa in gs_A.father:
 			res = cls.conflict(fa, gs_B)
@@ -112,7 +108,6 @@ class gset:
 			if res:
 				return res
 		return None
-
 
 	#集合A包含于集合B 	A<=B
 	@classmethod

@@ -120,8 +120,7 @@ class seph:
 			if gram == '集合':								#人是集合吗？
 				return (0,(self.s, [],{'集合':self.s}))
 			else:
-				res = sets.gset.involved_in(self.s, gram)	#人会死吗？
-				return res
+				return sets.gset.involved_in(self.s, gram)	#人会死吗？
 		if gdata.gsin(gram):
 			gs = gdata.getgs(gram)
 			res = gs.contain(self)
@@ -146,7 +145,7 @@ class seph:
 					return (0,fn)
 				else:
 					return (1,fn)
-			return [2,'完全无知阿']
+			return (2,'完全无知阿')
 		#苏格拉底是男人吗？
 		#苏格拉底是男的吗?
 		#苏格拉底是男的人吗？
@@ -158,7 +157,7 @@ class seph:
 				for name in gs.fn:
 					print('fn.name',gs.fn[name])
 					return gs.fn[name].judge_a(self, gram)
-			return [2,'我完全不知道']
+			return (2,'我完全不知道')
 
 
 def main():

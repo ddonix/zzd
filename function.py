@@ -29,16 +29,16 @@ class func:
 					_fns_all[dset]={}
 				_fns_all[dset][self.name]={}
 				for v in vset[1:-1].split(' '):
-					_fns_all[dset][self.name][v]=set()
-					_fns_all[dset][self.name][v].add('%s的'%v)
-					_fns_all[dset][self.name][v].add('%s性'%v)
-					_fns_all[dset][self.name][v].add('%s类'%v)
-					_fns_all[dset][self.name][v].add('%s%s'%(v,dset))
-					_fns_all[dset][self.name][v].add('%s的%s'%(v,dset))
-					_fns_all[dset][self.name][v].add('%s%s的%s'%(self.name, v,dset))
-					_fns_all[dset][self.name][v].add('%s是%s的%s'%(self.name, v,dset))
-					_fns_all[dset][self.name][v].add('%s为%s的%s'%(self.name, v,dset))
-				print(_fns_all)
+					_fns_all[dset][self.name][v]=v
+					_fns_all[dset][self.name]['%s的'%v]=v
+					_fns_all[dset][self.name]['%s性'%v]=v
+					_fns_all[dset][self.name]['%s类'%v]=v
+					_fns_all[dset][self.name]['%s%s'%(v,dset)]=v
+					_fns_all[dset][self.name]['%s的%s'%(v,dset)]=v
+					_fns_all[dset][self.name]['%s%s的%s'%(self.name, v,dset)]=v
+					_fns_all[dset][self.name]['%s是%s的%s'%(self.name, v,dset)]=v
+					_fns_all[dset][self.name]['%s为%s的%s'%(self.name, v,dset)]=v
+					print(_fns_all)
 				
 	def ds(self, sp):
 		for f in self.func:
@@ -86,21 +86,24 @@ class func:
 				continue
 			if f[1][0] != '(' or f[1][-1] != ')':
 				continue
-			print('f:',f[0],f[1],f[2])
 			if not f[2]:	#没有推理
-				for p in self.plot:
-					if desp in self.plot[p]:
-						if self.name in sp.fn:
-							if sp.fn[self.name] == p:
-								return (0,[],{self.name:p})
-							else:
-								return (1,[],{self.name:sp.fn[self.name]})
+				if desp in _fns_all[f[0]][self.name]:
+					if self.name not in sp.fn:
+						return (2,'%s的%s未知。'%(sp.s,self.name))
+					else:
+						if sp.fn[self.name] == _fns_all[f[0]][self.name][desp]:
+							return (0,[],{self.name:sp.fn[self.name]})
 						else:
-							return [2,'%s的%s未知'%(sp.s,self.name)]
-				return [2,'%s是未知的词'%desp]
+							return (1,'%s的%s是%s'%(sp.s,self.name,sp.fn[self.name]))
+				else:
+					return (2,'%s是未知的词'%desp)
 			else:			#有推理
-				return [2,'现在还不会推理']
-		return [2,'%s是未知的词'%desp]
+				return (2,'现在还不会推理')
+		for fns in _fns_all:
+			for cls in _fns_all[fns]:
+				#print(_fns_all[fns][cls])
+				pass
+		return (2,'%s是fffff未知的词'%desp)
 	
 	def value_A(self, gs):
 		return None
