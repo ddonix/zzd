@@ -311,9 +311,9 @@ class zzd():
 			if res[0] == 0:
 				self.say('是的')
 			elif res[0] == 1:
-				self.say('错误')
+				self.say('错误。%s'%res[1])
 			else:
-				self.say('%s.需要我上网问问吗？'%res[1])
+				self.say('未知。%s。需要我上网问问吗？'%res[1])
 				ok = self.ask(['选择回答语句'])
 				if ok and '肯定回答语句' in ok[2]:
 					self.say('我还不会上网，逗你玩呢.哈哈哈')

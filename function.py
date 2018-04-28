@@ -73,14 +73,21 @@ class func:
 			if f[1][0] != '(' or f[1][-1] != ')':
 				continue
 			if not f[2]:	#没有推理
-				return [2,'现在还不会推理']
+				return (2,'现在还不会推理')
 			else:			#有推理
-				return [2,'现在还不会推理']
-		return [2,'%s是未知的词'%desp]
+				return (2,'现在还不会推理')
+		return (2,'%s是未知的词'%desp)
+	
+	@classmethod
+	def judge_cls(cls, sp, desp):
+		print(sp.s,desp)
+		for c in _fns_all:
+			for v in _fns_all[c]:
+				if desp in _fns_all[c][v]:
+					return (3, '猜测:%s是%s.%s是%s'%(sp.s,c,v,_fns_all[c][v][desp]))
+		return (2, '无法猜测%和%s的含义'%(sp.s, desp))
 	
 	def judge_a(self, sp, desp):
-		print('sp.s, desp', sp.s, desp)
-		print('sp.s, desp', sp.s, desp)
 		for f in self.func:
 			if sp.be(f[0])[0] != 0:
 				continue
@@ -89,7 +96,7 @@ class func:
 			if not f[2]:	#没有推理
 				if desp in _fns_all[f[0]][self.name]:
 					if self.name not in sp.fn:
-						return (2,'%s的%s未知。'%(sp.s,self.name))
+						return (3,'%s的%s未知。'%(sp.s,self.name))
 					else:
 						if sp.fn[self.name] == _fns_all[f[0]][self.name][desp]:
 							return (0,[],{self.name:sp.fn[self.name]})
@@ -99,11 +106,7 @@ class func:
 					return (2,'%s是未知的词'%desp)
 			else:			#有推理
 				return (2,'现在还不会推理')
-		for fns in _fns_all:
-			for cls in _fns_all[fns]:
-				#print(_fns_all[fns][cls])
-				pass
-		return (2,'%s是fffff未知的词'%desp)
+		assert True
 	
 	def value_A(self, gs):
 		return None

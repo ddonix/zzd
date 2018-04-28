@@ -2,6 +2,7 @@
 import sets
 import gdata
 import db
+import function
 
 class seph:
 	def __init__(self, s):
@@ -137,7 +138,7 @@ class seph:
 				res = gs.fensp([self], True)				#1234是数吗？
 			if res:
 				return (0, res)
-			return [2]
+			return (2, '未知')
 		elif gdata.fnin(gram):
 			fn = gdata.getfn(gram)							#1234是偶数吗？
 			if fn.ds(self) == True and fn.vs(self) == 'bool':
@@ -145,20 +146,23 @@ class seph:
 					return (0,fn)
 				else:
 					return (1,fn)
-			return (2,'完全无知阿')
+			return (2,'表达式有问题')
 		#苏格拉底是男人吗？
 		#苏格拉底是男的吗?
 		#苏格拉底是男的人吗？
 		#苏格拉底的性别是男吗?
 		#苏格拉底是人，人有性别，性别把人分男女，苏格拉底是男人吗等价于苏格拉底的性别是男吗？
 		else:
-			print('else:', self.s,gram)
+			for fn in self.fn:
+				res = gdata.getfn(fn).judge_a(self, gram)
+				if res[0] != 2:
+					return res
 			for gs in self.gs:
 				for name in gs.fn:
-					print('fn.name',gs.fn[name])
-					return gs.fn[name].judge_a(self, gram)
-			return (2,'我完全不知道')
-
+					res = gs.fn[name].judge_a(self, gram)
+					if res[0] != 2:
+						return res
+			return function.func.judge_cls(self, gram)
 
 def main():
 	print('element')
