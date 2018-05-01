@@ -304,16 +304,30 @@ class zzd():
 						x2,x1 = adapter['集合'].split('|')
 					else:
 						x1,x2 = adapter['集合'].split('|')
-			if not gdata.spin(x1):
-				self.say('%s是未知的词.您可以在学习模式进行学习'%x1)
-				return
-			res = gdata.getsp(x1).be(x2)
+			res = gdata.getsp_ok(x1).be(x2)
 			if res[0] == 0:
-				self.say('是的')
+				if '系动词' in adapter:
+					echo = '%s%s%s'%(x1,adapter['系动词'],x2)
+				elif '(属于)' in adapter:
+					echo = '%s属于%s'%(x1,x2)
+				elif '(包含)' in adapter:
+					echo = '%s包含%s'%(x2,x1)
+				else:
+					echo = '%s%s'%(x1,x2)
 			elif res[0] == 1:
-				self.say('错误')
+				if '系动词' in adapter:
+					echo = '%s不%s%s'%(x1,adapter['系动词'],x2)
+				elif '(属于)' in adapter:
+					echo = '%s不属于%s'%(x1,x2)
+				elif '(包含)' in adapter:
+					echo = '%s不包含%s'%(x2,x1)
+				else:
+					echo = '%s不%s'%(x1,x2)
 			else:
-				self.say('%s.需要我上网问问吗？'%res[1])
+				echo  = res[1]
+			self.say(echo)
+			if res[0] == 2:
+				self.say('需要我上网问问吗？')
 				ok = self.ask(['选择回答语句'])
 				if ok and '肯定回答语句' in ok[2]:
 					self.say('我还不会上网，逗你玩呢.哈哈哈')
@@ -519,7 +533,6 @@ class zzd():
 		self.ask_event.wait()
 		res = self.FSM.pop('ask')[1]
 		print(res)
-		print(res[0])
 		return res
 	
 	def live(self):

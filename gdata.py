@@ -45,7 +45,6 @@ def getsp_ok(s):
 def gsin(g):
 	return True if g in _gset_all else False
 
-
 def gsin(g):
 	return True if g in _gset_all else False
 

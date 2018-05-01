@@ -111,7 +111,6 @@ class seph:
 			return (False,'我不知道%s'%gram)
 		return (False,'我不知道%s'%gram)
 	
-	
 	#0:是
 	#1:不是
 	#2:不确定
@@ -158,8 +157,7 @@ class seph:
 				for name in gs.fn:
 					print('fn.name',gs.fn[name])
 					return gs.fn[name].judge_a(self, gram)
-			return [2,'我完全不知道']
-
+			return (2,'我完全不知道')
 
 def main():
 	print('element')
