@@ -143,7 +143,7 @@ class gset:
 			raise TypeError
 		self.sp.remove(sp)
 	
-	def contain(self, sp):#苏格拉底是男人，是人。但是数据库中之记录苏格拉底是男人.
+	def contain(self, sp):
 		res = []
 		if sp in self.sp:
 			res.append(self)

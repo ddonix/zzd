@@ -1,7 +1,4 @@
 #!/usr/bin/python3 -B
-import xlrd
-import sqlite3
-import sys
 import time
 
 #output函数运行在root主进程

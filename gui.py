@@ -2,7 +2,6 @@
 
 import tkinter as tk           # 导入 Tkinter 库
 import voice
-import db
 import os
 import sys
 import zzd_human
@@ -10,14 +9,13 @@ import zzd_zzd
 import threading
 import signal
 import time
-import gdata
 
 input_layer1 = None
 
 entry_human = None
 entry_zzd = None
 	
-autoplay = True
+autoplay = False
 
 root = None
 #主进程ident, 小涵涵进程结束后给root进程发消息，让主进程退出.
@@ -65,8 +63,7 @@ def voicePlay(evt):
 	voice.txt2voice(waa)
 
 def enterSen(waa):
-	fix = gdata.fix(waa)
-	xhh.output(zhd, fix)
+	xhh.output(zhd, waa)
 
 def human_entry():
 	global entry_human
