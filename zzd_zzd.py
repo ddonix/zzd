@@ -541,8 +541,8 @@ def main(a,A):
     zzd.init()
     zhd = zzd(1, 1)
     
-    if a == 'sp':
-        zhd.KDB.checksp(A)
+    if a == 'se':
+        zhd.KDB.checkse(A)
     elif a == 'gs':
         zhd.KDB.checkgs(A, False)
     else:

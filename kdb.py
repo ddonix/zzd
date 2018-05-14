@@ -71,26 +71,41 @@ class ZZDKDB():
             raise NameError
 
     def getph(self, s):
-        if self.phin(s):
-            return self.phrases[s[0]][s]
+        if s[0] in self.phrases:
+            if s in self.phrases[s[0]]:
+                return self.phrases[s[0]][s]
+        znumber =  '0123456789'
+        cnumber =  '零一二三四五六七八九十百千万亿'
+        zstr = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
+        if s[0] in znumber:
+            f = znumber
+        elif s[0] in cnumber:
+            f = cnumber
+        elif s[0] in zstr:
+            f = zstr+znumber
         else:
-            print('s:%s'%s)
-            raise NameError
-    
+            return None
+        for e in s[1:]:
+            if e not in f:
+                return None
+        ph = element.phrases(s)
+        if f == znumber:
+            ph._addgs(self.getgs('数'))
+        elif f == cnumber:
+            ph._addgs(self.getgs('汉语数'))
+        else:
+            ph._addgs(self.getgs('字符串'))
+        return ph
+
     def getse(self, s):
-        return None
+        se = element.sentence(self,s)
+        return se
 
     def gsin(self, g):
         return True if g in self.gset else False
 
     def fnin(self, f):
         return True if f in self.func else False
-        
-    def phin(self, s):
-        if s[0] in self.phrases:
-            if s in self.phrases[s[0]]:
-                return True
-        return False
         
     def legal(self, s):
         for v in s:
@@ -110,21 +125,29 @@ class ZZDKDB():
             self.phrases[ph.s[0]] = {ph.s:ph}
         else:
             self.phrases[ph.s[0]][ph.s] = ph
-
-    def checksp(self, sp):
-        print('检查SP %s'%sp)
-        sp = self.getsp(sp)
+    
+    def checkph(self, ph):
+        print('检查PH %s'%ph)
+        ph = self.getph(ph)
+        if not ph:
+            print('%s是未知的词')
+            return
         print('1.实例信息')
-        print(sp)
-        if len(sp.gs) == 0:
+        print(ph)
+        if len(ph.gs) == 0:
             print('2.不属于任何集合')
         else:
             print('2.属合下列集合:')
-            ancestor = []
-            for gs in sp.gs:
+            for gs in ph.gs:
                 print(gs.name)
-        print('3.分词')
-        for p in sp.d:
+    
+    def checkse(self, se):
+        print('检查SE %s'%se)
+        se = self.getse(se)
+        print('1.实例信息')
+        print(se)
+        print('2.分词')
+        for p in se.ph:
             pr = '%s|'%p.s
             for g in p.gs:
                 pr += '%s '%g.name
@@ -306,6 +329,7 @@ class ZZDKDB():
             print(f,self.getfn(f))
 
     def phinit(self):
+        element.phrases.init(self)
         try:
             conn = sqlite3.connect('./data/grammar.db')
             cursor = conn.execute("select * from table_vocable")
@@ -342,7 +366,7 @@ class ZZDKDB():
         #补充()类集合里面的元素
         for gram in self.gset:
             if gram[0] != '[' and gram[0] != '(':
-                if not self.phin(gram):
+                if not self.getph(gram):
                     self.addph(element.phrases(gram))
                 self.add_information_1(gram, '集合')
             if gram[0] == '(' and gram[-1] == ')':
@@ -455,7 +479,7 @@ def __prevgram(gram, res):
 def main():
     print('kdb')
     kdb = ZZDKDB()
-    print(kdb.getgs('数学变量'))
+    kdb.checkse('一切')
         
 if __name__ == '__main__':
     main()
