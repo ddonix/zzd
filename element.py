@@ -1,34 +1,26 @@
 #!/usr/bin/python3 -B
-class phbase:
-    def __init__(self, kdb, s):
+class phrases:
+    def __init__(self, s):
         assert type(s) == str
         self.s = s                #sting
         self.gs = set()
         self.fn = {}
-        self.kdb = kdb
     
     def addfn(self, fn):
         fn = fn.split('~')
         for f in fn:
             name,value=f.split(':')
             self.fn[name]=value
-        print(self.fn)
     
     def _addgs(self, gs):
         if gs not in self.gs:
             self.gs.add(gs)
     
-    def _removegs(self, gs):
-        assert gs in self.gs
-        self.gs.remove(gs)
-    
-class seph:
+class sentence:
     def __init__(self, kdb, s):
         assert type(s) == str
         self.s = s                #sting
-        self.d = []
-        self.gs = set()
-        self.fn = {}
+        self.ph = []
         self.kdb = kdb
     
     def _fenci(self, point=False):
@@ -36,7 +28,7 @@ class seph:
         cnumber =  '零一二三四五六七八九十百千万亿'
         zstr = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ'
         zpoint = '，。,.！!？?'
-        if self.kdb.spin(self.s):
+        if self.kdb.phin(self.s):
             self.d.append(self)
             return
         for name in ['数','汉语数','字符串']:
@@ -103,21 +95,6 @@ class seph:
                         sp = seph(self.kdb, s)
                         sp._addgs(self.kdb.getgs('汉语数'))
                         self.d.append(sp)
-    
-    def addfn(self, fn):
-        fn = fn.split('~')
-        for f in fn:
-            name,value=f.split(':')
-            self.fn[name]=value
-        print(self.fn)
-    
-    def _addgs(self, gs):
-        if gs not in self.gs:
-            self.gs.add(gs)
-    
-    def _removegs(self, gs):
-        assert gs in self.gs
-        self.gs.remove(gs)
     
     #0:是
     #1:不是

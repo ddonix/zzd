@@ -17,60 +17,42 @@ class gset:
     def weight(self):               #返回集合的元素个数，无穷集合返回-1.
         raise NotImplementedError
         
-    def affirm1(self, sp):           #sp属于self
+    def affirm1(self, ph):           #ph属于self
         raise NotImplementedError
     
     def affirm2(self, gs):           #gs包含于self
         raise NotImplementedError
     
-    def spin(self, sp):             #判断sp是否属于self，但是不属于self的任何child
+    def affirm3(self, se):           #se包含于self
+        raise NotImplementedError
+    
+    def phin(self, ph):             #判断ph是否属于self，不考虑子集
+        raise NotImplementedError
+    
+    def sein(self, se):             #判断se是否属于self，不考虑子集
         raise NotImplementedError
 
-    def _do_fensp(self, phrases):
-        raise NotImplementedError
-    
-    def _fensp(self, phrases):
-        if phrases and self.judge1(phrases[0])[0] == True:
-            return (phrases[0].s, phrases[1:], {self.name:phrases[0].s})
-        if self.child != []:
-            ress = []
-            for i in range(len(self.child)-1, -1, -1):
-                res = self.child[i]._fensp(phrases)
-                if res:
-                    res[2][self.name] = res[0]
-                    ress.append(res)
-            if not ress:
-                return None
-            ress.sort(key=lambda x:len(x[1]))
-            return ress[0]
-        else:
-            return self._do_fensp(phrases)
-    
-    def fensp(self, phrases):
-        res = self._fensp(phrases)
-        return res if res and not res[1] else None
-    
-    def judge1(self, sp):            #判断sp是否属于self
+    def judge1(self, ph):            #判断ph是否属于self
         keys = {}
         for child in self.child:
-            res = child.judge1(sp)
+            res = child.judge1(ph)
             if res[0] == True:
                 for k in res[1]:
                     keys[k] = res[1][k]
-        res = self.spin(sp)
+        res = self.phin(ph)
         if res[0] == True:
             for k in res[1]:
                 keys[k] = res[1][k]
         else:
             if keys:
-                keys[self.name] = sp.s
+                keys[self.name] = ph.s
                 
         if keys:
             return (True,keys)
         else:
             return res
     
-    def judge2(self, gs):     #判断gs是否是self的子集吗?
+    def judge2(self, gs):     #判断gs是否是self的子集
         if gs == self:
             return (True, self)
         res = [2]
@@ -79,6 +61,9 @@ class gset:
             if res[0] != 2:
                 return res
         return res
+    
+    def judge3(self, sp):     #判断sp是否属于self
+        raise NotImplementedError
 
     def addbyname(self, name):
         for n in name:

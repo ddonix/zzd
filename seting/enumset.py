@@ -13,18 +13,18 @@ class gsetenum(sets.gset):
             for s in es:
                 self.e.add(s)
                     
-    def spin(self, sp):
-        if sp.s in self.e:
-            return (True, {self.name:sp.s})
+    def phin(self, ph):
+        if ph.s in self.e:
+            return (True, {self.name:ph.s})
         elif 'over' in self.FSM:
             return (False, '')
         else:
             return (2, '')
     
-    def affirm1(self, sp):
-        if self.judge1(sp)[0] == True:
+    def affirm1(self, ph):
+        if self.judge1(ph)[0] == True:
             return (True, '')
-        self.e.add(sp.s)
+        self.e.add(ph.s)
         return (True, '')
     
     def affirm2(self, gs):

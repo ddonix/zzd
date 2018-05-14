@@ -15,7 +15,7 @@ class ZZDKDB():
         self.func = {}          #所有函数
         self.gset = {}          #所有集合
         self.vocable = {' '}    #所有字符
-        self.spbase = {}        #所有语句
+        self.phrases = {}        #所有语句
         self.identify = {}      #身份认证
         self.gset_key = {}      #关键集合
         self.keyword = {}       #关键语句
@@ -40,7 +40,7 @@ class ZZDKDB():
         
         self.fninit()
         self.gsinit()
-        self.spinit()
+        self.phinit()
         self.coreinit()
         
     def getinWaaClass(self, sep):
@@ -70,15 +70,15 @@ class ZZDKDB():
         except:
             raise NameError
 
-    def getsp(self, s, base=False):
-        if self.spin(s):
-            return self.spbase[s[0]][s]
+    def getph(self, s):
+        if self.phin(s):
+            return self.phrases[s[0]][s]
         else:
-            sp = element.seph(self, s)
-            sp._fenci(False)
-            if base:
-                self.addsp(sp)
-            return sp
+            print('s:%s'%s)
+            raise NameError
+    
+    def getse(self, s):
+        return None
 
     def gsin(self, g):
         return True if g in self.gset else False
@@ -86,9 +86,9 @@ class ZZDKDB():
     def fnin(self, f):
         return True if f in self.func else False
         
-    def spin(self, s):
-        if s[0] in self.spbase:
-            if s in self.spbase[s[0]]:
+    def phin(self, s):
+        if s[0] in self.phrases:
+            if s in self.phrases[s[0]]:
                 return True
         return False
         
@@ -105,11 +105,11 @@ class ZZDKDB():
     def addfn(self, fn):
         self.func[fn.name] = fn
 
-    def addsp(self, sp):
-        if len(sp.s) == 1:
-            self.spbase[sp.s[0]] = {sp.s:sp}
+    def addph(self, ph):
+        if len(ph.s) == 1:
+            self.phrases[ph.s[0]] = {ph.s:ph}
         else:
-            self.spbase[sp.s[0]][sp.s] = sp
+            self.phrases[ph.s[0]][ph.s] = ph
 
     def checksp(self, sp):
         print('检查SP %s'%sp)
@@ -237,11 +237,11 @@ class ZZDKDB():
     #成功返回True，错误返回False，其他返回2.
     def add_information_1(self, a, A):
         assert self.gsin(A)
-        sp = self.getsp(a)
+        ph = self.getph(a)
         gs = self.getgs(A)
-        res = gs.affirm1(sp)
+        res = gs.affirm1(ph)
         if res[0] == True:
-            sp._addgs(gs)
+            ph._addgs(gs)
         return res
 
     #增加集合B属于集合A这条信息。
@@ -305,7 +305,7 @@ class ZZDKDB():
         for f in self.func:
             print(f,self.getfn(f))
 
-    def spinit(self):
+    def phinit(self):
         try:
             conn = sqlite3.connect('./data/grammar.db')
             cursor = conn.execute("select * from table_vocable")
@@ -314,38 +314,36 @@ class ZZDKDB():
         for v in cursor:
             assert len(v[0]) == 1
             self.vocable.add(v[0][0])
+            ph = element.phrases(v[0])
+            self.addph(ph)
             
-            sp = element.seph(self, v[0])
-            self.addsp(sp)
-            sp._fenci(False)
             for g in v[1].split('~') if v[1] else []:
                 if not (g == '' or g == None):
                     self.add_information_1(v[0], g)
             if v[2]:
-                sp.addfn(v[2])
+                ph.addfn(v[2])
         try:
             cursor = conn.execute("select * from table_phrase")
         except:
             raise NameError
         for v in cursor:
             assert len(v[0]) > 1
-            if not self.legal(v[0]):
-                print(v)
-                raise NameError
-            sp = element.seph(self, v[0])
-            self.addsp(sp)
-            sp._fenci(False)
+            ph = element.phrases(v[0])
+            self.addph(ph)
+            
             for g in v[1].split('~') if v[1] else []:
                 if not (g == '' or g == None):
                     self.add_information_1(v[0], g)
             if v[2]:
-                sp.addfn(v[2])
+                ph.addfn(v[2])
         conn.close()
         
         #补充所有集合类元素集,例如：集合语句是集合
         #补充()类集合里面的元素
         for gram in self.gset:
             if gram[0] != '[' and gram[0] != '(':
+                if not self.phin(gram):
+                    self.addph(element.phrases(gram))
                 self.add_information_1(gram, '集合')
             if gram[0] == '(' and gram[-1] == ')':
                 item = gram[1:-1].split(' ')
@@ -361,9 +359,9 @@ class ZZDKDB():
         for keyword in cursor:
             if keyword[0] in self.gset:
                 self.gset_key[keyword[0]] = keyword[1:]
-                for sp in self.spbase:
-                    for s in self.spbase[sp]:
-                        if self.spbase[sp][s].be(keyword[0])[0] == 0:
+                for sp in self.phrases:
+                    for s in self.phrases[sp]:
+                        if self.phrases[sp][s].be(keyword[0])[0] == 0:
                             self.keyword[s] = keyword[1:]
             elif keyword[0][0] == '(' and keyword[0][-1] == ')':
                 gs = sets.gset(keyword[0])
