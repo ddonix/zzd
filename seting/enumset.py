@@ -21,6 +21,17 @@ class gsetenum(sets.gset):
         else:
             return (2, '')
     
+    def sein(self, se):
+        if len(se.ph) > 1:
+            return (False, '')
+        ph = se.ph[0]
+        if ph.s in self.e:
+            return (True, {self.name:ph.s})
+        elif 'over' in self.FSM:
+            return (False, '')
+        else:
+            return (2, '')
+    
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:
             return (True, '')

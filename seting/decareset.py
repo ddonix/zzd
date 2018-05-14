@@ -19,7 +19,12 @@ class gsetdecare(sets.gset):
             else:
                 self.decare.append(kdb.getgs(g))
 
-    def spin(self, sp):
+    def phin(self, ph):
+        print('self.name:%s, ph.s:%s'%(self.name,ph.s))
+        return (False,'')
+    
+    def sein(self, se):
+        print('self.name:%s, se.s:%s'%(self.name,se.s))
         return (False,'')
     
     def affirm1(self, sp):

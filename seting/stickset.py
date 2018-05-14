@@ -24,7 +24,12 @@ class gsetstick(sets.gset):
             if s not in f:
                 return (False, '')
         return (True,{self.name:ph.s})
-
+    
+    def sein(self, se):
+        if len(se.ph) > 1:
+            return (False, '')
+        return self.phin(se.ph[0])
+    
     def weight(self):               #返回集合的元素个数，无穷集合返回-1.
         return -1
     

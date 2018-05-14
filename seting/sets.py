@@ -62,8 +62,25 @@ class gset:
                 return res
         return res
     
-    def judge3(self, sp):     #判断sp是否属于self
-        raise NotImplementedError
+    def judge3(self, se):     #判断se是否属于self
+        keys = {}
+        for child in self.child:
+            res = child.judge3(se)
+            if res[0] == True:
+                for k in res[1]:
+                    keys[k] = res[1][k]
+        res = self.sein(se)
+        if res[0] == True:
+            for k in res[1]:
+                keys[k] = res[1][k]
+        else:
+            if keys:
+                keys[self.name] = se.s
+                
+        if keys:
+            return (True,keys)
+        else:
+            return res
 
     def addbyname(self, name):
         for n in name:

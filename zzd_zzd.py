@@ -546,8 +546,8 @@ def main(a,A):
     elif a == 'gs':
         zhd.KDB.checkgs(A, False)
     else:
-        sp = zhd.KDB.getsp(a)
-        res = sp.be(A)
+        se = zhd.KDB.getse(a)
+        res = se.be(A)
         print(res)
     
 if __name__ == '__main__':
