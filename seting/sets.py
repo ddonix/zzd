@@ -51,15 +51,24 @@ class gset:
         return res if res and not res[1] else None
     
     def judge1(self, sp):            #判断sp是否属于self
-        res = self.spin(sp)
-        if res[0] != 2:
-            return res
+        keys = {}
         for child in self.child:
             res = child.judge1(sp)
             if res[0] == True:
-                res[1][self.name] = sp.s
-                return res
-        return res
+                for k in res[1]:
+                    keys[k] = res[1][k]
+        res = self.spin(sp)
+        if res[0] == True:
+            for k in res[1]:
+                keys[k] = res[1][k]
+        else:
+            if keys:
+                keys[self.name] = sp.s
+                
+        if keys:
+            return (True,keys)
+        else:
+            return res
     
     def judge2(self, gs):     #判断gs是否是self的子集吗?
         if gs == self:
