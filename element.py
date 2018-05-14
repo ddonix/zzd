@@ -1,4 +1,27 @@
 #!/usr/bin/python3 -B
+class phbase:
+    def __init__(self, kdb, s):
+        assert type(s) == str
+        self.s = s                #sting
+        self.gs = set()
+        self.fn = {}
+        self.kdb = kdb
+    
+    def addfn(self, fn):
+        fn = fn.split('~')
+        for f in fn:
+            name,value=f.split(':')
+            self.fn[name]=value
+        print(self.fn)
+    
+    def _addgs(self, gs):
+        if gs not in self.gs:
+            self.gs.add(gs)
+    
+    def _removegs(self, gs):
+        assert gs in self.gs
+        self.gs.remove(gs)
+    
 class seph:
     def __init__(self, kdb, s):
         assert type(s) == str
@@ -107,6 +130,12 @@ class seph:
             return gs.judge2(self)
         else:
             return gs.judge1(self)
+            
+def main():
+    print('element')
+    
+if __name__ == '__main__':
+    main()
             
 def main():
     print('element')
