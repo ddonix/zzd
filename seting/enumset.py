@@ -24,11 +24,6 @@ class gsetenum(sets.gset):
         else:
             return (2, '')
     
-    def _sein(self, phs):
-        if phs and self.phin(phs[0])[0] == True:
-            return (phs[0].s, phs[1:], {self.name:phs[0].s})
-        return None
-    
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:
             return (True, '')

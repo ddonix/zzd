@@ -1,0 +1,11 @@
+zzd_zzd
+bool
+bool
+(男 女)
+{'男': {'男类', '性别是男的人', '性别为男的人', '男', '性别男的人', '男性', '男的人', '男人'}, '女': {'女的人', '性别是女的人', '性别女的人', '性别为女的人', '女', '女类', '女人', '女性'}}
+数
+性别 <function.func object at 0xf6eec8cc>
+平方 <function.func object at 0xf6eec92c>
+奇数 <function.func object at 0xf6eec88c>
+偶数 <function.func object at 0xf6eec86c>
+(False, '')

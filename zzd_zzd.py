@@ -115,16 +115,18 @@ class zzd():
         else:
             zzd.inWaaClass[inclass](self, se)
         
-    def _solve_math(self, sep):
-        res = sep.be('数学语句')
-        if res[0] != 0:
+    def _solve_math(self, se):
+        res = se.be('数学语句')
+        print(se.s)
+        if res[0] != True:
             self.say('数学语法不对')
         else:
-            adapter = res[1][2]
+            adapter = res[1]
             if '数学判断' in adapter or '数学方程' in adapter:
-                self.add_desire('math',res[1][0])
+                self.add_desire('math',se.s)
             else:
-                sen = zmath.c2math(sep.d)
+                sen = zmath.c2math(se.ph)
+                print(sen)
                 if sen:
                     self.add_desire('math',sen)
                 else:

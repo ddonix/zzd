@@ -47,5 +47,4 @@ class gsetdecare(sets.gset):
         return (False, '不支持的操作')
     
     def weight(self):
-        r = 1
         return -1

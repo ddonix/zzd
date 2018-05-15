@@ -29,8 +29,10 @@ class gset:
     def phin(self, ph):             #判断ph是否属于self，不考虑子集
         raise NotImplementedError
     
-    def _sein(self, phs):           #判断se是否属于self，不考虑子集
-        raise NotImplementedError
+    def _sein(self, phs):
+        if phs and self.phin(phs[0])[0] == True:
+            return (phs[0].s, phs[1:], {self.name:phs[0].s})
+        return None
 
     def judge1(self, ph):           #判断ph是否属于self
         keys = {}
