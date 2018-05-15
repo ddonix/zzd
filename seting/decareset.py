@@ -25,17 +25,23 @@ class gsetdecare(sets.gset):
         phh = phs
         sps = ''
         keys={}
-        for de in self.decare:
+       
+        for i,de in enumerate(self.decare):
             if type(de) == str:
                 sps += de
                 continue
+            if de.name == '...' and i < len(self.decare)-1:
+                de.setplot(self.decare[i+1].name)
             res = de._judge3(phh)
             if not res:
                 break
             sps += res[0]
             phh = res[1]
             for k in res[2]:
-                keys[k] = res[2][k]
+                if k in keys:
+                    keys[k] = '%s|%s'%(keys[k],res[2][k])
+                else:
+                    keys[k] = res[2][k]
         else:
             return (sps, phh, keys)
         return None
