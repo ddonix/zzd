@@ -142,10 +142,11 @@ class zzd():
                     self.desire['verify'][1] = True
                     self.desire['verify'][2] = arg['认证参数']
             else:
-                self.say('语法错误。')
+                self.say('语法错误')
             return
         adapter = res[1]
         assert 'zzd命令' in adapter
+        print(adapter)
         if '命令参数' in adapter:
             arg = adapter['命令参数']
         else:
