@@ -46,7 +46,7 @@ class gset:
         else:
             if keys:
                 keys[self.name] = ph.s
-                
+
         if keys:
             return (True,keys)
         else:
@@ -64,6 +64,7 @@ class gset:
     
     def judge3(self, se):     #判断se是否属于self
         keys = {}
+        print('self.name:%s,se.s:%s'%(self.name, se.s))
         for child in self.child:
             res = child.judge3(se)
             if res[0] == True:
