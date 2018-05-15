@@ -65,8 +65,6 @@ class gset:
         return res
     
     def _judge3(self, phs):
-        if not phs:
-            return None
         if self.child:
             ress = []
             for i in range(len(self.child)-1, -1, -1):

@@ -24,6 +24,7 @@ class gsetregu(sets.gset):
                     break
                 if self.plot:
                     if phs[0].be(self.plot)[0] == True:
+                        self.plot = ''
                         break
                 sps += phs[0].s
                 phs = phs[1:]
