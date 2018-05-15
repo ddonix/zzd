@@ -30,7 +30,7 @@ class gsetdecare(sets.gset):
             if type(de) == str:
                 sps += de
                 continue
-            if de.name == '...' and i < len(self.decare)-1:
+            if de.name == '...' and i < len(self.decare)-1 and type(self.decare[i+1]) != str:
                 de.setplot(self.decare[i+1].name)
             res = de._judge3(phh)
             if not res:
