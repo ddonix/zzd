@@ -37,14 +37,13 @@ class ZZDKDB():
         for mend in cursor:
             self.mend_replace[mend[0]] = mend
         conn.close()
-        
         self.fninit()
         self.gsinit()
         self.phinit()
         self.coreinit()
         
     def getinWaaClass(self, se):
-        keyword = [x.s for x in se.phrases if x.s in self.keyword]
+        keyword = [x.s for x in se.ph if x.s in self.keyword]
         if se.s in self.keyword:
             keyword.append(se.s)
         bit = {'math':0, 'query':0, 'judge':0, 'command':0, 'affirm':0}
@@ -381,21 +380,12 @@ class ZZDKDB():
         except:
             raise NameError
         for keyword in cursor:
-            if keyword[0] in self.gset:
-                self.gset_key[keyword[0]] = keyword[1:]
-                for sp in self.phrases:
-                    for s in self.phrases[sp]:
-                        if self.phrases[sp][s].be(keyword[0])[0] == 0:
-                            self.keyword[s] = keyword[1:]
-            elif keyword[0][0] == '(' and keyword[0][-1] == ')':
-                gs = sets.gset(keyword[0])
-                self.gset_key[keyword[0]] = keyword[1:]
-                item = keyword[0][1:-1].split(' ')
-                for sp in item:
-                    add_information_1(sp, keyword[0])
-                    self.keyword[sp] = keyword[1:]
-            else:
-                raise NameError
+            assert keyword[0] in self.gset
+            self.gset_key[keyword[0]] = keyword[1:]
+            for sp in self.phrases:
+                for s in self.phrases[sp]:
+                    if self.phrases[sp][s].be(keyword[0])[0] == True:
+                        self.keyword[s] = keyword[1:]
         
         try:
             cursor = conn.execute("select * from verify")
@@ -403,8 +393,6 @@ class ZZDKDB():
             raise TypeError
         for guest in cursor:
             self.identify[guest[0]] = guest[1]
-            
-
         conn.close()
 
     

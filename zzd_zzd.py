@@ -130,9 +130,9 @@ class zzd():
                 else:
                     self.say('数学语法错误')
     
-    def _solve_command(self, sep):
-        res = sep.be('命令语句')
-        if res[0] != 0:
+    def _solve_command(self, se):
+        res = se.be('命令语句')
+        if res[0] != True:
             if not self.FSM['verify']:
                 self.say('请先认证身份。')
                 arg = self.ask(['认证参数','认证参数句'])
@@ -142,7 +142,7 @@ class zzd():
             else:
                 self.say('语法错误。')
             return
-        adapter = res[1][2]
+        adapter = res[1]
         assert 'zzd命令' in adapter
         if '命令参数' in adapter:
             arg = adapter['命令参数']
@@ -389,7 +389,7 @@ class zzd():
         return False
     
     def _solve_other(self, sep):
-        if sep.be('称呼')[0] == 0:
+        if sep.be('称呼')[0] == True:
             self.say('我在，有什么为你做的吗')
             return
         for ph in sep.d:
@@ -545,6 +545,9 @@ def main(a,A):
         zhd.KDB.checkse(A)
     elif a == 'gs':
         zhd.KDB.checkgs(A, False)
+    elif a == 'inw':
+        res = zhd.KDB.getinWaaClass(zhd.KDB.getse(A))
+        print(res)
     else:
         se = zhd.KDB.getse(a)
         res = se.be(A)
