@@ -13,14 +13,12 @@ class gsetdecare(sets.gset):
         for g in gram:
             assert not (g[0] == '[' and g[-1] == ']')
             assert g in kdb.mend_add or kdb.gsin(g)
-            print('kdb',g,name)
             if g in kdb.mend_add:
                 self.decare.append(g)
             else:
                 self.decare.append(kdb.getgs(g))
 
     def phin(self, ph):
-        print('self.name:%s, ph.s:%s'%(self.name,ph.s))
         return (False,'')
     
     def _sein(self, phs):
@@ -39,7 +37,7 @@ class gsetdecare(sets.gset):
             for k in res[2]:
                 keys[k] = res[2][k]
         else:
-            return (sps,'',keys)
+            return (sps, phh, keys)
         return None
     
     def affirm1(self, sp):

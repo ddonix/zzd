@@ -25,8 +25,8 @@ class gsetenum(sets.gset):
             return (2, '')
     
     def _sein(self, phs):
-        if phs and len(phs) == 1 and self.phin(phs[0])[0] == True:
-            return (phs[0].s, '', {self.name:phs[0].s})
+        if phs and self.phin(phs[0])[0] == True:
+            return (phs[0].s, phs[1:], {self.name:phs[0].s})
         return None
     
     def affirm1(self, ph):

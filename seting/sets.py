@@ -68,12 +68,13 @@ class gset:
         if self.child:
             ress = []
             for i in range(len(self.child)-1, -1, -1):
-                res = self.child[i]._judge3(phs)
+                phss = []
+                phss.extend(phs)
+                res = self.child[i]._judge3(phss)
                 if res:
-                    print(res)
                     res[2][self.name] = res[0]
                     ress.append(res)
-            if ress: 
+            if ress:
                 ress.sort(key=lambda x:len(x[1]))
                 return ress[0]
         return self._sein(phs)
