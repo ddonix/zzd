@@ -1,4 +1,5 @@
 #!/usr/bin/python3 -B
+import ipdb
 from seting import sets
 
 #枚举集合，集合元素可以枚举，是有限个。如:(再见 拜拜),人等
@@ -22,15 +23,13 @@ class gsetenum(sets.gset):
             return (2, '')
     
     def sein(self, se):
-        if len(se.ph) > 1:
-            return (False, '')
-        ph = se.ph[0]
-        if ph.s in self.e:
-            return (True, {self.name:ph.s})
-        elif 'over' in self.FSM:
-            return (False, '')
-        else:
-            return (2, '')
+        return (False, '') if len(se.ph) > 1 else self.phin(se.ph[0])
+    
+    def _sein(self, phs):
+        ipdb.set_trace()
+        if phs and len(phs) == 1 and self.phin(phs[0])[0] == True:
+            return (phs[0].s, '', {self.name:phs[0].s})
+        return None
     
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:

@@ -31,8 +31,11 @@ class gset:
     
     def sein(self, se):             #判断se是否属于self，不考虑子集
         raise NotImplementedError
+    
+    def _sein(self, phs):           #判断se是否属于self，不考虑子集
+        raise NotImplementedError
 
-    def judge1(self, ph):            #判断ph是否属于self
+    def judge1(self, ph):           #判断ph是否属于self
         keys = {}
         for child in self.child:
             res = child.judge1(ph)
@@ -62,26 +65,27 @@ class gset:
                 return res
         return res
     
+    def _judge3(self, phs):
+        if self.child:
+            ress = []
+            for i in range(len(self.child)-1, -1, -1):
+                res = self.child[i]._judge3(phs)
+                if res:
+                    print('res',res)
+                    res[2][self.name] = res[0]
+                    ress.append(res)
+            if ress: 
+                ress.sort(key=lambda x:len(x[1]))
+                return ress[0]
+        else:
+            return self._sein(phs)
+
     def judge3(self, se):     #判断se是否属于self
-        keys = {}
-        print('self.name:%s,se.s:%s'%(self.name, se.s))
-        for child in self.child:
-            res = child.judge3(se)
-            if res[0] == True:
-                for k in res[1]:
-                    keys[k] = res[1][k]
-        res = self.sein(se)
-        if res[0] == True:
-            for k in res[1]:
-                keys[k] = res[1][k]
+        res = self._judge3(se.ph)
+        if not res or res[1]:
+            return (False, '')
         else:
-            if keys:
-                keys[self.name] = se.s
-                
-        if keys:
-            return (True,keys)
-        else:
-            return res
+            return (True, res[2])
 
     def addbyname(self, name):
         for n in name:

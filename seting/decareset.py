@@ -25,6 +25,12 @@ class gsetdecare(sets.gset):
     
     def sein(self, se):
         print('self.name:%s, se.s:%s'%(self.name,se.s))
+        keys = {}
+        ph = se.ph
+        for g in self.decare:
+            print(g)
+        for p in ph:
+            print(p.s)
         return (False,'')
     
     def affirm1(self, sp):
