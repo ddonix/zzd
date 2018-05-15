@@ -48,7 +48,7 @@ class gset:
                 keys[self.name] = ph.s
 
         if keys:
-            return (True,keys)
+            return (True, keys)
         else:
             return res
     
@@ -80,6 +80,8 @@ class gset:
         return self._sein(phs)
 
     def judge3(self, se):     #判断se是否属于self
+        if len(se.ph) == 1:
+            return self.judge1(se.ph[0])
         res = self._judge3(se.ph)
         if res and not res[1]:
             return (True, res[2])

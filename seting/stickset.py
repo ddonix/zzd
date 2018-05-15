@@ -25,10 +25,10 @@ class gsetstick(sets.gset):
                 return (False, '')
         return (True,{self.name:ph.s})
     
-    def sein(self, se):
-        if len(se.ph) > 1:
-            return (False, '')
-        return self.phin(se.ph[0])
+    def _sein(self, phs):
+        if phs and self.phin(phs[0])[0] == True:
+            return (phs[0].s, phs[1:], {self.name:phs[0].s})
+        return None
     
     def weight(self):               #返回集合的元素个数，无穷集合返回-1.
         return -1

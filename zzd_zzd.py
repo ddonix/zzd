@@ -102,18 +102,18 @@ class zzd():
         waa = waain['waa']
         assert self.friend == waain['sour']
         
-        sep = self.KDB.getsp(waa)
+        se = self.KDB.getse(waa)
         if 'ask' in self.FSM:
-            if self._solve_answer(sep):
+            if self._solve_answer(se):
                 return
         if not self.FSM['verify']:
-            self._solve_command(sep)
+            self._solve_command(se)
             return
-        inclass = self.KDB.getinWaaClass(sep)
+        inclass = self.KDB.getinWaaClass(se)
         if inclass == 'other':
-            self._solve_other(sep)
+            self._solve_other(se)
         else:
-            zzd.inWaaClass[inclass](self, sep)
+            zzd.inWaaClass[inclass](self, se)
         
     def _solve_math(self, sep):
         res = sep.be('数学语句')
@@ -138,7 +138,7 @@ class zzd():
                 arg = self.ask(['认证参数','认证参数句'])
                 if arg:
                     self.desire['verify'][1] = True
-                    self.desire['verify'][2] = arg[2]['认证参数']
+                    self.desire['verify'][2] = arg['认证参数']
             else:
                 self.say('语法错误。')
             return
@@ -207,7 +207,7 @@ class zzd():
                 self.say('您没有输入口令，写入取消。')
                 return
             else:
-                password = password[2]['认证参数']
+                password = password['认证参数']
         if password != self.managerid:
             self.say('口令错误，写入取消。')
             return
@@ -317,9 +317,9 @@ class zzd():
             if res[0] == 2:
                 self.say('需要我上网问问吗？')
                 ok = self.ask(['选择回答语句'])
-                if ok and '肯定回答语句' in ok[2]:
+                if ok and '肯定回答语句' in ok:
                     self.say('我还不会上网，逗你玩呢.哈哈哈')
-                elif ok and '否定回答语句' in ok[2]:
+                elif ok and '否定回答语句' in ok:
                     self.say('好的')
 
     def _solve_affirm(self, sep):
@@ -369,19 +369,19 @@ class zzd():
                 else:    
                     self.say('我不知道%s是否是集合。是吗'%x)
                     ok = self.ask(['选择回答语句'])
-                    if ok and '肯定回答语句' in ok[2]:
+                    if ok and '肯定回答语句' in ok:
                         self._solve_set_A(x, gs)
-                    elif ok and '否定回答语句' in ok[2]:
+                    elif ok and '否定回答语句' in ok:
                         self._solve_set_a(x, gs)
                     else:
                         self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
 
-    def _solve_answer(self, sep):
+    def _solve_answer(self, se):
         assert 'ask' in self.FSM and not self.FSM['ask'][1]
         for question in self.FSM['ask'][0]:
             print('question:',question)
-            res = sep.be(question)
-            if res[0] == 0:
+            res = se.be(question)
+            if res[0] == True:
                 self.FSM['ask'][1] = res[1]
                 self.ask_event.set()
                 return True
@@ -432,9 +432,10 @@ class zzd():
                 self.say('您好，我是小白，请认证身份！')
                 self.add_desire('time', (desire, True, time.time()+60))
                 arg = self.ask(['认证参数','认证参数句'])
+                print('arg',arg)
                 if arg:
                     self.desire['verify'][1] = True
-                    self.desire['verify'][2] = arg[2]['认证参数']
+                    self.desire['verify'][2] = arg['认证参数']
         else:
             if desire[2] in self.KDB.identify:
                 self.friend.name = self.KDB.identify[desire[2]]
@@ -450,7 +451,7 @@ class zzd():
                 arg = self.ask(['认证参数','认证参数句'])
                 if arg:
                     self.desire['verify'][1] = True
-                    self.desire['verify'][2] = arg[2]['认证参数']
+                    self.desire['verify'][2] = arg['认证参数']
     
     def desire_think(self, desire):
         return None
@@ -473,7 +474,7 @@ class zzd():
         if self.infomation_a or self.infomation_A:
             self.say('您还有学习信息没有写入数据库,需要写入吗？')
             ok = self.ask(['选择回答语句'])
-            if ok and '肯定回答语句' in ok[2]:
+            if ok and '肯定回答语句' in ok:
                 self._command_save(None)
             else:
                 self.say('丢弃学习信息。')
@@ -516,7 +517,6 @@ class zzd():
         self.ask_event.clear()
         self.ask_event.wait()
         res = self.FSM.pop('ask')[1]
-        print(res)
         return res
     
     def live(self):

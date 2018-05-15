@@ -43,13 +43,13 @@ class ZZDKDB():
         self.phinit()
         self.coreinit()
         
-    def getinWaaClass(self, sep):
-        keyword = [x for x in sep.d if x.s in self.keyword]
-        if sep.s in self.keyword:
-            keyword.append(sep)
+    def getinWaaClass(self, se):
+        keyword = [x.s for x in se.phrases if x.s in self.keyword]
+        if se.s in self.keyword:
+            keyword.append(se.s)
         bit = {'math':0, 'query':0, 'judge':0, 'command':0, 'affirm':0}
         for k in keyword:
-            weight = self.keyword[k.s][0].split(' ')
+            weight = self.keyword[k][0].split(' ')
             for i in range(0,len(weight),2):
                 bit[weight[i]] += int(weight[i+1])
         bit = sorted(bit.items(),key = lambda x:x[1],reverse = True)
