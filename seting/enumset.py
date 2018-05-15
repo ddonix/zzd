@@ -1,11 +1,13 @@
 #!/usr/bin/python3 -B
-import ipdb
 from seting import sets
 
 #枚举集合，集合元素可以枚举，是有限个。如:(再见 拜拜),人等
 #实现addsp函数.
 class gsetenum(sets.gset):
     def __init__(self, kdb, name):
+        assert '.' not in name
+        assert '[' not in name
+        assert ']' not in name
         sets.gset.__init__(self, kdb, name)
         self.e = set()         #元素集合，这个集合里的元素不属于任何子集.
         self.FSM = {}
@@ -22,11 +24,7 @@ class gsetenum(sets.gset):
         else:
             return (2, '')
     
-    def sein(self, se):
-        return (False, '') if len(se.ph) > 1 else self.phin(se.ph[0])
-    
     def _sein(self, phs):
-        ipdb.set_trace()
         if phs and len(phs) == 1 and self.phin(phs[0])[0] == True:
             return (phs[0].s, '', {self.name:phs[0].s})
         return None

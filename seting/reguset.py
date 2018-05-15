@@ -7,14 +7,17 @@ class gsetregu(sets.gset):
         assert name in {'.', '...'}
         sets.gset.__init__(self, kdb, name)
 
-    def spin(self, sp):
+    def phin(self, ph):
+        return (True,{self.name:sp.s})
+    
+    def _sein(self, phs):
         if self.name == '.':
-            if not sp.d:
-                return (True,{self.name:sp.s})
-            else:
-                return (False, '')
+            return (phs[0].s, phs[1:], {self.name:phs[0].s})
         else:
-            return (True,{self.name:sp.s})
+            sps = ''
+            for ph in phs:
+                sps += ph.s
+            return (sps, '', {self.name:sps})
             
     def weight(self):               #返回集合的元素个数，无穷集合返回-1.
         return -1

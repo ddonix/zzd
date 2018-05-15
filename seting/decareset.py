@@ -23,15 +23,24 @@ class gsetdecare(sets.gset):
         print('self.name:%s, ph.s:%s'%(self.name,ph.s))
         return (False,'')
     
-    def sein(self, se):
-        print('self.name:%s, se.s:%s'%(self.name,se.s))
-        keys = {}
-        ph = se.ph
-        for g in self.decare:
-            print(g)
-        for p in ph:
-            print(p.s)
-        return (False,'')
+    def _sein(self, phs):
+        phh = phs
+        sps = ''
+        keys={}
+        for de in self.decare:
+            if type(de) == str:
+                sps += de
+                continue
+            res = de._judge3(phh)
+            if not res:
+                break
+            sps += res[0]
+            phh = res[1]
+            for k in res[2]:
+                keys[k] = res[2][k]
+        else:
+            return (sps,'',keys)
+        return None
     
     def affirm1(self, sp):
         return (False, '不支持的操作')

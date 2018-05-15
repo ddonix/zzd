@@ -289,6 +289,11 @@ class ZZDKDB():
         return gs.affirm2(gsB)
 
     def gsinit(self):
+        self.addgs(stickset.gsetstick(self, '数'))
+        self.addgs(stickset.gsetstick(self, '汉语数'))
+        self.addgs(stickset.gsetstick(self, '字符串'))
+        self.addgs(reguset.gsetregu(self, '.'))
+        self.addgs(reguset.gsetregu(self, '...'))
         try:
             conn = sqlite3.connect('./data/grammar.db')
             cursor = conn.execute("select * from gset_phrase")
@@ -307,11 +312,6 @@ class ZZDKDB():
                 gram = prevgram(v[1])
                 for g in gram:
                     self.add_information_2(g, v[0])
-        self.addgs(stickset.gsetstick(self, '数'))
-        self.addgs(stickset.gsetstick(self, '汉语数'))
-        self.addgs(stickset.gsetstick(self, '字符串'))
-        self.addgs(reguset.gsetregu(self, '.'))
-        self.addgs(reguset.gsetregu(self, '...'))
         
     def fninit(self):
         try:

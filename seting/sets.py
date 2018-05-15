@@ -29,9 +29,6 @@ class gset:
     def phin(self, ph):             #判断ph是否属于self，不考虑子集
         raise NotImplementedError
     
-    def sein(self, se):             #判断se是否属于self，不考虑子集
-        raise NotImplementedError
-    
     def _sein(self, phs):           #判断se是否属于self，不考虑子集
         raise NotImplementedError
 
@@ -66,26 +63,27 @@ class gset:
         return res
     
     def _judge3(self, phs):
+        if not phs:
+            return None
         if self.child:
             ress = []
             for i in range(len(self.child)-1, -1, -1):
                 res = self.child[i]._judge3(phs)
                 if res:
-                    print('res',res)
+                    print(res)
                     res[2][self.name] = res[0]
                     ress.append(res)
             if ress: 
                 ress.sort(key=lambda x:len(x[1]))
                 return ress[0]
-        else:
-            return self._sein(phs)
+        return self._sein(phs)
 
     def judge3(self, se):     #判断se是否属于self
         res = self._judge3(se.ph)
-        if not res or res[1]:
-            return (False, '')
-        else:
+        if res and not res[1]:
             return (True, res[2])
+        else:
+            return (False, '')
 
     def addbyname(self, name):
         for n in name:
