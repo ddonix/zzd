@@ -22,7 +22,7 @@ class gsetenum(sets.gset):
         elif 'over' in self.FSM:
             return (False, '')
         else:
-            return (2, '')
+            return (2, '对不起，我不知道')
     
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:

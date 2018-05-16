@@ -8,6 +8,7 @@ from seting import stickset
 from seting import enumset
 from seting import decareset
 from seting import reguset
+from seting import categoryset
 import sys
 
 class ZZDKDB():
@@ -115,6 +116,8 @@ class ZZDKDB():
 
     def addgs(self, gs):
         self.gset[gs.name] = gs
+        for name in gs.byname:
+            self.gset[name] = gs
 
     def addfn(self, fn):
         self.func[fn.name] = fn
@@ -321,11 +324,12 @@ class ZZDKDB():
         except:
             return NameError
         for f in grammar:
-            if not f[0]:
+            if f[1] == '分类':
+                fn = categoryset.parsefunc(self, f)
+            elif f[1] == '求值':
                 continue
-            fn = function.func(self, f[0], f[1])
-        for f in self.func:
-            print(f,self.getfn(f))
+            else:
+                continue
 
     def phinit(self):
         element.phrases.init(self)
@@ -467,7 +471,6 @@ def __prevgram(gram, res):
 def main():
     print('kdb')
     kdb = ZZDKDB()
-    kdb.checkse('一切')
         
 if __name__ == '__main__':
     main()
