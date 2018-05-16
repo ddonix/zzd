@@ -19,7 +19,7 @@ class gsetcategory(sets.gset):
     def phin(self, ph):
         res = self.fn.value(ph)
         if not res:
-            return (2, '对不起，我不知道')
+            return (False, '%s不是%s'%(ph.s,self.name))
         if res == self.v:
             return (True, {self.name:ph.s})
         else:

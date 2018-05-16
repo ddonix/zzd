@@ -36,6 +36,8 @@ class gset:
     def _sein(self, phs):
         if phs and self.phin(phs[0])[0] == True:
             return (phs[0].s, phs[1:], {self.name:phs[0].s})
+        elif phs and self.phin(phs[0])[0] == False:
+            return None
         return None
 
     def judge1(self, ph):           #判断ph是否属于self
@@ -87,8 +89,14 @@ class gset:
         if len(se.ph) == 1:
             return self.judge1(se.ph[0])
         res = self._judge3(se.ph)
-        if res and not res[1]:
-            return (True, res[2])
+        if res:
+            if not res[1]:
+                return (True, res[2])
+            else:
+                more = ''
+                for ph in res[1]:
+                    more += ph.s
+                return (False, '%s是多出的部分'%more)
         else:
             return (2, '对不起，我不知道')
 
