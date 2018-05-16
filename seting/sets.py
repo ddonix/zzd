@@ -34,14 +34,8 @@ class gset:
         raise NotImplementedError
     
     def _sein(self, phs):
-        if phs:
-            res = self.phin(phs[0])
-            if res[0] == True:
-                return (phs[0].s, phs[1:], {self.name:phs[0].s})
-            elif res[0] == False:
-                return res
-            else:
-                return None
+        if phs and self.phin(phs[0])[0] == True:
+            return (phs[0].s, phs[1:], {self.name:phs[0].s})
         else:
             return None
 
@@ -95,9 +89,7 @@ class gset:
             return self.judge1(se.ph[0])
         res = self._judge3(se.ph)
         if res:
-            if res[0] == False:
-                return res
-            elif not res[1]:
+            if not res[1]:
                 return (True, res[2])
             else:
                 more = ''
@@ -105,7 +97,7 @@ class gset:
                     more += ph.s
                 return (False, '%s是多出的部分'%more)
         else:
-            return (2, '对不起，我不知道')
+            return (False, '%s不是%s'%(se.s, self.name))
 
     def __str__(self):
         res = '名字:%s\n'%self.name
