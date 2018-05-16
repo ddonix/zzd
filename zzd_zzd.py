@@ -274,55 +274,50 @@ class zzd():
 
     def _solve_judge(self, sep):
         res = sep.be('判断语句')
-        if res[0] != 0:
+        if res[0] != True:
             self.say('判断语法不对')
         else:
-            adapter = res[1][2]
-            if '集合' not in adapter:
-                assert '...' in adapter
-                assert '|' in adapter['...']
-                x1,x2 = adapter['...'].split('|')
-            else:
-                assert '集合判断语句' in adapter
+            adapter = res[1]
+            if '集合判断语句' in adapter:
                 assert '集合' in adapter
-                if '|' not in adapter['集合']:
-                    assert '...' in adapter
-                    x1 = adapter['...']
+                if '.' in adapter:
+                    x1 = adapter['.']
                     x2 = adapter['集合']
                 else:
                     if '(包含)' in adapter:
                         x2,x1 = adapter['集合'].split('|')
                     else:
                         x1,x2 = adapter['集合'].split('|')
-            res = self.KDB.getsp(x1).be(x2)
-            if res[0] == 0:
-                if '系动词' in adapter:
-                    echo = '%s%s%s'%(x1,adapter['系动词'],x2)
-                elif '(属于)' in adapter:
-                    echo = '%s属于%s'%(x1,x2)
-                elif '(包含)' in adapter:
-                    echo = '%s包含%s'%(x2,x1)
+                        
+                res = self.KDB.getse(x1).be(x2)
+                if res[0] == True:
+                    if '系动词' in adapter:
+                        echo = '%s%s%s'%(x1,adapter['系动词'],x2)
+                    elif '(属于)' in adapter:
+                        echo = '%s属于%s'%(x1,x2)
+                    elif '(包含)' in adapter:
+                        echo = '%s包含%s'%(x2,x1)
+                    else:
+                        echo = '%s%s'%(x1,x2)
+                elif res[0] == False:
+                    if '系动词' in adapter:
+                        echo = '%s不%s%s'%(x1,adapter['系动词'],x2)
+                    elif '(属于)' in adapter:
+                        echo = '%s不属于%s'%(x1,x2)
+                    elif '(包含)' in adapter:
+                        echo = '%s不包含%s'%(x2,x1)
+                    else:
+                        echo = '%s不%s'%(x1,x2)
                 else:
-                    echo = '%s%s'%(x1,x2)
-            elif res[0] == 1:
-                if '系动词' in adapter:
-                    echo = '%s不%s%s'%(x1,adapter['系动词'],x2)
-                elif '(属于)' in adapter:
-                    echo = '%s不属于%s'%(x1,x2)
-                elif '(包含)' in adapter:
-                    echo = '%s不包含%s'%(x2,x1)
-                else:
-                    echo = '%s不%s'%(x1,x2)
-            else:
-                echo  = res[1]
-            self.say(echo)
-            if res[0] == 2:
-                self.say('需要我上网问问吗？')
-                ok = self.ask(['选择回答语句'])
-                if ok and '肯定回答语句' in ok:
-                    self.say('我还不会上网，逗你玩呢.哈哈哈')
-                elif ok and '否定回答语句' in ok:
-                    self.say('好的')
+                    echo  = res[1]
+                self.say(echo)
+                if res[0] == 2:
+                    self.say('需要我上网问问吗？')
+                    ok = self.ask(['选择回答语句'])
+                    if ok and '肯定回答语句' in ok:
+                        self.say('我还不会上网，逗你玩呢.哈哈哈')
+                    elif ok and '否定回答语句' in ok:
+                        self.say('好的')
 
     def _solve_affirm(self, sep):
         res = sep.be('断言语句')
