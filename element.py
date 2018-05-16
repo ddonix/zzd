@@ -24,7 +24,10 @@ class phrases:
         if not phrases.kdb.gsin(gram):
             return (2,'%s:不是已知的集合'%gram)
         gs = phrases.kdb.getgs(gram)
-        return gs.judge1(self)
+        if phrases.kdb.getgs('集合') in self.gs:
+            return gs.judge2(self)
+        else:
+            return gs.judge1(self)
  
 class sentence:
     def __init__(self, kdb, s):
@@ -60,11 +63,16 @@ class sentence:
         if not self.kdb.gsin(gram):
             return [2,'%s:不是已知的集合或者函数'%gram]
         gs = self.kdb.getgs(gram)
-        if gram == '集合':
-            return gs.judge2(self)
+        
+        res = self.kdb.getgs('集合').judge1(self)
+        if res[0] == True:
+            if gram == '集合':
+                return (True, self.kdb.getgs('集合'))
+            else:
+                return gs.judge2(self.kdb.getgs(self.s))
         else:
             return gs.judge3(self)
-            
+
 def main():
     print('element')
     

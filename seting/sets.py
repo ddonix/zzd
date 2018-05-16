@@ -60,7 +60,7 @@ class gset:
         res = [2]
         for child in self.child:
             res = child.judge2(gs)
-            if res[0] != 2:
+            if res[0] == True:
                 return res
         return res
     

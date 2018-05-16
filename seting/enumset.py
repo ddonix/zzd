@@ -32,6 +32,7 @@ class gsetenum(sets.gset):
     
     def affirm2(self, gs):
         self.child.append(gs)
+        gs.father.append(self)
         return (True, '')
     
     def weight(self):

@@ -290,15 +290,9 @@ class zzd():
                         x1,x2 = adapter['集合'].split('|')
                         
                 res = self.KDB.getse(x1).be(x2)
+                print(adapter)
                 if res[0] == True:
-                    if '系动词' in adapter:
-                        echo = '%s%s%s'%(x1,adapter['系动词'],x2)
-                    elif '(属于)' in adapter:
-                        echo = '%s属于%s'%(x1,x2)
-                    elif '(包含)' in adapter:
-                        echo = '%s包含%s'%(x2,x1)
-                    else:
-                        echo = '%s%s'%(x1,x2)
+                    echo = adapter['集合断言语句']
                 elif res[0] == False:
                     if '系动词' in adapter:
                         echo = '%s不%s%s'%(x1,adapter['系动词'],x2)
