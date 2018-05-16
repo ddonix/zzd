@@ -19,7 +19,14 @@ class gfunccategory(func.gfunc):
             else:
                 return None
         else:
-            return None
+            if fn[0] == '数':
+                if fn[2].find('eval(x)') != -1:
+                    e = fn[2].replace('eval(x)','(%s)'%se.s)
+                else:
+                    e = fn[2]
+                return eval(e)
+            else:
+                return None
     
     def judge(self, se, desp):
         return None
