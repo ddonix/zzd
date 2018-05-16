@@ -11,17 +11,20 @@ class gsetcategory(sets.gset):
         assert ')' not in name
         sets.gset.__init__(self, kdb, name)
 
-    def setfn(self, fn):
+    def setfn(self, fn, v):
+        self.fn = fn
+        self.v = v
         return
 
     def phin(self, ph):
-        if ph.s in self.e:
-            return (True, {self.name:ph.s})
-        elif 'over' in self.FSM:
-            return (False, '')
-        else:
+        res = self.fn.value(ph)
+        if not res:
             return (2, '对不起，我不知道')
-    
+        if res == self.v:
+            return (True, {self.name:ph.s})
+        else:
+            return (False, '%s是%s的'%(ph.s, res))
+            
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:
             return (True, '')
@@ -34,7 +37,7 @@ class gsetcategory(sets.gset):
         return (True, '')
     
     def weight(self):
-        return len(self.e)
+        return -1
 
 def main():
     print('gsetcategory')

@@ -15,10 +15,8 @@ class gset:
         self.child = []         #子集
     
     def addbyname(self, name):
-        for n in name:
-            assert n != self.name
-            assert n not in self.byname
-            self.byname.add(n)
+        assert name != self.name
+        self.byname.add(name)
 
     def weight(self):               #返回集合的元素个数，无穷集合返回-1.
         raise NotImplementedError

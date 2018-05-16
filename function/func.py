@@ -21,34 +21,26 @@ class gfunc:
             vset = d[d.find('>')+1:]
             fn = f[2:]
             self.func.add((dset,vset,fn))
-            print(dset)
-            print(vset)
-    
-    def ds(self, sp):
+
+    def getfn(self, se):
         for f in self.func:
-            if sp.be(f[0])[0] == 0:
-                return True
-        return False
+            if se.be(f[0])[0] == True:
+                return f
+        return None
     
-    def vs(self, sp):
+    def vs(self, se):
         for f in self.func:
-            if sp.be(f[0])[0] == 0:
+            if se.be(f[1])[0] == True:
                 return f[1]
         return None
     
     #取值或者判断真假的函数
-    def value_a(self, se):
+    def value(self, se):
         raise NotImplementedError
     
-    def affirm_a(self, sp, desp):
+    def judge(self, se, desp):
         raise NotImplementedError
     
-    def judge_a(self, sp, desp):
-        raise NotImplementedError
-    
-    def value_A(self, gs):
-        raise NotImplementedError
-
 def main():
     print('func')
     

@@ -473,6 +473,8 @@ def __prevgram(gram, res):
 def main():
     print('kdb')
     kdb = ZZDKDB()
+    for func in kdb.func:
+        print(func)
         
 if __name__ == '__main__':
     main()
