@@ -291,6 +291,7 @@ class zzd():
                         
                 res = self.KDB.getse(x1).be(x2)
                 print(adapter)
+                print(res)
                 if res[0] == True:
                     echo = adapter['集合断言语句']
                 elif res[0] == False:

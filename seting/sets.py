@@ -57,7 +57,7 @@ class gset:
     def judge2(self, gs):     #判断gs是否是self的子集
         if gs == self:
             return (True, self)
-        res = [2]
+        res = (2,'对不起，我不知道')
         for child in self.child:
             res = child.judge2(gs)
             if res[0] == True:
@@ -86,7 +86,7 @@ class gset:
         if res and not res[1]:
             return (True, res[2])
         else:
-            return (False, '')
+            return (2, '对不起，我不知道')
 
     def addbyname(self, name):
         for n in name:
