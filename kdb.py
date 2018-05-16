@@ -9,6 +9,8 @@ from seting import enumset
 from seting import decareset
 from seting import reguset
 from seting import categoryset
+from function import func
+from function import categoryfunc
 import sys
 
 class ZZDKDB():
@@ -38,8 +40,8 @@ class ZZDKDB():
         for mend in cursor:
             self.mend_replace[mend[0]] = mend
         conn.close()
-        self.fninit()
         self.gsinit()
+        self.fninit()
         self.phinit()
         self.coreinit()
         
@@ -325,7 +327,7 @@ class ZZDKDB():
             return NameError
         for f in grammar:
             if f[1] == '分类':
-                fn = categoryset.parsefunc(self, f)
+                fn = function.categoryfunc.parsefunc(self, f)
             elif f[1] == '求值':
                 continue
             else:
