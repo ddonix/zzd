@@ -33,7 +33,7 @@ class gsetdecare(sets.gset):
             if de.name == '...' and i < len(self.decare)-1 and type(self.decare[i+1]) != str:
                 de.setplot(self.decare[i+1].name)
             res = de._judge3(phh)
-            if not res:
+            if not res or res[0] == False:
                 break
             sps += res[0]
             phh = res[1]

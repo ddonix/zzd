@@ -34,11 +34,16 @@ class gset:
         raise NotImplementedError
     
     def _sein(self, phs):
-        if phs and self.phin(phs[0])[0] == True:
-            return (phs[0].s, phs[1:], {self.name:phs[0].s})
-        elif phs and self.phin(phs[0])[0] == False:
+        if phs:
+            res = self.phin(phs[0])
+            if res[0] == True:
+                return (phs[0].s, phs[1:], {self.name:phs[0].s})
+            elif res[0] == False:
+                return res
+            else:
+                return None
+        else:
             return None
-        return None
 
     def judge1(self, ph):           #判断ph是否属于self
         keys = {}
@@ -77,7 +82,7 @@ class gset:
                 phss = []
                 phss.extend(phs)
                 res = self.child[i]._judge3(phss)
-                if res:
+                if res and res[0] != False:
                     res[2][self.name] = res[0]
                     ress.append(res)
             if ress:
@@ -90,7 +95,9 @@ class gset:
             return self.judge1(se.ph[0])
         res = self._judge3(se.ph)
         if res:
-            if not res[1]:
+            if res[0] == False:
+                return res
+            elif not res[1]:
                 return (True, res[2])
             else:
                 more = ''
