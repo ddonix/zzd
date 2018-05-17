@@ -8,18 +8,18 @@ class gfuncvalue(func.gfunc):
         func.gfunc.__init__(self, kdb, name, desc)
 
     #取值或者判断真假的函数
-    def _value(self, se, fn):
+    def _value(self, ph, fn):
         assert fn[2]
         if fn[0] == '数':
             if fn[2].find('eval(x)') != -1:
-                e = fn[2].replace('eval(x)','(%s)'%se.s)
+                e = fn[2].replace('eval(x)','(%s)'%ph.s)
             else:
                 e = fn[2]
             return eval(e)
         else:
             return None
     
-    def judge(self, se, desp):
+    def judge(self, ph, desp):
         return None
 
 def parsefunc(kdb, fn):

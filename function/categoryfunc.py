@@ -9,13 +9,7 @@ class gfunccategory(func.gfunc):
         self.creategset()
 
     #取值或者判断真假的函数
-    def _value(self, se, fn):
-        print('se')
-        print(se)
-        print(se.ph)
-        if len(se.ph) != 1:
-            return None
-        ph = se.ph[0]
+    def _value(self, ph, fn):
         if not fn[2]:
             if self.name in ph.fn:
                 return ph.fn[self.name]
@@ -31,7 +25,7 @@ class gfunccategory(func.gfunc):
             else:
                 return None
     
-    def _judge(self, se, fn, desp):
+    def _judge(self, ph, fn, desp):
         return None
 
     def creategset(self):

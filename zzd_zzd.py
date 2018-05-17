@@ -270,8 +270,8 @@ class zzd():
             adapter = res[1]
             x = adapter['.']
             f = adapter['函数']
-            y = self.KDB.getfn(f).value(self.KDB.getse(x))
-            self.say(y[1])
+            res = self.KDB.getfn(f).value(self.KDB.getse(x))
+            self.say(res[1])
 
     def _solve_judge(self, se):
         res = se.be('判断语句')
@@ -296,7 +296,9 @@ class zzd():
                 if res[0] == True:
                     echo = adapter['集合断言语句']
                 elif res[0] == False:
-                    if '系动词' in adapter:
+                    if res[1]:
+                        echo = res[1]
+                    elif '系动词' in adapter:
                         echo = '%s不%s%s'%(x1,adapter['系动词'],x2)
                     elif '(属于)' in adapter:
                         echo = '%s不属于%s'%(x1,x2)

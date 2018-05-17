@@ -6,7 +6,7 @@ import time
 	
 pos = 0
 getmess = False
-nickname = '莫有空'
+nickname = '间'
 user = None
 username = None
 

@@ -63,7 +63,6 @@ class sentence:
         if not self.kdb.gsin(gram):
             return [2,'%s:不是已知的集合或者函数'%gram]
         gs = self.kdb.getgs(gram)
-        
         res = self.kdb.getgs('集合').judge1(self)
         if res[0] == True:
             if gram == '集合':
