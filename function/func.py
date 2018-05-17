@@ -56,7 +56,10 @@ class gfunc:
         for f in fn:
             res = self._value(ph, f)
             if res != None:
-                return (True, str(res))
+                if type(res) == bool:
+                    return (True, '对' if res else '错')
+                else:
+                    return (True, str(res))
         return (False, '%s未知'%self.name)
     
     def judge(self, ph, desp):

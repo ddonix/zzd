@@ -118,7 +118,7 @@ class zzd():
         res = se.be('数学语句')
         print(se.s)
         if res[0] != True:
-            self._phrase_se(se)
+            self._solve_other(se)
         else:
             adapter = res[1]
             if '数学判断' in adapter or '数学方程' in adapter:
@@ -267,7 +267,7 @@ class zzd():
     def _solve_query(self, se):
         res = se.be('询问语句')
         if res[0] != True:
-            self._phrase_se(se)
+            self._solve_other(se)
         else:
             adapter = res[1]
             f = adapter['函数']
@@ -282,7 +282,7 @@ class zzd():
     def _solve_judge(self, se):
         res = se.be('判断语句')
         if res[0] != True:
-            self._phrase_se(se)
+            self._solve_other(se)
         else:
             adapter = res[1]
             if '集合判断语句' in adapter:
@@ -326,7 +326,7 @@ class zzd():
     def _solve_affirm(self, se):
         res = se.be('断言语句')
         if res[0] != True:
-            self._phrase_se(se)
+            self._solve_other(se)
         else:
             adapter = res[1]
             if '待定断言语句' in adapter:
@@ -394,6 +394,9 @@ class zzd():
             self.say('我在，有什么为你做的吗')
             return
         if se.be('询问语句')[0] == True:
+            self._solve_query(se)
+            return
+        if se.be('判断语句')[0] == True:
             self._solve_query(se)
             return
         self._phrase_se(se)

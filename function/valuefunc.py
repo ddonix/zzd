@@ -10,14 +10,14 @@ class gfuncvalue(func.gfunc):
     #取值或者判断真假的函数
     def _value(self, ph, fn):
         assert fn[2]
-        ph = ph[0]
-        if fn[0] == '数':
-            e = fn[2].replace('如果','if')
-            e = e.replace('否则','else')
-            e = e.replace('x','(%s)'%ph.s)
-            return eval(e)
+        e = fn[2].replace('如果','if')
+        e = e.replace('否则','else')
+        if len(ph) == 1:
+            e = e.replace('x','(%s)'%ph[0].s)
         else:
-            return None
+            for i in range(0,len(ph)):
+                e = e.replace('x%d'%(i+1),'(%s)'%ph[i].s)
+        return eval(e)
     
     def judge(self, ph, desp):
         return None
