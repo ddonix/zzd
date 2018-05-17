@@ -66,23 +66,25 @@ class gset:
     def judge2(self, gs):     #判断gs是否是self的子集
         if gs == self:
             return (True, self)
-        res = (2,'对不起，我不知道')
+        res = (2, '对不起，我不知道')
         for child in self.child:
-            res = child.judge2(gs)
-            if res[0] == True:
-                return res
+            if child.judge2_recursion:
+                res = child.judge2(gs)
+                if res[0] == True:
+                    return res
         return res
     
     def _judge3(self, phs):
         if self.child:
             ress = []
             for i in range(len(self.child)-1, -1, -1):
-                phss = []
-                phss.extend(phs)
-                res = self.child[i]._judge3(phss)
-                if res and res[0] != False:
-                    res[2][self.name] = res[0]
-                    ress.append(res)
+                if self.child[i].judge3_recursion:
+                    phss = []
+                    phss.extend(phs)
+                    res = self.child[i]._judge3(phss)
+                    if res and res[0] != False:
+                        res[2][self.name] = res[0]
+                        ress.append(res)
             if ress:
                 ress.sort(key=lambda x:len(x[1]))
                 return ress[0]

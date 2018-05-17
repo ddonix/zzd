@@ -270,7 +270,7 @@ class zzd():
             adapter = res[1]
             x = adapter['.']
             f = adapter['函数']
-            res = self.KDB.getfn(f).value(self.KDB.getse(x))
+            res = self.KDB.getfn(f).value(self.KDB.getph(x))
             self.say(res[1])
 
     def _solve_judge(self, se):
