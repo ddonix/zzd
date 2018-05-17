@@ -21,7 +21,7 @@ class gsetcategory(sets.gset):
         return
 
     def phin(self, ph):
-        res = self.fn.value(ph)
+        res = self.fn.value([ph])
         if res[0] == False:
             return (2, res[1])
         elif res[1] == self.v:

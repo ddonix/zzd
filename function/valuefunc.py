@@ -11,10 +11,9 @@ class gfuncvalue(func.gfunc):
     def _value(self, ph, fn):
         assert fn[2]
         if fn[0] == '数':
-            if fn[2].find('eval(x)') != -1:
-                e = fn[2].replace('eval(x)','(%s)'%ph.s)
-            else:
-                e = fn[2]
+            e = fn[2].replace('如果','if')
+            e = e.replace('否则','else')
+            e = e.replace('x','(%s)'%ph.s)
             return eval(e)
         else:
             return None

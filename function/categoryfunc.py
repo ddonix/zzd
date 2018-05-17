@@ -9,6 +9,9 @@ class gfunccategory(func.gfunc):
 
     #取值或者判断真假的函数
     def _value(self, ph, fn):
+        if len(ph) != 1:
+            return None
+        ph = ph[0]
         if not fn[2]:
             if self.name in ph.fn:
                 return ph.fn[self.name]
@@ -16,10 +19,9 @@ class gfunccategory(func.gfunc):
                 return None
         else:
             if fn[0] == '数':
-                if fn[2].find('eval(x)') != -1:
-                    e = fn[2].replace('eval(x)','(%s)'%ph.s)
-                else:
-                    e = fn[2]
+                e = fn[2].replace('如果','if')
+                e = e.replace('否则','else')
+                e = e.replace('x','(%s)'%ph.s)
                 return eval(e)
             else:
                 return None

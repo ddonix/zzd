@@ -26,8 +26,15 @@ class gfunc:
     def getfn(self, ph):
         res = []
         for f in self.func:
-            if ph.be(f[0])[0] == True:
-                res.append(f)
+            d = f[0]
+            if d[0] == '[':
+                dset = d[1:-1].split(' ')
+            else:
+                dset = [d]
+            if len(ph) == len(dset):
+                for i in range(0,len(ph)):
+                    if ph[i].be(dset[i])[0] == True:
+                        res.append(f)
         return res
     
     def vs(self, ph):
@@ -58,10 +65,10 @@ class gfunc:
         return (False, '')
     
     #取值或者判断真假的函数
-    def _value(self, se, f):
+    def _value(self, ph, f):
         raise NotImplementedError
     
-    def _judge(self, se, f, desp):
+    def _judge(self, ph, f, desp):
         raise NotImplementedError
     
 def main():

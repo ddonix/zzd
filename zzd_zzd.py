@@ -268,9 +268,13 @@ class zzd():
             self._phrase_se(se)
         else:
             adapter = res[1]
-            x = adapter['.']
             f = adapter['函数']
-            res = self.KDB.getfn(f).value(self.KDB.getph(x))
+            x = adapter['.']
+            if '|' in x:
+                x1,x2=x.split('|')
+                res = self.KDB.getfn(f).value(self.KDB.getph(x1))
+            else:
+                res = self.KDB.getfn(f).value(self.KDB.getph(x))
             self.say(res[1])
 
     def _solve_judge(self, se):
