@@ -32,7 +32,7 @@ class gfunccategory(func.gfunc):
         for f in self.func:
             for v in f[1][1:-1].split(' '):
                 gs = categoryset.gsetcategory(self.kdb, '%s%s'%(v,f[0]))
-                gs.setfn(self, v)
+                gs.setfn(self, f, v)
                 
                 gs.addbyname('%s的%s'%(v,f[0]))
                 if self.name[0] != '(':

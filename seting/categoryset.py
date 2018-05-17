@@ -11,8 +11,9 @@ class gsetcategory(sets.gset):
         assert ')' not in name
         sets.gset.__init__(self, kdb, name)
 
-    def setfn(self, fn, v):
+    def setfn(self, fn, f, v):
         self.fn = fn
+        self.f = f
         self.v = v
         return
 
@@ -23,7 +24,7 @@ class gsetcategory(sets.gset):
         elif res[1] == self.v:
             return (True, {self.name:ph.s})
         else:
-            return (False, '%s是%s%s'%(ph.s, res[1]))
+            return (False, '%s是%s%s'%(ph.s, res[1], self.f[0]))
             
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:
