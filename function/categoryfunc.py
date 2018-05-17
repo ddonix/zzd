@@ -1,7 +1,6 @@
 #!/usr/bin/python3 -B
 from function import func
 from seting import categoryset
-
 #分类集合，枚举集合的划分。例如:人划分为男人和女人
 class gfunccategory(func.gfunc):
     def __init__(self, kdb, name, desc):
@@ -39,6 +38,7 @@ class gfunccategory(func.gfunc):
                     gs.addbyname('%s%s的%s'%(self.name, v,f[0]))
                     gs.addbyname('%s是%s的%s'%(self.name, v,f[0]))
                 self.kdb.addgs(gs)
+                self.kdb.add_information_2(gs.name, f[0])
                 
 
 def parsefunc(kdb, fn):
