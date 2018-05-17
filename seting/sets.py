@@ -13,6 +13,10 @@ class gset:
         
         self.father = []        #父集
         self.child = []         #子集
+
+        self.judge1_recursion = True
+        self.judge2_recursion = True
+        self.judge3_recursion = True
     
     def addbyname(self, name):
         assert name != self.name
@@ -41,20 +45,20 @@ class gset:
 
     def judge1(self, ph):           #判断ph是否属于self
         keys = {}
-        for child in self.child:
-            res = child.judge1(ph)
-            if res[0] == True:
-                for k in res[1]:
-                    keys[k] = res[1][k]
         res = self.phin(ph)
         if res[0] == True:
             for k in res[1]:
                 keys[k] = res[1][k]
-        else:
-            if keys:
-                keys[self.name] = ph.s
-
+            keys[self.name] = ph.s
+            return (True, keys)
+        for child in self.child:
+            if child.judge1_recursion:
+                res = child.judge1(ph)
+                if res[0] == True:
+                    for k in res[1]:
+                        keys[k] = res[1][k]
         if keys:
+            keys[self.name] = ph.s
             return (True, keys)
         else:
             return res

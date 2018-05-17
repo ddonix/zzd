@@ -44,7 +44,7 @@ class ZZDKDB():
         self.gsinit()
         self.fninit()
         self.phinit()
-#        self.coreinit()
+        self.coreinit()
         
     def getinWaaClass(self, se):
         keyword = [x.s for x in se.ph if x.s in self.keyword]

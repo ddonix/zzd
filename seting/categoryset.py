@@ -10,6 +10,9 @@ class gsetcategory(sets.gset):
         assert '(' not in name
         assert ')' not in name
         sets.gset.__init__(self, kdb, name)
+        self.judge1_recursion = False
+        self.judge2_recursion = False
+        self.judge3_recursion = False
 
     def setfn(self, fn, f, v):
         self.fn = fn
