@@ -164,6 +164,8 @@ class zzd():
             self.say('请已经认证过身份了.同时服务多人功能正在开发中')
         elif 'zzd播放命令' in adapter:
             out = self.player.play(arg)
+        elif 'zzd换曲命令' in adapter:
+            out = self.player.next()
         elif 'zzd暂停命令' in adapter:
             out = self.player.pause()
         elif 'zzd继续命令' in  adapter:

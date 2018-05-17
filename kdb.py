@@ -124,6 +124,9 @@ class ZZDKDB():
 
     def addfn(self, fn):
         self.func[fn.name] = fn
+        for name in fn.byname:
+            self.func[name] = fn
+
 
     def addph(self, ph):
         if len(ph.s) == 1:

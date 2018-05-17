@@ -13,6 +13,7 @@ class gfunc:
         assert not self.kdb.fnin(name)
         
         self.name = name
+        self.byname = set()     #别名
         
         self.func = set()
         desc = desc.split('~')
@@ -22,6 +23,10 @@ class gfunc:
             vset = d[d.find('>')+1:]
             fn = f[2:]
             self.func.add((dset,vset,fn))
+    
+    def addbyname(self, name):
+        assert name != self.name
+        self.byname.add(name)
 
     def getfn(self, ph):
         res = []
