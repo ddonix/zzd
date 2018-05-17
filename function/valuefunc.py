@@ -2,8 +2,8 @@
 from function import func
 from seting import categoryset
 
-#分类集合，枚举集合的划分。例如:人划分为男人和女人
-class gfunccategory(func.gfunc):
+#求值函数,所有可以通过python eval的表达式都可以
+class gfuncvalue(func.gfunc):
     def __init__(self, kdb, name, desc):
         func.gfunc.__init__(self, kdb, name, desc)
         self.creategset()
@@ -45,8 +45,8 @@ class gfunccategory(func.gfunc):
                 
 
 def parsefunc(kdb, fn):
-    assert fn[1] == '分类'
-    func = gfunccategory(kdb, fn[0], fn[2])
+    assert fn[1] == '求值'
+    func = gfuncvalue(kdb, fn[0], fn[2])
     return func
 
 def main():

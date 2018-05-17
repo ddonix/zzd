@@ -1,4 +1,5 @@
 #!/usr/bin/python3 -B
+import element
 
 class gfunc:
     def __init__(self, kdb, name, desc):

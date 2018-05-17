@@ -11,6 +11,7 @@ from seting import reguset
 from seting import categoryset
 from function import func
 from function import categoryfunc
+from function import valuefunc
 import sys
 
 class ZZDKDB():
@@ -293,6 +294,9 @@ class ZZDKDB():
         return gs.affirm2(gsB)
 
     def gsinit(self):
+        self.addgs(enumset.gsetenum(self, '集合'))
+        self.addgs(enumset.gsetenum(self, '函数'))
+        
         self.addgs(stickset.gsetstick(self, '数'))
         self.addgs(stickset.gsetstick(self, '汉语数'))
         self.addgs(stickset.gsetstick(self, '字符串'))
@@ -328,8 +332,10 @@ class ZZDKDB():
         for f in grammar:
             if f[1] == '分类':
                 fn = function.categoryfunc.parsefunc(self, f)
+                self.addfn(fn)
             elif f[1] == '求值':
-                continue
+                fn = function.valuefunc.parsefunc(self, f)
+                self.addfn(fn)
             else:
                 continue
 
@@ -378,6 +384,13 @@ class ZZDKDB():
                 item = gram[1:-1].split(' ')
                 for sp in item:
                     self.add_information_1(sp, gram)
+        
+        #补充函数的phrases
+        for fn in self.func:
+            if fn[0] != '(':
+                if not self.getph(fn):
+                    self.addph(element.phrases(fn))
+                self.add_information_1(fn, '函数')
         
     def coreinit(self):
         try:

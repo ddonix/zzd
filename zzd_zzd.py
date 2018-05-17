@@ -52,7 +52,6 @@ class zzd():
     def init(cls):
         cls.inWaaClass['math'] =  zzd._solve_math                        #math
         cls.inWaaClass['command'] = zzd._solve_command                    #command
-        cls.inWaaClass['query'] = zzd._solve_query                        #query
         cls.inWaaClass['judge'] = zzd._solve_judge                        #judge
         cls.inWaaClass['affirm'] = zzd._solve_affirm                    #affirm
         cls.inWaaClass['query'] = zzd._solve_query                        #query
@@ -263,17 +262,17 @@ class zzd():
         else:
             self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]))
     
-    def _solve_query(self, sep):
-        res = sep.be('询问语句')
-        if res[0] != 0:
+    def _solve_query(self, se):
+        res = se.be('询问语句')
+        if res[0] != True:
             self.say('询问语法不对')
         else:
-            adapter = res[1][2]
+            adapter = res[1]
             for a in adapter:
-                print(a,adapter[a])
+                print(a, adapter[a])
 
-    def _solve_judge(self, sep):
-        res = sep.be('判断语句')
+    def _solve_judge(self, se):
+        res = se.be('判断语句')
         if res[0] != True:
             self.say('判断语法不对')
         else:
@@ -314,12 +313,12 @@ class zzd():
                     elif ok and '否定回答语句' in ok:
                         self.say('好的')
 
-    def _solve_affirm(self, sep):
-        res = sep.be('断言语句')
-        if res[0] != 0:
+    def _solve_affirm(self, se):
+        res = se.be('断言语句')
+        if res[0] != True:
             self.say('断言语法不对')
         else:
-            adapter = res[1][2]
+            adapter = res[1]
             if '待定断言语句' in adapter:
                 assert '...' in adapter
                 assert '|' in adapter['...']
@@ -380,20 +379,19 @@ class zzd():
         self.ask_event.set()
         return False
     
-    def _solve_other(self, sep):
-        if sep.be('称呼')[0] == True:
+    def _solve_other(self, se):
+        if se.be('称呼')[0] == True:
             self.say('我在，有什么为你做的吗')
             return
-        for ph in sep.d:
-            if ph.be('集合')[0] == 0:
-                self._solve_affirm(sep)
-                return
-        phrases = sep.d if sep.d else [sep]
-        s = phrases[0].s
-        for ph in phrases[1:]:
+        if se.be('询问语句')[0] == True:
+            self._solve_query(se)
+            return
+        s = ''
+        for ph in se.ph:
             s += '~%s'%ph.s
         self.say('对不起，我处理不利.分词结果是:%s'%s)
         n = ['']
+        phrases = se.ph
         while phrases:
             if len(phrases[0].s) == 1 and len(phrases[0].gs) == 1:
                 n[-1] += phrases[0].s
