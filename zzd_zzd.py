@@ -118,7 +118,7 @@ class zzd():
         res = se.be('数学语句')
         print(se.s)
         if res[0] != True:
-            self.say('数学语法不对')
+            self._phrase_se(se)
         else:
             adapter = res[1]
             if '数学判断' in adapter or '数学方程' in adapter:
@@ -265,16 +265,18 @@ class zzd():
     def _solve_query(self, se):
         res = se.be('询问语句')
         if res[0] != True:
-            self.say('询问语法不对')
+            self._phrase_se(se)
         else:
             adapter = res[1]
-            for a in adapter:
-                print(a, adapter[a])
+            x = adapter['.']
+            f = adapter['函数']
+            y = self.KDB.getfn(f).value(self.KDB.getse(x))
+            self.say(y[1])
 
     def _solve_judge(self, se):
         res = se.be('判断语句')
         if res[0] != True:
-            self.say('判断语法不对')
+            self._phrase_se(se)
         else:
             adapter = res[1]
             if '集合判断语句' in adapter:
@@ -316,7 +318,7 @@ class zzd():
     def _solve_affirm(self, se):
         res = se.be('断言语句')
         if res[0] != True:
-            self.say('断言语法不对')
+            self._phrase_se(se)
         else:
             adapter = res[1]
             if '待定断言语句' in adapter:
@@ -386,10 +388,13 @@ class zzd():
         if se.be('询问语句')[0] == True:
             self._solve_query(se)
             return
+        self._phrase_se(se)
+    
+    def _phrase_se(self, se):
         s = ''
         for ph in se.ph:
             s += '~%s'%ph.s
-        self.say('对不起，我处理不利.分词结果是:%s'%s)
+        self.say('对不起，我处理不了.分词结果是:%s'%s)
         n = ['']
         phrases = se.ph
         while phrases:
@@ -405,8 +410,8 @@ class zzd():
                 l += 1
                 rr +='%s '%nc
         if l:
-            r ='我猜测：%s是新词，您可以进入学习模式进行学习:'%rr
-        self.say(r)
+            r ='我猜测:%s是新词，您可以进入学习模式进行学习'%rr
+            self.say(r)
                 
     def desire_verify(self, desire):
         if self.FSM['verify'] == True:

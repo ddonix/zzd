@@ -9,26 +9,29 @@ class gfunccategory(func.gfunc):
         self.creategset()
 
     #取值或者判断真假的函数
-    def value(self, se):
-        fn = self.getfn(se)
-        if not fn:
+    def _value(self, se, fn):
+        print('se')
+        print(se)
+        print(se.ph)
+        if len(se.ph) != 1:
             return None
+        ph = se.ph[0]
         if not fn[2]:
-            if self.name in se.fn:
-                return se.fn[self.name]
+            if self.name in ph.fn:
+                return ph.fn[self.name]
             else:
                 return None
         else:
             if fn[0] == '数':
                 if fn[2].find('eval(x)') != -1:
-                    e = fn[2].replace('eval(x)','(%s)'%se.s)
+                    e = fn[2].replace('eval(x)','(%s)'%ph.s)
                 else:
                     e = fn[2]
                 return eval(e)
             else:
                 return None
     
-    def judge(self, se, desp):
+    def _judge(self, se, fn, desp):
         return None
 
     def creategset(self):

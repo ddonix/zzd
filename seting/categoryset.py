@@ -18,9 +18,9 @@ class gsetcategory(sets.gset):
 
     def phin(self, ph):
         res = self.fn.value(ph)
-        if not res:
+        if res[0] == False:
             return (False, '%s不是%s'%(ph.s,self.name))
-        if res == self.v:
+        elif res[1] == self.v:
             return (True, {self.name:ph.s})
         else:
             return (False, '%s是%s的'%(ph.s, res))

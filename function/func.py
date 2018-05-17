@@ -24,10 +24,11 @@ class gfunc:
             self.func.add((dset,vset,fn))
 
     def getfn(self, se):
+        res = []
         for f in self.func:
             if se.be(f[0])[0] == True:
-                return f
-        return None
+                res.append(f)
+        return res
     
     def vs(self, se):
         for f in self.func:
@@ -37,9 +38,30 @@ class gfunc:
     
     #取值或者判断真假的函数
     def value(self, se):
-        raise NotImplementedError
+        fn = self.getfn(se)
+        if not fn:
+            return (False, '没有%s'%self.name)
+        for f in fn:
+            res = self._value(se, f)
+            if res != None:
+                return (True, res)
+        return (False, '%s未知'%self.name)
     
     def judge(self, se, desp):
+        fn = self.getfn(se)
+        if not fn:
+            return (False, '')
+        for f in fn:
+            res = self._judge(se, f, desp)
+            if res != None:
+                return (True, res)
+        return (False, '')
+    
+    #取值或者判断真假的函数
+    def _value(self, se, f):
+        raise NotImplementedError
+    
+    def _judge(self, se, f, desp):
         raise NotImplementedError
     
 def main():
