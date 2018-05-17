@@ -27,7 +27,7 @@ class gsetcategory(sets.gset):
         elif res[1] == self.v:
             return (True, {self.name:ph.s})
         else:
-            return (False, '%s是%s%s'%(ph.s, res[1], self.f[0]))
+            return (False, '不，%s是%s%s'%(ph.s, res[1], self.f[0]))
             
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:

@@ -10,6 +10,7 @@ class gfuncvalue(func.gfunc):
     #取值或者判断真假的函数
     def _value(self, ph, fn):
         assert fn[2]
+        ph = ph[0]
         if fn[0] == '数':
             e = fn[2].replace('如果','if')
             e = e.replace('否则','else')

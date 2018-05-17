@@ -271,10 +271,10 @@ class zzd():
             f = adapter['函数']
             x = adapter['.']
             if '|' in x:
-                x1,x2=x.split('|')
-                res = self.KDB.getfn(f).value(self.KDB.getph(x1))
+                x,y=x.split('|')
+                res = self.KDB.getfn(f).value([self.KDB.getph(x),self.KDB.getph(y)])
             else:
-                res = self.KDB.getfn(f).value(self.KDB.getph(x))
+                res = self.KDB.getfn(f).value([self.KDB.getph(x)])
             self.say(res[1])
 
     def _solve_judge(self, se):
