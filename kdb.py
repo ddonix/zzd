@@ -44,7 +44,7 @@ class ZZDKDB():
         self.gsinit()
         self.fninit()
         self.phinit()
-        self.coreinit()
+#        self.coreinit()
         
     def getinWaaClass(self, se):
         keyword = [x.s for x in se.ph if x.s in self.keyword]
@@ -296,7 +296,6 @@ class ZZDKDB():
     def gsinit(self):
         self.addgs(enumset.gsetenum(self, '集合'))
         self.addgs(enumset.gsetenum(self, '函数'))
-        
         self.addgs(stickset.gsetstick(self, '数'))
         self.addgs(stickset.gsetstick(self, '汉语数'))
         self.addgs(stickset.gsetstick(self, '字符串'))

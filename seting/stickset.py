@@ -31,8 +31,10 @@ class gsetstick(sets.gset):
     def affirm1(self, ph):           #ph属于self.不支持断言.
         return (False, 'stickset不支持断言元素')
     
-    def affirm2(self, gs):           #gs包含于self.没有子集
-        return (False, 'stickset不支持断言子集')
+    def affirm2(self, gs):           #gs包含于self.奇数，偶数
+        self.child.append(gs)
+        gs.father.append(self)
+        return (True, '')
     
     def affirm3(self, sp):           #sp属于self.不支持断言.
         return (False, 'stickset不支持断言元素')
