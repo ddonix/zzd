@@ -19,7 +19,18 @@ class gsetdecare(sets.gset):
                 self.decare.append(kdb.getgs(g))
 
     def phin(self, ph):
-        return (False,'')
+        for decare in self.decare:
+            if type(decare) == str:
+                continue
+            else:
+                if ph:
+                    res = decare.judge1(ph)
+                    ph = None
+                    if res[0] != True:
+                        return res
+                else:
+                    return (False, '')
+        return res
     
     def _sein(self, phs):
         phh = phs
