@@ -273,17 +273,19 @@ class zzd():
             print(adapter)
             f = adapter['函数']
             x = adapter['.']
-            if '|' in x:
-                print(x)
-                x=x.split('|')
-                print(self.KDB.getfn(f))
-                print(self.KDB.getfn(f).name)
-                if '(的)' in adapter:
-                    res = self.KDB.getfn(f).value([self.KDB.getph(x[0]),self.KDB.getph(x[1]), self.KDB.getph(x[2])])
-                else:
-                    res = self.KDB.getfn(f).value([self.KDB.getph(x[0]),self.KDB.getph(x[1]), None])
-            else:
+            if '一元函数询问语句' in adapter:
                 res = self.KDB.getfn(f).value([self.KDB.getph(x)])
+            else:
+                assert '二元函数询问语句' in adapter
+                assert '|' in x
+                x = x.split('|')
+                if '(的)' in adapter:
+                    ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1]), self.KDB.getph(x[2])]
+                elif '反向词' in adapter:
+                    ph = [self.KDB.getph(x[1]), self.KDB.getph(x[0]), None]
+                else:
+                    ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1]), None]
+                res = self.KDB.getfn(f).value(ph)
             self.say(res[1])
 
     def _solve_judge(self, se):
