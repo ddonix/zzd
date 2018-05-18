@@ -33,11 +33,18 @@ class phrases:
         if not phrases.kdb.gsin(gram):
             return (2,'%s:不是已知的集合'%gram)
         gs = phrases.kdb.getgs(gram)
-        if phrases.kdb.getgs('集合') in self.gs:
-            return gs.affirm2(self)
+        if phrases.kdb.getgs('集合') not in self.gs:
+            res = gs.affirm1(self)
+            if res[0] == True:
+                self._addgs(gs)
+            return res
         else:
-            return gs.affirm1(self)
- 
+            child = phrases.kdb.getgs(self.s)
+            res = gs.affirm2(child)
+            if res[0] == True:
+                child.father.append(ds)
+            return res
+    
 class sentence:
     def __init__(self, kdb, s):
         assert type(s) == str
