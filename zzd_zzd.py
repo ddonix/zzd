@@ -312,7 +312,7 @@ class zzd():
                     echo = adapter['集合断言语句']
                 elif res[0] == False:
                     if res[1]:
-                        echo = res[1]
+                        echo = '不, %s'%res[1]
                     elif '系动词' in adapter:
                         echo = '%s不%s%s'%(x1,adapter['系动词'],x2)
                     elif '(属于)' in adapter:
@@ -321,8 +321,6 @@ class zzd():
                         echo = '%s不包含%s'%(x2,x1)
                     else:
                         echo = '%s不%s'%(x1,x2)
-                else:
-                    echo  = res[1]
                 self.say(echo)
                 if res[0] == 2:
                     self.say('需要我上网问问吗？')
@@ -336,9 +334,36 @@ class zzd():
         res = se.be('断言语句')
         if res[0] != True:
             self._solve_other(se)
+            return
+        if self.FSM['train'] == False:
+            self.say('对不起，您需先进入学习模式才能增加信息')
+            self.say('是否进入学习模式?')
+            ok = self.ask(['选择回答语句'])
+            if ok and '肯定回答语句' in ok:
+                self.say('好的，已进入学习模式')
+                self.FSM['train'] = True
+            return
+        adapter = res[1]
+        if '属于断言语句' in adapter:
+            assert '.' in adapter
+            assert '集合' in adapter
+            x = self.KDB.getph(adapter['.'])
+            gs = adapter['集合']
+            assert x
+            res = x.be(gs)
+            if res[0] == True:
+                self.say('我的知识库里已经有这条信息了')
+            elif res[0] == False:
+                self.say('这条信息与我的数据库冲突.因为:%s'%res[1])
+            else:
+                res = self.KDB.getgs(gs).affirm1(x)
+                print(res)
         else:
-            adapter = res[1]
-            if '待定断言语句' in adapter:
+            print(adapter)
+
+
+        '''
+        if '包含断言语句' in adapter:
                 assert '...' in adapter
                 assert '|' in adapter['...']
                 x,fn=adapter['...'].split('|')
@@ -385,6 +410,7 @@ class zzd():
                         self._solve_set_a(x, gs)
                     else:
                         self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
+'''
 
     def _solve_answer(self, se):
         assert 'ask' in self.FSM and not self.FSM['ask'][1]
