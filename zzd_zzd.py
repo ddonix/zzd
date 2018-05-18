@@ -270,11 +270,18 @@ class zzd():
             self._solve_other(se)
         else:
             adapter = res[1]
+            print(adapter)
             f = adapter['函数']
             x = adapter['.']
             if '|' in x:
+                print(x)
                 x=x.split('|')
-                res = self.KDB.getfn(f).value([self.KDB.getph(x[0]),self.KDB.getph(x[-1])])
+                print(self.KDB.getfn(f))
+                print(self.KDB.getfn(f).name)
+                if '(的)' in adapter:
+                    res = self.KDB.getfn(f).value([self.KDB.getph(x[0]),self.KDB.getph(x[1]), self.KDB.getph(x[2])])
+                else:
+                    res = self.KDB.getfn(f).value([self.KDB.getph(x[0]),self.KDB.getph(x[1]), None])
             else:
                 res = self.KDB.getfn(f).value([self.KDB.getph(x)])
             self.say(res[1])

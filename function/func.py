@@ -40,8 +40,8 @@ class gfunc:
                 dset = d[1:-1].split(' ')
             else:
                 dset = [d]
-            if len(ph) == len(dset):
-                for i in range(0,len(ph)):
+            if len(ph) in [len(dset), len(dset)+1]:
+                for i in range(0,len(dset)):
                     if ph[i].be(dset[i])[0] == True:
                         res.append(f)
         return res
