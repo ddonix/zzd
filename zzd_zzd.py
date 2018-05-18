@@ -174,7 +174,7 @@ class zzd():
         elif 'zzd问候命令' in adapter:
             self.say(adapter['zzd问候命令'])
         elif 'zzd保存命令' in adapter:
-            self._command_save(sp)
+            self._command_save()
         elif 'zzd学习命令' in adapter or 'zzd进入命令' in adapter:
             mode = adapter['zzd学习命令'] if 'zzd学习命令' in adapter else adapter['zzd模式定语_学习']
             if self.FSM['train'] == False:
@@ -192,74 +192,28 @@ class zzd():
         else:
             self.say('不识别的内置命令')
 
-    def _command_save(self, sp):
-        if not (self.infomation_a or self.infomation_A):
-            print(self.infomation_a)
-            print(self.infomation_A)
+    def _command_save(self):
+        infonum = self.KDB.getinfonum()
+        if infonum == 0:
             self.say('没有信息需要写入数据库')
             return
-        if sp and '认证参数' in adapter:
-            password = adapter['认证参数']
-        else:
-            self.say('请输入管理员口令')
-            password = self.ask(['认证参数句','认证参数'])
-            if not password:
-                self.say('您没有输入口令，写入取消。')
-                return
-            else:
-                password = password['认证参数']
+        self.say('请输入管理员口令')
+        password = self.ask(['认证参数句','认证参数'])
+        if not password:
+            self.say('您没有输入口令，写入取消。')
+            return
+        password = password['认证参数']
         if password != self.managerid:
             self.say('口令错误，写入取消。')
             return
-        while self.infomation_a:
-            info = self.infomation_a.popitem()
-            if not db.add_database_a_in_A(info[0], info[1]):
-                self.say('%s信息写入失败'%info[0])
-                self.infomation_a[info[0]]=info[1]
-                break
+            
+        res = self.KDB.save_infomation()
+        if res[0] == False:
+            self.say(res[1])
         else:
-            self.say('元素信息写入成功')
-        
-        while self.infomation_A:
-            info = self.infomation_A.popitem()
-            if not db.add_database_A_in_B(info[1], info[0]):
-                self.say('%s信息写入失败'%info[0])
-                self.infomation_A[info[0]]=info[1]
-                break
-        else:    
-            self.say('集合信息写入成功')
-    
-    def _solve_set_a(self, x, gs):
-        res = db.add_information_1(x, gs)
-        if res[0] == 0:
-            if x in self.infomation_a:
-                self.infomation_a[x] += '~%s'%gs
-            else:
-                self.infomation_a[x] = gs
-            self.say('好的，我记住了')
-        elif res[0] == 1:
-            self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x,res[1],res[1],gs))
-        else:
-            self.say('该信息与知识库冲突。原因：%s是%s, %s与%s不相容'%(x,res[1],res[1],gs))
-                    
-    def _solve_set_A(self, x, gs):
-        if not self.KDB.spin(x):
-            db.add_information_1(x, '集合')
-            self.infomation_a[x] = '集合'
-        res = db.add_information_2(x, gs)
-        if res[0] == 0:
-            if x in self.infomation_A:
-                self.infomation_A[gs] += '~%s'%x
-            else:
-                self.infomation_A[gs] = x
-            self.say('好的，我记住了')
-        elif res[0] == 1:
-            if x == res[1]:
-                self.say('该信息已在知识库。原因：%s是%s'%(x, gs))
-            else:
-                self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x, res[1], res[1], gs))
-        else:
-            self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]))
+            self.say('成功写入%d条信息'%res[1])
+            if res[1] < infonum:
+                self.say('%d条信息写入失败'%res[2])
     
     def _solve_query(self, se):
         res = se.be('询问语句')
@@ -365,6 +319,7 @@ class zzd():
             res = x.affirm(gs)
             if res[0] == True:
                 self.say('好的，我记住了')
+                self.KDB.add_study_info(x, gs)
             else:
                 self.say(res[1])
         '''
@@ -522,13 +477,7 @@ class zzd():
             self.say('您还有%d条学习信息没有写入数据库,需要写入吗？'%infonum)
             ok = self.ask(['选择回答语句'])
             if ok and '肯定回答语句' in ok:
-                res = self.kdb.save_infomation()
-                if res[0] == False:
-                    self.say(res[1])
-                else:
-                    self.say('成功写入%d条信息'%res[1])
-                    if res[1] < infonum:
-                        self.say('%d条信息写入失败'%res[2])
+                self._command_save()
             else:
                 self.say('丢弃学习信息')
         self.say(desire[2][0])
@@ -608,14 +557,3 @@ def main(a,A):
     
 if __name__ == '__main__':
     main(sys.argv[1], sys.argv[2])
-'''
-    phs = db.fenci(a, False)
-    for p in phs:
-        print(p.s,'|')
-    sp = g.fensp(phs,True)
-    print('sp[0]:',sp[0])
-    print('sp[1]:',sp[1])
-    print('adapter:',adapter)
-    for s in adapter:
-        print(s,adapter[s])
-'''

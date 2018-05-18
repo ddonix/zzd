@@ -26,9 +26,9 @@ class ZZDKDB():
         self.mend_add = set()   #增加修复集合
         self.mend_replace = {}  #替换修复集合
     
-        infomation_a = {} # 'a':'A' a属于A
-        infomation_A = {} # 'A':'B' A包含B
-        infomation_a_fn = {} # 'a':a有fn信息
+        self.infomation_a = {} # 'a':'A' a属于A
+        self.infomation_A = {} # 'A':'B' A包含B
+        self.infomation_a_fn = {} # 'a':a有fn信息
         
         try:
             conn = sqlite3.connect('./data/grammar.db')
@@ -278,7 +278,7 @@ class ZZDKDB():
             return (False, '没有信息需要写入数据库')
         while self.infomation_a:
             info = self.infomation_a.popitem()
-            if not db.add_database_a_in_A(info[0], info[1]):
+            if not self.add_database_a_in_A(info[0], info[1]):
                 fail += 1
                 self.infomation_a[info[0]]=info[1]
                 break
@@ -287,13 +287,27 @@ class ZZDKDB():
         
         while self.infomation_A:
             info = self.infomation_A.popitem()
-            if not db.add_database_A_in_B(info[1], info[0]):
+            if not self.add_database_A_in_B(info[1], info[0]):
                 fail += 1
                 self.infomation_A[info[0]]=info[1]
                 break
             else:
                 success += 1
         return (True, success, fail)
+    
+    def add_study_info(self, x, gs):
+        if x.be('集合')[0] == True:
+            x = x.s
+            if x in self.infomation_a:
+                self.infomation_a[x] += '~%s'%gs
+            else:
+                self.infomation_a[x] = gs
+        else:
+            x = x.s
+            if x in self.infomation_a:
+                self.infomation_a[x] += '~%s'%gs
+            else:
+                self.infomation_a[x] = gs
     
     #增加元素a属于集合A这条信息。
     #成功返回True，错误返回False，其他返回2.
