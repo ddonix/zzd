@@ -270,12 +270,12 @@ class ZZDKDB():
     def getinfonum(self):
         return len(self.infomation_a)+len(self.infomation_A)+len(self.infomation_a_fn)
         
-    def _command_save(self, sp):
+    def save_infomation(self):
         fail = 0
         success = 0
-        allinfo = len(self.infomation_a)+len(self.infomation_A)+len(self.infomation_a_fn)
+        allinfo = self.getinfonum()
         if allinfo == 0:
-            return (False, ('没有信息需要写入数据库'))
+            return (False, '没有信息需要写入数据库')
         while self.infomation_a:
             info = self.infomation_a.popitem()
             if not db.add_database_a_in_A(info[0], info[1]):
@@ -289,7 +289,6 @@ class ZZDKDB():
             info = self.infomation_A.popitem()
             if not db.add_database_A_in_B(info[1], info[0]):
                 fail += 1
-                self.say('%s信息写入失败'%info[0])
                 self.infomation_A[info[0]]=info[1]
                 break
             else:

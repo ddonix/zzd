@@ -517,13 +517,20 @@ class zzd():
         assert desire[2]
         desire[1] = False
         self.player.stop(False)
-        if self.infomation_a or self.infomation_A:
-            self.say('您还有学习信息没有写入数据库,需要写入吗？')
+        infonum = self.KDB.getinfonum()
+        if infonum > 0:
+            self.say('您还有%d条学习信息没有写入数据库,需要写入吗？'%infonum)
             ok = self.ask(['选择回答语句'])
             if ok and '肯定回答语句' in ok:
-                self._command_save(None)
+                res = self.kdb.save_infomation()
+                if res[0] == False:
+                    self.say(res[1])
+                else:
+                    self.say('成功写入%d条信息'%res[1])
+                    if res[1] < infonum:
+                        self.say('%d条信息写入失败'%res[2])
             else:
-                self.say('丢弃学习信息。')
+                self.say('丢弃学习信息')
         self.say(desire[2][0])
         self.desire['time'][1] == False
         self.FSM['work'] = False

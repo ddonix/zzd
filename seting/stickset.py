@@ -28,7 +28,7 @@ class gsetstick(sets.gset):
     def weight(self):               #返回集合的元素个数，无穷集合返回-1.
         return -1
     
-    def affirm2(self, gs):           #gs包含于self.奇数，偶数
+    def affirm2(self, gs):          #gs包含于self.奇数，偶数
         self.child.append(gs)
         return (True, '')
     
