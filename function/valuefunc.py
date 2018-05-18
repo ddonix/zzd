@@ -4,8 +4,8 @@ from seting import categoryset
 
 #求值函数,所有可以通过python eval的表达式都可以
 class gfuncvalue(func.gfunc):
-    def __init__(self, kdb, name, desc):
-        func.gfunc.__init__(self, kdb, name, desc)
+    def __init__(self, kdb, name, desc, byname):
+        func.gfunc.__init__(self, kdb, name, desc, byname)
 
     #取值或者判断真假的函数
     def _value(self, ph, fn):
@@ -24,7 +24,7 @@ class gfuncvalue(func.gfunc):
 
 def parsefunc(kdb, fn):
     assert fn[1] == '求值'
-    func = gfuncvalue(kdb, fn[0], fn[2])
+    func = gfuncvalue(kdb, fn[0], fn[2], fn[3])
     return func
 
 def main():

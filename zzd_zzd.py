@@ -273,8 +273,8 @@ class zzd():
             f = adapter['函数']
             x = adapter['.']
             if '|' in x:
-                x,y=x.split('|')
-                res = self.KDB.getfn(f).value([self.KDB.getph(x),self.KDB.getph(y)])
+                x=x.split('|')
+                res = self.KDB.getfn(f).value([self.KDB.getph(x[0]),self.KDB.getph(x[-1])])
             else:
                 res = self.KDB.getfn(f).value([self.KDB.getph(x)])
             self.say(res[1])

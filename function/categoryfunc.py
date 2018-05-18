@@ -3,8 +3,8 @@ from function import func
 from seting import categoryset
 #分类集合，枚举集合的划分。例如:人划分为男人和女人
 class gfunccategory(func.gfunc):
-    def __init__(self, kdb, name, desc):
-        func.gfunc.__init__(self, kdb, name, desc)
+    def __init__(self, kdb, name, desc, byname):
+        func.gfunc.__init__(self, kdb, name, desc, byname)
         self.creategset()
 
     #取值或者判断真假的函数
@@ -45,7 +45,7 @@ class gfunccategory(func.gfunc):
 
 def parsefunc(kdb, fn):
     assert fn[1] == '分类'
-    func = gfunccategory(kdb, fn[0], fn[2])
+    func = gfunccategory(kdb, fn[0], fn[2], fn[3])
     return func
 
 def main():

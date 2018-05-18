@@ -2,7 +2,7 @@
 import element
 
 class gfunc:
-    def __init__(self, kdb, name, desc):
+    def __init__(self, kdb, name, desc, byname):
         assert type(name) == str
         assert name
         assert 'f' in desc
@@ -23,6 +23,10 @@ class gfunc:
             vset = d[d.find('>')+1:]
             fn = f[2:]
             self.func.add((dset,vset,fn))
+        if byname:
+            byname = byname.split('~')
+            for name in byname:
+                self.addbyname(name)
     
     def addbyname(self, name):
         assert name != self.name
