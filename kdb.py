@@ -382,6 +382,11 @@ class ZZDKDB():
                 if not self.getph(gram):
                     self.addph(element.phrases(gram))
                 self.add_information_1(gram, '集合')
+                for name in self.gset[gram].byname:
+                    if not self.getph(name):
+                        self.addph(element.phrases(name))
+                    self.add_information_1(name, '集合')
+                    
             if gram[0] == '(' and gram[-1] == ')':
                 item = gram[1:-1].split(' ')
                 for sp in item:
@@ -393,6 +398,10 @@ class ZZDKDB():
                 if not self.getph(fn):
                     self.addph(element.phrases(fn))
                 self.add_information_1(fn, '函数')
+                for name in self.func[fn].byname:
+                    if not self.getph(fn):
+                        self.addph(element.phrases(fn))
+                    self.add_information_1(fn, '函数')
         
     def coreinit(self):
         try:
