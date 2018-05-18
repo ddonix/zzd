@@ -12,9 +12,6 @@ import kdb
 #除input函数运行在root主进程，其他函数运行在zhd线程.
 class zzd():
     inWaaClass = {}        #输入语句类型
-    infomation_a = {} # 'a':'A' a属于A
-    infomation_A = {} # 'A':'B' A包含B
-    infomation_a_fn = {} # 'a':a有fn信息
     def __init__(self, show, friend):
         assert show and friend
         self.show = show
@@ -349,19 +346,27 @@ class zzd():
             assert '集合' in adapter
             x = self.KDB.getph(adapter['.'])
             gs = adapter['集合']
-            assert x
-            res = x.be(gs)
-            if res[0] == True:
-                self.say('我的知识库里已经有这条信息了')
-            elif res[0] == False:
-                self.say('这条信息与我的数据库冲突.因为:%s'%res[1])
+        elif '集合断言语句' in adapter:
+            assert '集合' in adapter
+            if '(包含)' in adapter:
+                gs,x = adapter['集合'].split('|')
+                x = self.KDB.getph(x)
             else:
-                res = self.KDB.getgs(gs).affirm1(x)
-                print(res)
+                x,gs = adapter['集合'].split('|')
+                x = self.KDB.getph(x)
         else:
-            print(adapter)
-
-
+            assert 1
+        res = x.be(gs)
+        if res[0] == True:
+            self.say('我的知识库里已经有这条信息了')
+        elif res[0] == False:
+            self.say('这条信息与我的数据库冲突.因为:%s'%res[1])
+        else:
+            res = x.affirm(gs)
+            if res[0] == True:
+                self.say('好的，我记住了')
+            else:
+                self.say(res[1])
         '''
         if '包含断言语句' in adapter:
                 assert '...' in adapter

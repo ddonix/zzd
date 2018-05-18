@@ -35,11 +35,6 @@ class gsetcategory(sets.gset):
         self.e.add(ph.s)
         return (True, '')
     
-    def affirm2(self, gs):
-        self.child.append(gs)
-        gs.father.append(self)
-        return (True, '')
-    
     def weight(self):
         return -1
 

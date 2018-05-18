@@ -25,6 +25,10 @@ class ZZDKDB():
         self.keyword = {}       #关键语句
         self.mend_add = set()   #增加修复集合
         self.mend_replace = {}  #替换修复集合
+    
+        infomation_a = {} # 'a':'A' a属于A
+        infomation_A = {} # 'A':'B' A包含B
+        infomation_a_fn = {} # 'a':a有fn信息
         
         try:
             conn = sqlite3.connect('./data/grammar.db')
@@ -502,3 +506,72 @@ def main():
         
 if __name__ == '__main__':
     main()
+    
+    def _command_save(self, sp):
+        if not (self.infomation_a or self.infomation_A):
+            print(self.infomation_a)
+            print(self.infomation_A)
+            self.say('没有信息需要写入数据库')
+            return
+        if sp and '认证参数' in adapter:
+            password = adapter['认证参数']
+        else:
+            self.say('请输入管理员口令')
+            password = self.ask(['认证参数句','认证参数'])
+            if not password:
+                self.say('您没有输入口令，写入取消。')
+                return
+            else:
+                password = password['认证参数']
+        if password != self.managerid:
+            self.say('口令错误，写入取消。')
+            return
+        while self.infomation_a:
+            info = self.infomation_a.popitem()
+            if not db.add_database_a_in_A(info[0], info[1]):
+                self.say('%s信息写入失败'%info[0])
+                self.infomation_a[info[0]]=info[1]
+                break
+        else:
+            self.say('元素信息写入成功')
+        
+        while self.infomation_A:
+            info = self.infomation_A.popitem()
+            if not db.add_database_A_in_B(info[1], info[0]):
+                self.say('%s信息写入失败'%info[0])
+                self.infomation_A[info[0]]=info[1]
+                break
+        else:    
+            self.say('集合信息写入成功')
+    
+    def _solve_set_a(self, x, gs):
+        res = db.add_information_1(x, gs)
+        if res[0] == 0:
+            if x in self.infomation_a:
+                self.infomation_a[x] += '~%s'%gs
+            else:
+                self.infomation_a[x] = gs
+            self.say('好的，我记住了')
+        elif res[0] == 1:
+            self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x,res[1],res[1],gs))
+        else:
+            self.say('该信息与知识库冲突。原因：%s是%s, %s与%s不相容'%(x,res[1],res[1],gs))
+                    
+    def _solve_set_A(self, x, gs):
+        if not self.KDB.spin(x):
+            db.add_information_1(x, '集合')
+            self.infomation_a[x] = '集合'
+        res = db.add_information_2(x, gs)
+        if res[0] == 0:
+            if x in self.infomation_A:
+                self.infomation_A[gs] += '~%s'%x
+            else:
+                self.infomation_A[gs] = x
+            self.say('好的，我记住了')
+        elif res[0] == 1:
+            if x == res[1]:
+                self.say('该信息已在知识库。原因：%s是%s'%(x, gs))
+            else:
+                self.say('该信息已在知识库。原因：%s是%s, %s是%s'%(x, res[1], res[1], gs))
+        else:
+            self.say('该信息与知识库冲突。原因:%s与%s冲突'%(res[1][0],res[1][1]))

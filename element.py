@@ -28,6 +28,15 @@ class phrases:
             return gs.judge2(self)
         else:
             return gs.judge1(self)
+    
+    def affirm(self, gram):
+        if not phrases.kdb.gsin(gram):
+            return (2,'%s:不是已知的集合'%gram)
+        gs = phrases.kdb.getgs(gram)
+        if phrases.kdb.getgs('集合') in self.gs:
+            return gs.affirm2(self)
+        else:
+            return gs.affirm1(self)
  
 class sentence:
     def __init__(self, kdb, s):
