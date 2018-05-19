@@ -396,6 +396,9 @@ class zzd():
         if se.be('判断语句')[0] == True:
             self._solve_query(se)
             return
+        if se.be('断言语句')[0] == True:
+            self._solve_affirm(se)
+            return
         self._phrase_se(se)
     
     def _phrase_se(self, se):

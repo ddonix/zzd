@@ -42,7 +42,7 @@ class phrases:
             child = phrases.kdb.getgs(self.s)
             res = gs.affirm2(child)
             if res[0] == True:
-                child.father.append(ds)
+                child.father.append(gs)
             return res
     
 class sentence:
