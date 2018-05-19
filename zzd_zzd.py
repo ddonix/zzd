@@ -206,7 +206,7 @@ class zzd():
             self.say('口令错误，写入取消。')
             return
             
-        res = self.KDB.save_infomation()
+        res = self.KDB.save_infomation(self.friend.name)
         if res[0] == False:
             self.say(res[1])
         else:

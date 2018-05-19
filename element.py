@@ -25,7 +25,10 @@ class phrases:
         if not gs:
             return (2,'%s:不是已知的集合'%gram)
         if phrases.kdb.getgs('集合') in self.gs:
-            return gs.judge2(self)
+            if gram == '集合':
+                return (True, phrases.kdb.getgs('集合'))
+            else:
+                return gs.judge2(self)
         else:
             return gs.judge1(self)
     

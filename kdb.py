@@ -225,7 +225,7 @@ class ZZDKDB():
             conn = sqlite3.connect('./data/grammar.db')
             cursor = conn.cursor()
             sql = '''select * from user_gset_phrase where (user, name)=(?, ?)'''
-            cursor.execute(sql, (user, A))
+            cursor.execute(sql, (user, G))
             conn.commit()
         except:
             print('读取数据库失败')
@@ -236,11 +236,11 @@ class ZZDKDB():
         try:
             if not info:
                 sql = '''insert into user_gset_phrase (user, name, subset) values (?, ?, ?)'''
-                cursor.execute(sql, (user, A, G))
+                cursor.execute(sql, (user, G, A))
             else:
-                subset = '%s~%s'%(info[0][2],G) if info[0][2] else G
+                subset = '%s~%s'%(info[0][2],A) if info[0][2] else A
                 sql = '''update user_gset_phrase set subset=(?) where (user, name)=(?, ?)'''
-                cursor.execute(sql, (subset, user, A))
+                cursor.execute(sql, (subset, user, G))
         except:
             print('写入数据库失败')
             return False
@@ -280,10 +280,10 @@ class ZZDKDB():
     def add_study_info(self, x, gs):
         if x.be('集合')[0] == True:
             x = x.s
-            if x in self.infomation_a:
-                self.infomation_a[x] += '~%s'%gs
+            if gs in self.infomation_A:
+                self.infomation_A[gs] += '~%s'%x
             else:
-                self.infomation_a[x] = gs
+                self.infomation_A[gs] = x
         else:
             x = x.s
             if x in self.infomation_a:
@@ -527,9 +527,6 @@ def main():
     kdb = ZZDKDB()
     for func in kdb.func:
         print(func)
-    kdb.add_local_database_a_in_G('东东','柏拉图','哲学')
-    kdb.add_local_database_a_in_G('涵涵','柏拉图','哲学')
-    kdb.add_local_database_A_in_G('东东','人','生物')
         
 if __name__ == '__main__':
     main()
