@@ -295,7 +295,9 @@ class ZZDKDB():
     #成功返回True，错误返回False，其他返回2.
     def add_information_a_in_G(self, a, G):
         gs = self.getgs(G)
-        assert gs
+        if not gs:
+            gs = enumset.gsetenum(self, G)
+            self.addgs(gs)
         ph = self.getph(a)
         res = gs.affirm1(ph)
         if res[0] == True:

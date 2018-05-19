@@ -176,12 +176,11 @@ class zzd():
         elif 'zzd保存命令' in adapter:
             self._command_save()
         elif 'zzd学习命令' in adapter or 'zzd进入命令' in adapter:
-            mode = adapter['zzd学习命令'] if 'zzd学习命令' in adapter else adapter['zzd模式定语_学习']
             if self.FSM['train'] == False:
-                self.say('好的，已进入%s模式！每次最多包含一条信息。'%mode)
+                self.say('好的，已进入学习模式！')
                 self.FSM['train'] = True
             else:
-                self.say('您已经是已%s模式了'%mode)
+                self.say('您已经是已学习模式了')
         elif 'zzd退出命令' in adapter:
             mode = adapter['zzd学习命令'] if 'zzd学习命令' in adapter else adapter['zzd模式定语_学习']
             if self.FSM['train'] == True:
@@ -302,7 +301,7 @@ class zzd():
             assert '集合' in adapter
             x = self.KDB.getph(adapter['.'])
             gs = adapter['集合']
-        elif '集合断言语句' in adapter:
+        elif '包含断言语句' in adapter:
             assert '集合' in adapter
             if '(包含)' in adapter:
                 gs,x = adapter['集合'].split('|')
@@ -311,7 +310,8 @@ class zzd():
                 x,gs = adapter['集合'].split('|')
                 x = self.KDB.getph(x)
         else:
-            assert 1
+            x = self.KDB.getph(adapter['.'])
+            gs = adapter['集合']
         res = x.be(gs)
         if res[0] == True:
             self.say('我的知识库里已经有这条信息了')
