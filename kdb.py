@@ -385,8 +385,6 @@ class ZZDKDB():
             for g in v[1].split('~') if v[1] else []:
                 if not (g == '' or g == None):
                     self.add_information_a_in_G(v[0], g)
-            if v[2]:
-                ph.addfn(v[2])
         try:
             cursor = conn.execute("select * from table_phrase")
         except:

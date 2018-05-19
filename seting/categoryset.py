@@ -13,6 +13,7 @@ class gsetcategory(sets.gset):
         self.judge1_recursion = False
         self.judge2_recursion = False
         self.judge3_recursion = False
+        self.e = set()
 
     def setfn(self, fn, f, v):
         self.fn = fn
@@ -32,8 +33,13 @@ class gsetcategory(sets.gset):
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:
             return (True, '')
-        self.e.add(ph.s)
-        return (True, '')
+        elif self.judge1(ph)[0] == False:
+            return (False, '')
+        else:
+            self.e.add(ph.s)
+            print(self.fn.name, self.v)
+            ph.addfn(self.fn.name, self.v)
+            return (True, '')
     
     def weight(self):
         return -1

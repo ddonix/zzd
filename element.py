@@ -10,11 +10,10 @@ class phrases:
     def init(cls, kdb):
         cls.kdb = kdb
     
-    def addfn(self, fn):
-        fn = fn.split('~')
-        for f in fn:
-            name,value=f.split(':')
-            self.fn[name]=value
+    def addfn(self, name, value):
+        assert name not in self.fn
+        print('name value',name,value)
+        self.fn[name]=value
     
     def _addgs(self, gs):
         if gs not in self.gs:
