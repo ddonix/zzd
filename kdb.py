@@ -32,18 +32,14 @@ class ZZDKDB():
         
         try:
             conn = sqlite3.connect('./data/grammar.db')
-            cursor = conn.execute("select * from mend_add")
+            cursor = conn.execute("select * from mend")
         except:
             raise TypeError
         for mend in cursor:
-            self.mend_add.add(mend[0])
-        
-        try:
-            cursor = conn.execute("select * from mend_replace")
-        except:
-            raise TypeError
-        for mend in cursor:
-            self.mend_replace[mend[0]] = mend
+            if not mend[1]:
+                self.mend_add.add(mend[0])
+            else:
+                self.mend_replace[mend[0]] = mend
         conn.close()
         self.gsinit()
         self.fninit()
@@ -205,9 +201,65 @@ class ZZDKDB():
             for ch in gs.child:
                 checkgs(ch.name, True)
         print('check success')
-
+    
     #a是A的元素
-    def add_database_a_in_A(self, sp_a, gs_A):
+    def add_local_database_a_in_A(self, user, x, A):
+        try:
+            conn = sqlite3.connect('./data/grammar.db')
+            cursor = conn.cursor()
+            sql = '''select * from user_phrase where (user, s)=(?, ?)'''
+            cursor.execute(sql, (user, x))
+            conn.commit()
+        except:
+            print('读取数据库失败')
+            return False
+        
+        info = cursor.fetchall()
+        print(info)
+        try:
+            if not info:
+                sql = '''insert into user_phrase (user, s, gs) values (?, ?, ?)'''
+                cursor.execute(sql, (user, x, A))
+            else:
+                gs = '%s~%s'%(info[0][1],A) if info[0][1] else A
+                sql = '''update user_phrase set gs=(?) where (user, s)=(?, ?)'''
+                cursor.execute(sql, (gs, user, x))
+        except:
+            print('写入数据库失败')
+            return False
+            
+        conn.commit()
+        conn.close
+        return True
+
+    #A是B的子集
+    def add_name_database_A_in_B(self, name, gs_A, gs_B):
+        try:
+            conn = sqlite3.connect('./data/grammar.db')
+            cursor = conn.cursor()
+            sql = '''select * from gset_phrase where name=(?)'''
+            cursor.execute(sql, (gs_B,))
+            conn.commit()
+            info = cursor.fetchall()
+            print(info)
+            if not info:
+                sql = '''insert into gset_phrase (name, subset) values (?, ?)'''
+                # 把数据保存到name username和 id_num中
+                cursor.execute(sql, (gs_B,gs_A))
+            else:
+                gs = '%s~%s'%(info[0][1],gs_A) if info[0][1] else gs_A
+                sql = '''update gset_phrase set subset=(?) where name=(?)'''
+                cursor.execute(sql, (gs, gs_B))
+            conn.commit()
+            conn.close
+        except:
+            print('写入数据库失败')
+            return False
+        print('写入数据库成功')
+        return True
+    
+    #a是A的元素
+    def add_global_database_a_in_A(self, sp_a, gs_A):
         try:
             conn = sqlite3.connect('./data/grammar.db')
             cursor = conn.cursor()
@@ -242,7 +294,7 @@ class ZZDKDB():
         return True
 
     #A是B的子集
-    def add_database_A_in_B(self, gs_A, gs_B):
+    def add_global_database_A_in_B(self, gs_A, gs_B):
         try:
             conn = sqlite3.connect('./data/grammar.db')
             cursor = conn.cursor()
@@ -270,7 +322,7 @@ class ZZDKDB():
     def getinfonum(self):
         return len(self.infomation_a)+len(self.infomation_A)+len(self.infomation_a_fn)
         
-    def save_infomation(self):
+    def save_infomation(self, name):
         fail = 0
         success = 0
         allinfo = self.getinfonum()
@@ -544,7 +596,8 @@ def main():
     kdb = ZZDKDB()
     for func in kdb.func:
         print(func)
+    res = kdb.add_local_database_a_in_A('东东','柏拉图','军事家')
+    print(res)
         
 if __name__ == '__main__':
     main()
-    
