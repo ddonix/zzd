@@ -21,18 +21,18 @@ class phrases:
             self.gs.add(gs)
     
     def be(self, gram):
-        if not phrases.kdb.gsin(gram):
-            return (2,'%s:不是已知的集合'%gram)
         gs = phrases.kdb.getgs(gram)
+        if not gs:
+            return (2,'%s:不是已知的集合'%gram)
         if phrases.kdb.getgs('集合') in self.gs:
             return gs.judge2(self)
         else:
             return gs.judge1(self)
     
     def affirm(self, gram):
-        if not phrases.kdb.gsin(gram):
-            return (2,'%s:不是已知的集合'%gram)
         gs = phrases.kdb.getgs(gram)
+        if not gs:
+            return (2,'%s:不是已知的集合'%gram)
         if phrases.kdb.getgs('集合') not in self.gs:
             res = gs.affirm1(self)
             if res[0] == True:
@@ -76,9 +76,9 @@ class sentence:
     #1:不是
     #2:不确定
     def be(self, gram):
-        if not self.kdb.gsin(gram):
-            return [2,'%s:不是已知的集合或者函数'%gram]
         gs = self.kdb.getgs(gram)
+        if not gs:
+            return [2,'%s:不是已知的集合或者函数'%gram]
         res = self.kdb.getgs('集合').judge1(self)
         if res[0] == True:
             if gram == '集合':

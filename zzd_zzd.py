@@ -261,6 +261,7 @@ class zzd():
                 print(res)
                 if res[0] == True:
                     echo = adapter['集合断言语句']
+                    self.say(echo)
                 elif res[0] == False:
                     if res[1]:
                         echo = '不, %s'%res[1]
@@ -272,8 +273,9 @@ class zzd():
                         echo = '%s不包含%s'%(x2,x1)
                     else:
                         echo = '%s不%s'%(x1,x2)
-                self.say(echo)
-                if res[0] == 2:
+                    self.say(echo)
+                else:
+                    self.say(res[1])
                     self.say('需要我上网问问吗？')
                     ok = self.ask(['选择回答语句'])
                     if ok and '肯定回答语句' in ok:

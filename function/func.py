@@ -10,7 +10,7 @@ class gfunc:
         assert '->' in desc
 
         self.kdb = kdb
-        assert not self.kdb.fnin(name)
+        assert not self.kdb.getfn(name)
         
         self.name = name
         self.byname = set()     #别名

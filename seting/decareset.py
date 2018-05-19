@@ -12,11 +12,12 @@ class gsetdecare(sets.gset):
         gram = name[1:-1].split(' ')
         for g in gram:
             assert not (g[0] == '[' and g[-1] == ']')
-            assert g in kdb.mend_add or kdb.gsin(g)
-            if g in kdb.mend_add:
-                self.decare.append(g)
+            gs = kdb.getgs(g)
+            assert g in kdb.mend_add or gs
+            if gs:
+                self.decare.append(gs)
             else:
-                self.decare.append(kdb.getgs(g))
+                self.decare.append(g)
 
     def phin(self, ph):
         for decare in self.decare:

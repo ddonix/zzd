@@ -26,9 +26,8 @@ class ZZDKDB():
         self.mend_add = set()   #增加修复集合
         self.mend_replace = {}  #替换修复集合
     
-        self.infomation_a = {} # 'a':'A' a属于A
-        self.infomation_A = {} # 'A':'B' A包含B
-        self.infomation_a_fn = {} # 'a':a有fn信息
+        self.infomation_a = {} # 'a':'G' a属于G
+        self.infomation_A = {} # 'X':'G' A包含G
         
         try:
             conn = sqlite3.connect('./data/grammar.db')
@@ -62,17 +61,11 @@ class ZZDKDB():
             return bit[0][0]
     
     def getgs(self, g):
-        try:
-            return self.gset[g]
-        except:
-            raise NameError
+        return self.gset[g] if g in self.gset else None
 
     def getfn(self, f):
-        try:
-            return self.func[f]
-        except:
-            raise NameError
-
+        return self.func[f] if f in self.func else None
+        
     def getph(self, s):
         if s[0] in self.phrases:
             if s in self.phrases[s[0]]:
@@ -104,12 +97,6 @@ class ZZDKDB():
         se = element.sentence(self,s)
         return se
 
-    def gsin(self, g):
-        return True if g in self.gset else False
-
-    def fnin(self, f):
-        return True if f in self.func else False
-        
     def legal(self, s):
         for v in s:
             if not v in self.vocable:
@@ -162,9 +149,9 @@ class ZZDKDB():
             print(pr)
         
     def checkgs(self, gram, recursion):
-        assert self.gsin(gram)
         #检查gs的sp与子集的sp是否有重合
         gs = self.getgs(gram)
+        assert gs
         print('检查集合 %s：'%gs.name)
         print('1.实例信息')
         print(gs)
@@ -203,12 +190,12 @@ class ZZDKDB():
         print('check success')
     
     #a是A的元素
-    def add_local_database_a_in_A(self, user, x, A):
+    def add_local_database_a_in_G(self, user, a, G):
         try:
             conn = sqlite3.connect('./data/grammar.db')
             cursor = conn.cursor()
             sql = '''select * from user_phrase where (user, s)=(?, ?)'''
-            cursor.execute(sql, (user, x))
+            cursor.execute(sql, (user, a))
             conn.commit()
         except:
             print('读取数据库失败')
@@ -219,11 +206,11 @@ class ZZDKDB():
         try:
             if not info:
                 sql = '''insert into user_phrase (user, s, gs) values (?, ?, ?)'''
-                cursor.execute(sql, (user, x, A))
+                cursor.execute(sql, (user, a, G))
             else:
-                gs = '%s~%s'%(info[0][1],A) if info[0][1] else A
+                gs = '%s~%s'%(info[0][2],G) if info[0][2] else G
                 sql = '''update user_phrase set gs=(?) where (user, s)=(?, ?)'''
-                cursor.execute(sql, (gs, user, x))
+                cursor.execute(sql, (gs, user, a))
         except:
             print('写入数据库失败')
             return False
@@ -232,97 +219,40 @@ class ZZDKDB():
         conn.close
         return True
 
-    #A是B的子集
-    def add_name_database_A_in_B(self, name, gs_A, gs_B):
+    #A是G的子集
+    def add_local_database_A_in_G(self, user, A, G):
         try:
             conn = sqlite3.connect('./data/grammar.db')
             cursor = conn.cursor()
-            sql = '''select * from gset_phrase where name=(?)'''
-            cursor.execute(sql, (gs_B,))
+            sql = '''select * from user_gset_phrase where (user, name)=(?, ?)'''
+            cursor.execute(sql, (user, A))
             conn.commit()
-            info = cursor.fetchall()
-            print(info)
-            if not info:
-                sql = '''insert into gset_phrase (name, subset) values (?, ?)'''
-                # 把数据保存到name username和 id_num中
-                cursor.execute(sql, (gs_B,gs_A))
-            else:
-                gs = '%s~%s'%(info[0][1],gs_A) if info[0][1] else gs_A
-                sql = '''update gset_phrase set subset=(?) where name=(?)'''
-                cursor.execute(sql, (gs, gs_B))
-            conn.commit()
-            conn.close
         except:
-            print('写入数据库失败')
+            print('读取数据库失败')
             return False
-        print('写入数据库成功')
-        return True
-    
-    #a是A的元素
-    def add_global_database_a_in_A(self, sp_a, gs_A):
+        
+        info = cursor.fetchall()
+        print(info)
         try:
-            conn = sqlite3.connect('./data/grammar.db')
-            cursor = conn.cursor()
-            if len(sp_a) > 1:
-                sql = '''select * from table_phrase where name=(?)'''
-            else:
-                sql = '''select * from table_vocable where name=(?)'''
-            cursor.execute(sql, (sp_a,))
-            conn.commit()
-            info = cursor.fetchall()
-            print(info)
             if not info:
-                if len(sp_a) > 1:
-                    sql = '''insert into table_phrase (name, gs) values (?, ?)'''
-                else:
-                    sql = '''insert into table_vocable (name, gs) values (?, ?)'''
-                # 把数据保存到name username和 id_num中
-                cursor.execute(sql, (sp_a,gs_A))
+                sql = '''insert into user_gset_phrase (user, name, subset) values (?, ?, ?)'''
+                cursor.execute(sql, (user, A, G))
             else:
-                gs = '%s~%s'%(info[0][1],gs_A) if info[0][1] else gs_A
-                if len(sp_a) > 1:
-                    sql = '''update table_phrase set gs=(?) where name=(?)'''
-                else:
-                    sql = '''update table_vocable set gs=(?) where name=(?)'''
-                cursor.execute(sql, (gs, sp_a))
-            conn.commit()
-            conn.close
+                subset = '%s~%s'%(info[0][2],G) if info[0][2] else G
+                sql = '''update user_gset_phrase set subset=(?) where (user, name)=(?, ?)'''
+                cursor.execute(sql, (subset, user, A))
         except:
             print('写入数据库失败')
             return False
-        print('写入数据库成功')
-        return True
-
-    #A是B的子集
-    def add_global_database_A_in_B(self, gs_A, gs_B):
-        try:
-            conn = sqlite3.connect('./data/grammar.db')
-            cursor = conn.cursor()
-            sql = '''select * from gset_phrase where name=(?)'''
-            cursor.execute(sql, (gs_B,))
-            conn.commit()
-            info = cursor.fetchall()
-            print(info)
-            if not info:
-                sql = '''insert into gset_phrase (name, subset) values (?, ?)'''
-                # 把数据保存到name username和 id_num中
-                cursor.execute(sql, (gs_B,gs_A))
-            else:
-                gs = '%s~%s'%(info[0][1],gs_A) if info[0][1] else gs_A
-                sql = '''update gset_phrase set subset=(?) where name=(?)'''
-                cursor.execute(sql, (gs, gs_B))
-            conn.commit()
-            conn.close
-        except:
-            print('写入数据库失败')
-            return False
-        print('写入数据库成功')
+            
+        conn.commit()
+        conn.close
         return True
     
     def getinfonum(self):
-        return len(self.infomation_a)+len(self.infomation_A)+len(self.infomation_a_fn)
+        return len(self.infomation_a)+len(self.infomation_A)
         
-    def save_infomation(self, name):
+    def save_infomation(self, user):
         fail = 0
         success = 0
         allinfo = self.getinfonum()
@@ -330,7 +260,7 @@ class ZZDKDB():
             return (False, '没有信息需要写入数据库')
         while self.infomation_a:
             info = self.infomation_a.popitem()
-            if not self.add_database_a_in_A(info[0], info[1]):
+            if not self.add_local_database_a_in_G(user, info[0], info[1]):
                 fail += 1
                 self.infomation_a[info[0]]=info[1]
                 break
@@ -339,7 +269,7 @@ class ZZDKDB():
         
         while self.infomation_A:
             info = self.infomation_A.popitem()
-            if not self.add_database_A_in_B(info[1], info[0]):
+            if not self.add_local_database_A_in_G(user, info[1], info[0]):
                 fail += 1
                 self.infomation_A[info[0]]=info[1]
                 break
@@ -361,37 +291,36 @@ class ZZDKDB():
             else:
                 self.infomation_a[x] = gs
     
-    #增加元素a属于集合A这条信息。
+    #增加元素a属于集合G这条信息。
     #成功返回True，错误返回False，其他返回2.
-    def add_information_1(self, a, A):
-        assert self.gsin(A)
+    def add_information_a_in_G(self, a, G):
+        gs = self.getgs(G)
+        assert gs
         ph = self.getph(a)
-        gs = self.getgs(A)
         res = gs.affirm1(ph)
         if res[0] == True:
             ph._addgs(gs)
         return res
 
-    #增加集合B属于集合A这条信息。
+    #增加集合A包含于集合G这条信息。
     #成功返回True，失败返回False，其他返回2.
-    def add_information_2(self, B, A):
-        assert self.gsin(A)
-        gs = self.getgs(A)
-        if self.gsin(B):
-            gsB = self.getgs(B)
-        else:
-            if B[0] == '[' and B[-1] == ']':
-                gse = B[1:-1].split(' ')
+    def add_information_A_in_G(self, A, G):
+        gs = self.getgs(G)
+        assert gs
+        gsA = self.getgs(A)
+        if not gsA:
+            if A[0] == '[' and A[-1] == ']':
+                gse = A[1:-1].split(' ')
                 for g in gse:
                     assert not (g[0] == '[' and g[-1] == ']')
-                    if g in self.mend_add or self.gsin(g):
+                    if g in self.mend_add or self.getgs(g):
                         continue
                     self.addgs(enumset.gsetenum(self, g))
-                gsB = decareset.gsetdecare(self, B)
+                gsA = decareset.gsetdecare(self, A)
             else:
-                gsB = enumset.gsetenum(self, B)
-            self.addgs(gsB)
-        return gs.affirm2(gsB)
+                gsA = enumset.gsetenum(self, A)
+            self.addgs(gsA)
+        return gs.affirm2(gsA)
 
     def gsinit(self):
         self.addgs(enumset.gsetenum(self, '集合'))
@@ -413,12 +342,12 @@ class ZZDKDB():
         for v in grammar:
             if not v[0]:
                 continue
-            if not self.gsin(v[0]):
+            if not self.getgs(v[0]):
                 self.addgs(enumset.gsetenum(self, v[0]))
             if v[1]:
                 gram = prevgram(v[1])
                 for g in gram:
-                    self.add_information_2(g, v[0])
+                    self.add_information_A_in_G(g, v[0])
         
     def fninit(self):
         try:
@@ -453,7 +382,7 @@ class ZZDKDB():
             
             for g in v[1].split('~') if v[1] else []:
                 if not (g == '' or g == None):
-                    self.add_information_1(v[0], g)
+                    self.add_information_a_in_G(v[0], g)
             if v[2]:
                 ph.addfn(v[2])
         try:
@@ -467,7 +396,7 @@ class ZZDKDB():
             
             for g in v[1].split('~') if v[1] else []:
                 if not (g == '' or g == None):
-                    self.add_information_1(v[0], g)
+                    self.add_information_a_in_G(v[0], g)
             if v[2]:
                 ph.addfn(v[2])
         conn.close()
@@ -478,27 +407,27 @@ class ZZDKDB():
             if gram[0] != '[' and gram[0] != '(':
                 if not self.getph(gram):
                     self.addph(element.phrases(gram))
-                self.add_information_1(gram, '集合')
+                self.add_information_a_in_G(gram, '集合')
                 for name in self.gset[gram].byname:
                     if not self.getph(name):
                         self.addph(element.phrases(name))
-                    self.add_information_1(name, '集合')
+                    self.add_information_a_in_G(name, '集合')
                     
             if gram[0] == '(' and gram[-1] == ')':
                 item = gram[1:-1].split(' ')
                 for sp in item:
-                    self.add_information_1(sp, gram)
+                    self.add_information_a_in_G(sp, gram)
         
         #补充函数的phrases
         for fn in self.func:
             if fn[0] != '(':
                 if not self.getph(fn):
                     self.addph(element.phrases(fn))
-                self.add_information_1(fn, '函数')
+                self.add_information_a_in_G(fn, '函数')
                 for name in self.func[fn].byname:
                     if not self.getph(fn):
                         self.addph(element.phrases(fn))
-                    self.add_information_1(fn, '函数')
+                    self.add_information_a_in_G(fn, '函数')
         
     def coreinit(self):
         try:
@@ -596,8 +525,9 @@ def main():
     kdb = ZZDKDB()
     for func in kdb.func:
         print(func)
-    res = kdb.add_local_database_a_in_A('东东','柏拉图','军事家')
-    print(res)
+    kdb.add_local_database_a_in_G('东东','柏拉图','哲学')
+    kdb.add_local_database_a_in_G('涵涵','柏拉图','哲学')
+    kdb.add_local_database_A_in_G('东东','人','生物')
         
 if __name__ == '__main__':
     main()

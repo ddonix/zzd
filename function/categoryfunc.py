@@ -40,7 +40,7 @@ class gfunccategory(func.gfunc):
                     gs.addbyname('%s%s的%s'%(self.name, v,f[0]))
                     gs.addbyname('%s是%s的%s'%(self.name, v,f[0]))
                 self.kdb.addgs(gs)
-                self.kdb.add_information_2(gs.name, f[0])
+                self.kdb.add_information_A_in_G(gs.name, f[0])
                 
 
 def parsefunc(kdb, fn):
