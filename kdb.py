@@ -372,7 +372,7 @@ class ZZDKDB():
                 dset,vset=d.split('->')
                 f = f[f.find('=')+1:]
                 print(dset, vset, f)
-                if vset == 'bool' or vset[0] == '(':
+                if dset[0] != '[' and (vset == 'bool' or vset[0] == '('):
                     fn = function.categoryfunc.fncategory(gfn, dset, vset, f)
                 else:
                     fn = function.valuefunc.fnvalue(gfn, dset, vset, f)

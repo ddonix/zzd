@@ -236,7 +236,12 @@ class zzd():
                 else:
                     ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1]), None]
                 res = self.KDB.getfn(f).value(ph)
-            self.say(str(res))
+            if res == True:
+                self.say('对')
+            elif res == False:
+                self.say('错')
+            else:
+                self.say(str(res))
 
     def _solve_judge(self, se):
         res = se.be('判断语句')
