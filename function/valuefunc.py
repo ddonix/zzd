@@ -3,15 +3,13 @@ from function import func
 from seting import categoryset
 
 #求值函数,所有可以通过python eval的表达式都可以
-class gfuncvalue(func.gfunc):
-    def __init__(self, kdb, name, desc, byname):
-        func.gfunc.__init__(self, kdb, name, desc, byname)
+class fnvalue(func.fn):
+    def __init__(self, gfunc, dset, vset, f):
+        func.fn.__init__(self, gfunc, dset, vset, f)
 
     #取值或者判断真假的函数
-    def _value(self, ph, fn):
-        assert fn[2]
-        print(ph, fn)
-        e = fn[2].replace('如果','if')
+    def _value(self, ph):
+        e = self.f.replace('如果','if')
         e = e.replace('否则','else')
         if len(ph) == 1:
             e = e.replace('x','(%s)'%ph[0].s)

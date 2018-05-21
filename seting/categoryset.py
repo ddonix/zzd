@@ -23,13 +23,16 @@ class gsetcategory(sets.gset):
 
     def phin(self, ph):
         res = self.fn.value([ph])
-        if res[0] == False:
-            return (2, res[1])
-        elif res[1] == self.v:
+        if res == self.v:
             return (True, {self.name:ph.s})
         else:
-            return (False, '%s是%s%s'%(ph.s, res[1], self.f.dset))
-            
+            if res in self.f.vset:
+                return (False, '%s是%s%s'%(ph.s,res,self.f.dset))
+            elif '未知' in res:
+                return (2, res)
+            else:
+                return (False, res)
+ 
     def affirm1(self, ph):
         if self.judge1(ph)[0] == True:
             return (True, '')

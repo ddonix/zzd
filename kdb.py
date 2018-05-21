@@ -374,9 +374,9 @@ class ZZDKDB():
                 print(dset, vset, f)
                 if vset == 'bool' or vset[0] == '(':
                     fn = function.categoryfunc.fncategory(gfn, dset, vset, f)
-                    gfn.addfn(fn)
-            #    else:
-            #        fn = function.valuefunc.fnvalue(f[0], dset, vset, f)
+                else:
+                    fn = function.valuefunc.fnvalue(gfn, dset, vset, f)
+                gfn.addfn(fn)
 
     def phinit(self):
         element.phrases.init(self)

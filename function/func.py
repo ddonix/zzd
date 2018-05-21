@@ -56,11 +56,14 @@ class gfunc:
     def value(self, ph):
         fn = self.getfn(ph)
         if not fn:
-            return (False, '没有%s'%self.name)
+            if len(ph) == 1 and len(self.fn) == 1:
+                return '%s不是%s'%(ph[0].s, list(self.fn)[0].dset)
+            else:
+                return '我蒙了'
         res = fn._value(ph)
         if res != None:
-            return (True, res)
-        return (False, '%s未知'%self.name)
+            return res
+        return '%s未知'%self.name
 
 def main():
     print('func')
