@@ -42,7 +42,7 @@ class fncategory(func.fn):
                     gs.addbyname('%s是%s的%s'%(self.gfunc.name, v,self.dset))
                 self.gfunc.kdb.addgs(gs)
                 self.gfunc.kdb.add_information_A_in_G(gs.name, self.dset)
-                
+ 
 def main():
     print('funccategory')
     
