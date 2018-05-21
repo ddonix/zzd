@@ -67,7 +67,6 @@ class gfunc:
     #取值或者判断真假的函数
     def value(self, ph):
         fn = self.getfn(ph)
-        print(fn)
         if not fn:
             if len(ph) == 1 and len(self.fn) == 1:
                 return '%s不是%s'%(ph[0].s, list(self.fn)[0].dset)

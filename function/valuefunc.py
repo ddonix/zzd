@@ -11,15 +11,27 @@ class fnvalue(func.fn):
     def _value(self, ph):
         e = self.f
         if len(ph) == 1:
-            e = e.replace('x','(%s)'%ph[0].s)
+            e = e.replace('x','%s'%ph[0].s)
         else:
-            for i in range(0,len(ph)-1):
-                e = e.replace('x%d'%(i+1),'(%s)'%ph[i].s)
-            if 'v' in e:
-                e = e.replace('v','("%s")'%(ph[-1].s if ph[-1] else 'default'))
-        print(e)
+            for i in range(0,len(ph)):
+                e = e.replace('x%d'%(i+1),'%s'%ph[i].s)
+        gfn = self.gfunc.kdb.getfn(e[0:e.find('(')])
+        m = e[e.find('('):][1:-1]
+        print(gfn.name, m)
+        if '(' not in m:
+            m = m.split(',')
+            ph = []
+            for m in m:
+                ph.append(self.gfunc.kdb.getph(m))
+            return gfn.value(ph)
+        else:
+            res = self.vvv(m)
+            print(res)
         return e
-    
+
+    def vvv(self, ss):
+        return ss
+ 
 def main():
     print('funccategory')
  
