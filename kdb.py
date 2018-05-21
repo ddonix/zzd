@@ -12,6 +12,7 @@ from seting import categoryset
 from function import func
 from function import categoryfunc
 from function import valuefunc
+from function import basefunc
 import sys
 
 class ZZDKDB():
@@ -362,6 +363,67 @@ class ZZDKDB():
             conn.close()
         except:
             return NameError
+
+        gfn = function.func.gfunc(self, '如果否则')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[. . .]', '')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '大于', '大')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数]', 'bool')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '大于等于')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数]', 'bool')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '小于', '小')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数]', 'bool')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '小于等于')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数]', 'bool')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '不等于')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[. .]', 'bool')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '等于')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[. .]', 'bool')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '加', '加上~和')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数]', '数')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '减', '减去~差')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数]', '数')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '乘', '乘以~乘积~积')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数]', '数')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '除')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数 w(商or余数)]', '数')
+        gfn.addfn(fn)
+        
+        gfn = function.func.gfunc(self, '除以')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[数 数 w(商or余数)]', '数')
+        gfn.addfn(fn)
+
         for gfunc in grammar:
             gfn = function.func.gfunc(self, gfunc[0], gfunc[1])
             self.addfn(gfn)

@@ -15,7 +15,7 @@ class fncategory(func.fn):
             if self.gfunc.name in ph.fn:
                 return ph.fn[self.gfunc.name]
             else:
-                return None
+                return '%s未知'%self.gfunc.name
         else:
             e = self.f.replace('如果','if')
             e = e.replace('否则','else')

@@ -9,7 +9,7 @@ class gsetregu(sets.gset):
         self.plot = ''
 
     def phin(self, ph):
-        return (True,{self.name:sp.s})
+        return (True,{self.name:ph.s})
 
     def setplot(self, p):
         self.plot = p

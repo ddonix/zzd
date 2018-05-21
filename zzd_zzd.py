@@ -232,14 +232,15 @@ class zzd():
                 if '(的)' in adapter:
                     ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1]), self.KDB.getph(x[2])]
                 elif '反向词' in adapter:
-                    ph = [self.KDB.getph(x[1]), self.KDB.getph(x[0]), None]
+                    ph = [self.KDB.getph(x[1]), self.KDB.getph(x[0])]
                 else:
-                    ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1]), None]
+                    ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1])]
                 res = self.KDB.getfn(f).value(ph)
-            if res == True:
-                self.say('对')
-            elif res == False:
-                self.say('错')
+            if type(res) == bool:
+                if res == True:
+                    self.say('对')
+                elif res == False:
+                    self.say('错')
             else:
                 self.say(str(res))
 
