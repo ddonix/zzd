@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -B
 from function import func
 from seting import categoryset
+from seting import boolset
 #分类集合，枚举集合的划分。例如:人划分为男人和女人
 class fncategory(func.fn):
     def __init__(self, gfunc, dset, vset, f):
@@ -8,7 +9,7 @@ class fncategory(func.fn):
         self.creategset()
     
     #取值或者判断真假的函数
-    def _value(self, ph, fn):
+    def _value(self, ph):
         ph = ph[0]
         if not self.f:
             if self.gfunc.name in ph.fn:
@@ -16,19 +17,20 @@ class fncategory(func.fn):
             else:
                 return None
         else:
-            e = fn[2].replace('如果','if')
+            e = self.f.replace('如果','if')
             e = e.replace('否则','else')
             e = e.replace('x','(%s)'%ph.s)
             return eval(e)
     
     def creategset(self):
         if self.vset == 'bool':
-            gs = boolset.gsetbool(self.gfunc.kdb, self.gfunc.name)
-            gs.setfn(self.gfunc, self)
-            for byname in self.gfunc.byname:
-                gs.addbyname(byname)
-            self.gfunc.kdb.addgs(gs)
-            self.gfunc.kdb.add_information_A_in_G(gs.name, self.dset)
+            if self.dset[0] != '[':
+                gs = boolset.gsetbool(self.gfunc.kdb, self.gfunc.name)
+                gs.setfn(self.gfunc, self)
+                for byname in self.gfunc.byname:
+                    gs.addbyname(byname)
+                self.gfunc.kdb.addgs(gs)
+                self.gfunc.kdb.add_information_A_in_G(gs.name, self.dset)
         else:
             for v in self.vset[1:-1].split(' '):
                 gs = categoryset.gsetcategory(self.gfunc.kdb, '%s%s'%(v,self.dset))

@@ -57,11 +57,11 @@ class gfunc:
         fn = self.getfn(ph)
         if not fn:
             return (False, '没有%s'%self.name)
-        res = fn._value(ph, f)
+        res = fn._value(ph)
         if res != None:
             return (True, res)
         return (False, '%s未知'%self.name)
- 
+
 def main():
     print('func')
  

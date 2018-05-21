@@ -22,14 +22,6 @@ class gfuncvalue(func.gfunc):
                 e = e.replace('v','("%s")'%(ph[-1].s if ph[-1] else 'default'))
         return eval(e)
     
-    def judge(self, ph, desp):
-        return None
-
-def parsefunc(kdb, fn):
-    assert fn[1] == '求值'
-    func = gfuncvalue(kdb, fn[0], fn[2], fn[3])
-    return func
-
 def main():
     print('funccategory')
     

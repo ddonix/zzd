@@ -367,9 +367,11 @@ class ZZDKDB():
             self.addfn(gfn)
             desc = gfunc[2].split('~')
             for func in desc:
-                d,f = func.split(',')
+                d = func[0:func.find(',')]
+                f = func[func.find(',')+1:]
                 dset,vset=d.split('->')
-                f = f[2:]
+                f = f[f.find('=')+1:]
+                print(dset, vset, f)
                 if vset == 'bool' or vset[0] == '(':
                     fn = function.categoryfunc.fncategory(gfn, dset, vset, f)
                     gfn.addfn(fn)
