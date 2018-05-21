@@ -322,7 +322,10 @@ class ZZDKDB():
             else:
                 gsA = enumset.gsetenum(self, A)
             self.addgs(gsA)
-        return gs.affirm2(gsA)
+        res = gs.affirm2(gsA)
+        if res[0] == True and gs not in gsA.father:
+            gsA.father.append(gs)
+        return res
 
     def gsinit(self):
         self.addgs(enumset.gsetenum(self, '集合'))
@@ -359,15 +362,19 @@ class ZZDKDB():
             conn.close()
         except:
             return NameError
-        for f in grammar:
-            if f[1] == '分类':
-                fn = function.categoryfunc.parsefunc(self, f)
-                self.addfn(fn)
-            elif f[1] == '求值':
-                fn = function.valuefunc.parsefunc(self, f)
-                self.addfn(fn)
-            else:
-                continue
+        for gfunc in grammar:
+            gfn = function.func.gfunc(self, gfunc[0], gfunc[1])
+            self.addfn(gfn)
+            desc = gfunc[2].split('~')
+            for func in desc:
+                d,f = func.split(',')
+                dset,vset=d.split('->')
+                f = f[2:]
+                if vset == 'bool' or vset[0] == '(':
+                    fn = function.categoryfunc.fncategory(gfn, dset, vset, f)
+                    gfn.addfn(fn)
+            #    else:
+            #        fn = function.valuefunc.fnvalue(f[0], dset, vset, f)
 
     def phinit(self):
         element.phrases.init(self)
