@@ -23,7 +23,12 @@ class fncategory(func.fn):
     
     def creategset(self):
         if self.vset == 'bool':
-            pass
+            gs = boolset.gsetbool(self.gfunc.kdb, self.gfunc.name)
+            gs.setfn(self.gfunc, self)
+            for byname in self.gfunc.byname:
+                gs.addbyname(byname)
+            self.gfunc.kdb.addgs(gs)
+            self.gfunc.kdb.add_information_A_in_G(gs.name, self.dset)
         else:
             for v in self.vset[1:-1].split(' '):
                 gs = categoryset.gsetcategory(self.gfunc.kdb, '%s%s'%(v,self.dset))
