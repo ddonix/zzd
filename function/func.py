@@ -124,6 +124,7 @@ class gfunc:
         return self.v(e)
 
     def v(self, e):
+        ipdb.set_trace()
         if '(' not in e:
             ph = self.kdb.getph(e)
             if e == 'True':
