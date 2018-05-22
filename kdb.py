@@ -10,7 +10,6 @@ from seting import decareset
 from seting import reguset
 from seting import categoryset
 from function import func
-from function import categoryfunc
 from function import valuefunc
 from function import basefunc
 import sys
@@ -433,11 +432,7 @@ class ZZDKDB():
                 f = func[func.find(',')+1:]
                 dset,vset=d.split('->')
                 f = f[f.find('=')+1:]
-                print(dset, vset, f)
-                if dset[0] != '[' and (vset == 'bool' or vset[0] == '('):
-                    fn = function.categoryfunc.fncategory(gfn, dset, vset, f)
-                else:
-                    fn = function.valuefunc.fnvalue(gfn, dset, vset, f)
+                fn = function.valuefunc.fnvalue(gfn, dset, vset, f)
                 gfn.setfn(fn)
 
     def phinit(self):

@@ -6,31 +6,51 @@ from seting import categoryset
 class fnvalue(func.fn):
     def __init__(self, gfunc, dset, vset, f):
         func.fn.__init__(self, gfunc, dset, vset, f)
+        if dset[0] != '[' and (vset == 'bool' or vset[0] == '('):
+            self.creategset()
 
     #取值或者判断真假的函数
     def _v(self, e):
         li = func.gfunc.e2list(e)
-        print('self.f:',self.f)
-        print('e:',e)
-        print('li')
-        if 'f' not in e:
-            ee = self.f
-            if len(li) == 2:
-                ee=ee.replace('x',li[1])
-            else:
-                for i in range(1,len(li)):
-                    ee=ee.replace('x%d'%i,li[i])
+        ee = self.f
+        if not ee:
+            ph = self.gfunc.kdb.getph(li[1])
+            return ph.fn[self.gfunc.name] if self.gfunc.name in ph.fn else '%s未知'%self.gfunc.name
+        if len(li) == 2:
+            ee=ee.replace('x',li[1])
+        else:
+            for i in range(1,len(li)):
+                ee=ee.replace('x%d'%i,li[i])
+        if 'f(' not in self.f:
             name = self.f[0:self.f.find('(')]
             gfn = self.gfunc.kdb.getfn(name)
-            print('...........')
-            print(ee)
-            print(gfn.name)
             return gfn.v(ee)
         else:
             return '递归了'
+    
+    def creategset(self):
+        if self.vset == 'bool':
+            if self.dset[0] != '[':
+                gs = boolset.gsetbool(self.gfunc.kdb, self.gfunc.name)
+                gs.setfn(self.gfunc, self)
+                for byname in self.gfunc.byname:
+                    gs.addbyname(byname)
+                self.gfunc.kdb.addgs(gs)
+                self.gfunc.kdb.add_information_A_in_G(gs.name, self.dset)
+        else:
+            for v in self.vset[1:-1].split(' '):
+                gs = categoryset.gsetcategory(self.gfunc.kdb, '%s%s'%(v,self.dset))
+                gs.setfn(self.gfunc, self, v)
+                
+                gs.addbyname('%s的%s'%(v,self.dset))
+                if self.gfunc.name[0] != '(':
+                    gs.addbyname('%s%s的%s'%(self.gfunc.name, v,self.dset))
+                    gs.addbyname('%s是%s的%s'%(self.gfunc.name, v,self.dset))
+                self.gfunc.kdb.addgs(gs)
+                self.gfunc.kdb.add_information_A_in_G(gs.name, self.dset)
  
 def main():
-    print('funccategory')
+    print('funcvalue')
  
 if __name__ == '__main__':
     main()
