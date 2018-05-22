@@ -132,6 +132,7 @@ class gfunc:
                 return e
         else:
             li = gfunc.e2list(e)
+            ee=e
             ee = '%s'%li[0]
             ee += '(%s'%(self.v(li[1]) if '(' in li[1] else li[1])
             for s in li[2:]:
