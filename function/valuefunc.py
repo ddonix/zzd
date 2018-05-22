@@ -9,7 +9,7 @@ class fnvalue(func.fn):
 
     #取值或者判断真假的函数
     def _v(self, e):
-        li = self.e2list(e)
+        li = func.gfunc.e2list(e)
         print('self.f:',self.f)
         print('e:',e)
         print('li')

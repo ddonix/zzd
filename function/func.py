@@ -1,5 +1,6 @@
 #!/usr/bin/python3 -B
 import element
+import ipdb
 class fn:
     def __init__(self, gfunc, d, v, f):
         assert gfunc
@@ -8,36 +9,6 @@ class fn:
         self.dset = d
         self.vset = v
         self.f = f
-    
-    def e2list(self, e):
-        res = []
-        res.append(e[0:e.find('(')])
-        e=e[e.find('(')+1:-1]
-        ss = e
-        while ss:
-            r = self._e2list(ss)
-            res.append(r[0])
-            ss = r[1]
-        print(res)
-        return res
-
-    def _e2list(self, ss):
-        assert ss
-        if ',' not in ss:
-            return (ss,'')
-        else:
-            i = ss.find(',')
-            if '(' not in ss[0:i]:
-                return (ss[0:i],ss[i+1:])
-            else:
-                c = ss[0:i].count('(')
-                j = 0
-                for j in range(0,len(ss)):
-                    if ss[j] == ')':
-                        c -= 1
-                        if not c:
-                            break
-                return (ss[0:j+1],ss[j+2:])
     
     #函数返回值
     def _value(self, ph):
@@ -72,21 +43,44 @@ class gfunc:
         assert not self.fn
         self.fn = fn
     
-    def e2list(self, e):
+    @classmethod
+    def e2list(cls, e):
         res = []
         res.append(e[0:e.find('(')])
         e=e[e.find('(')+1:-1]
-        e=e.split(',')
-        for e in e:
-            res.append(e)
+        ss = e
+        while ss:
+            r = cls._e2list(ss)
+            res.append(r[0])
+            ss = r[1]
+        print(res)
         return res
+
+    @classmethod
+    def _e2list(cls, ss):
+        assert ss
+        if ',' not in ss:
+            return (ss,'')
+        else:
+            i = ss.find(',')
+            if '(' not in ss[0:i]:
+                return (ss[0:i],ss[i+1:])
+            else:
+                c = ss[0:i].count('(')
+                j = 0
+                for j in range(0,len(ss)):
+                    if ss[j] == ')':
+                        c -= 1
+                        if not c:
+                            break
+                return (ss[0:j+1],ss[j+2:])
     
     def getfne(self, e):
         name = e[0:e.find('(')]
         if name == self.name:
             return self.fn
         else:
-            gfn = self.gfunc.kdb.getfn(name)
+            gfn = self.kdb.getfn(name)
             return gfn.fn
 
     def getfn(self, ph):
@@ -141,8 +135,9 @@ class gfunc:
             else:
                 return e
         else:
-            li = self.e2list(e)
-            ee = '%s(%s'%(li[0],li[1])
+            li = gfunc.e2list(e)
+            ee = '%s'%li[0]
+            ee += '(%s'%self.v(li[1])
             for s in li[2:]:
                 ee += ',%s'%self.v(s)
             ee += ')'

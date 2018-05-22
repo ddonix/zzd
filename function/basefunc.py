@@ -9,7 +9,7 @@ class fnbase(func.fn):
 
     #取值或者判断真假的函数
     def _v(self, e):
-        li = self.e2list(e)
+        li = func.gfunc.e2list(e)
         if self.gfunc.name == '如果否则':
             if li[1]:
                 return li[2]

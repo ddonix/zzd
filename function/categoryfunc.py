@@ -10,7 +10,7 @@ class fncategory(func.fn):
     
     #取值或者判断真假的函数
     def _v(self, e):
-        res = self.e2list(e)
+        res = func.gfunc.e2list(e)
         ph = self.gfunc.kdb.getph(res[1])
         if not self.f:
             if self.gfunc.name in ph.fn:
