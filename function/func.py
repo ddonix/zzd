@@ -131,7 +131,15 @@ class gfunc:
 
     def v(self, e):
         if '(' not in e:
-            return e
+            ph = self.kdb.getph(e)
+            if e == 'True':
+                return True
+            elif e == 'False':
+                return False
+            elif ph and ph.be('数')[0] == True:
+                return int(e)
+            else:
+                return e
         else:
             li = self.e2list(e)
             ee = '%s(%s'%(li[0],li[1])
