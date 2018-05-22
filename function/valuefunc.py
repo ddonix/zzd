@@ -1,6 +1,7 @@
 #!/usr/bin/python3 -B
 from function import func
 from seting import categoryset
+from seting import boolset
 
 #求值函数,所有可以通过python eval的表达式都可以
 class fnvalue(func.fn):

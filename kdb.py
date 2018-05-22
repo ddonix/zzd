@@ -426,7 +426,7 @@ class ZZDKDB():
         for gfunc in grammar:
             gfn = function.func.gfunc(self, gfunc[0], gfunc[1])
             self.addfn(gfn)
-            fn = function.valuefunc.fnvalue(gfn, gfunc[2], gfunc[3], gfunc[4][gfunc[4].find('=')+1:], gfunc[5])
+            fn = function.valuefunc.fnvalue(gfn, gfunc[2], gfunc[3], gfunc[4], gfunc[5])
             gfn.setfn(fn)
 
     def phinit(self):
