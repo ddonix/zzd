@@ -11,7 +11,7 @@ class fnbase(func.fn):
     def _v(self, e):
         li = func.gfunc.e2list(e)
         if self.gfunc.name == '如果否则':
-            if li[1] in ['False', '0', 'None']:
+            if li[1] in ['False', '0']:
                 return li[3]
             return li[2]
         elif self.gfunc.name == '大于':
@@ -53,7 +53,7 @@ class fnbase(func.fn):
             else:
                 return x1/x2
         else:
-            return '呵呵呵，不是基本函数'
+            raise TypeError
 
 def main():
     print('funcbase')

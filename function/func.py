@@ -1,6 +1,5 @@
 #!/usr/bin/python3 -B
 import element
-import ipdb
 class fn:
     def __init__(self, gfunc, d, v, f):
         assert gfunc
@@ -9,10 +8,6 @@ class fn:
         self.dset = d
         self.vset = v
         self.f = f
-    
-    #函数返回值
-    def _value(self, ph):
-        raise NotImplementedError
     
     #函数返回值
     def _v(self, e):
@@ -113,8 +108,8 @@ class gfunc:
     def value(self, ph):
         fn = self.getfn(ph)
         if not fn:
-            if len(ph) == 1 and len(self.fn) == 1:
-                return '%s不是%s'%(ph[0].s, list(self.fn)[0].dset)
+            if len(ph) == 1: 
+                return '%s不是%s'%(ph[0].s, self.fn.dset)
             else:
                 return '我蒙了'
         e = '%s(%s'%(self.name,ph[0].s)
@@ -124,7 +119,6 @@ class gfunc:
         return self.v(e)
 
     def v(self, e):
-        ipdb.set_trace()
         if '(' not in e:
             ph = self.kdb.getph(e)
             if e == 'True':
