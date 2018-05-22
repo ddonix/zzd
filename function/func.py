@@ -1,13 +1,14 @@
 #!/usr/bin/python3 -B
 import element
 class fn:
-    def __init__(self, gfunc, d, v, f):
+    def __init__(self, gfunc, d, v, f, c=''):
         assert gfunc
         
         self.gfunc = gfunc
         self.dset = d
         self.vset = v
         self.f = f
+        self.c = c
     
     #函数返回值
     def _v(self, e):

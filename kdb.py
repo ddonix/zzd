@@ -353,7 +353,7 @@ class ZZDKDB():
                 gram = prevgram(v[1])
                 for g in gram:
                     self.add_information_A_in_G(g, v[0])
-        
+ 
     def fninit(self):
         try:
             conn = sqlite3.connect('./data/grammar.db')
@@ -426,14 +426,8 @@ class ZZDKDB():
         for gfunc in grammar:
             gfn = function.func.gfunc(self, gfunc[0], gfunc[1])
             self.addfn(gfn)
-            desc = gfunc[2].split('~')
-            for func in desc:
-                d = func[0:func.find(',')]
-                f = func[func.find(',')+1:]
-                dset,vset=d.split('->')
-                f = f[f.find('=')+1:]
-                fn = function.valuefunc.fnvalue(gfn, dset, vset, f)
-                gfn.setfn(fn)
+            fn = function.valuefunc.fnvalue(gfn, gfunc[2], gfunc[3], gfunc[4][gfunc[4].find('=')+1:], gfunc[5])
+            gfn.setfn(fn)
 
     def phinit(self):
         element.phrases.init(self)

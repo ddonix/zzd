@@ -5,7 +5,7 @@ from seting import categoryset
 #求值函数,所有可以通过python eval的表达式都可以
 class fnbase(func.fn):
     def __init__(self, gfunc, dset, vset):
-        func.fn.__init__(self, gfunc, dset, vset, '')
+        func.fn.__init__(self, gfunc, dset, vset, '', '')
 
     #取值或者判断真假的函数
     def _v(self, e):

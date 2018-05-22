@@ -4,8 +4,8 @@ from seting import categoryset
 
 #求值函数,所有可以通过python eval的表达式都可以
 class fnvalue(func.fn):
-    def __init__(self, gfunc, dset, vset, f):
-        func.fn.__init__(self, gfunc, dset, vset, f)
+    def __init__(self, gfunc, dset, vset, f, c):
+        func.fn.__init__(self, gfunc, dset, vset, f, c)
         if dset[0] != '[' and (vset == 'bool' or vset[0] == '('):
             self.creategset()
 
