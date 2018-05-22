@@ -8,44 +8,40 @@ class fnbase(func.fn):
         func.fn.__init__(self, gfunc, dset, vset, '')
 
     #取值或者判断真假的函数
-    def _value(self, ph):
+    def _v(self, e):
+        li = self.e2list(e)
         if self.gfunc.name == '如果否则':
-            if '(' in ph[0].s:
-                return '要递归了'
+            if li[1]:
+                return li[2]
             else:
-                res = eval(ph[0].s)
-            if res:
-                return ph[1].s
-            else:
-                return ph[2].s
+                return li[3]
         elif self.gfunc.name == '大于':
-            return int(ph[0].s) > int(ph[1].s)
+            return int(li[1]) > int(li[2])
         elif self.gfunc.name == '大于等于':
-            return int(ph[0].s) >= int(ph[1].s)
+            return int(li[1]) >= int(li[2])
         elif self.gfunc.name == '小于':
-            return int(ph[0].s) < int(ph[1].s)
+            return int(li[1]) < int(li[2])
         elif self.gfunc.name == '小于等于':
-            return int(ph[0].s) <= int(ph[1].s)
+            return int(li[1]) <= int(li[2])
         elif self.gfunc.name == '不等于':
-            return ph[0].s != ph[1].s
+            return int(li[1]) != int(li[2])
         elif self.gfunc.name == '等于':
-            return ph[0].s == ph[1].s
+            return int(li[1]) == int(li[2])
         elif self.gfunc.name == '加':
-            return int(ph[0].s) + int(ph[1].s)
+            return int(li[1]) + int(li[2])
         elif self.gfunc.name == '减':
-            return int(ph[0].s) - int(ph[1].s)
-            return ph[0].s == ph[1].s
+            return int(li[1]) - int(li[2])
         elif self.gfunc.name == '乘':
-            return int(ph[0].s) * int(ph[1].s)
+            return int(li[1]) * int(li[2])
         elif '除' in self.gfunc.name:
             if self.gfunc.name == '除以':
-                x1 = int(ph[0].s)
-                x2 = int(ph[1].s)
+                x1 = int(li[1])
+                x2 = int(li[2])
             else:
-                x1 = int(ph[1].s)
-                x2 = int(ph[0].s)
-            if len(ph) == 3:
-                v=ph[2].s
+                x1 = int(li[2])
+                x2 = int(li[1])
+            if len(li) == 4:
+                v=li[3]
             else:
                 v=''
             print(x1,x2,v)

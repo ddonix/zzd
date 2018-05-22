@@ -9,18 +9,16 @@ class fncategory(func.fn):
         self.creategset()
     
     #取值或者判断真假的函数
-    def _value(self, ph):
-        ph = ph[0]
+    def _v(self, e):
+        res = self.e2list(e)
+        ph = self.gfunc.kdb.getph(res[1])
         if not self.f:
             if self.gfunc.name in ph.fn:
                 return ph.fn[self.gfunc.name]
             else:
                 return '%s未知'%self.gfunc.name
         else:
-            e = self.f.replace('如果','if')
-            e = e.replace('否则','else')
-            e = e.replace('x','(%s)'%ph.s)
-            return eval(e)
+            return '递归'
     
     def creategset(self):
         if self.vset == 'bool':

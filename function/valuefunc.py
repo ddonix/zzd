@@ -8,29 +8,26 @@ class fnvalue(func.fn):
         func.fn.__init__(self, gfunc, dset, vset, f)
 
     #取值或者判断真假的函数
-    def _value(self, ph):
-        e = self.f
-        if len(ph) == 1:
-            e = e.replace('x','%s'%ph[0].s)
+    def _v(self, e):
+        li = self.e2list(e)
+        print('self.f:',self.f)
+        print('e:',e)
+        print('li')
+        if 'f' not in e:
+            ee = self.f
+            if len(li) == 2:
+                ee=ee.replace('x',li[1])
+            else:
+                for i in range(1,len(li)):
+                    ee=ee.replace('x%d'%i,li[i])
+            name = self.f[0:self.f.find('(')]
+            gfn = self.gfunc.kdb.getfn(name)
+            print('...........')
+            print(ee)
+            print(gfn.name)
+            return gfn.v(ee)
         else:
-            for i in range(0,len(ph)):
-                e = e.replace('x%d'%(i+1),'%s'%ph[i].s)
-        gfn = self.gfunc.kdb.getfn(e[0:e.find('(')])
-        m = e[e.find('('):][1:-1]
-        print(gfn.name, m)
-        if '(' not in m:
-            m = m.split(',')
-            ph = []
-            for m in m:
-                ph.append(self.gfunc.kdb.getph(m))
-            return gfn.value(ph)
-        else:
-            res = self.vvv(m)
-            print(res)
-        return e
-
-    def vvv(self, ss):
-        return ss
+            return '递归了'
  
 def main():
     print('funccategory')
