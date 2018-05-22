@@ -1,6 +1,5 @@
 #!/usr/bin/python3 -B
 import element
-import ipdb
 class fn:
     def __init__(self, gfunc, d, v, f):
         assert gfunc
