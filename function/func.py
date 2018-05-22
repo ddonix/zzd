@@ -49,7 +49,6 @@ class gfunc:
             r = cls._e2list(ss)
             res.append(r[0])
             ss = r[1]
-        print(res)
         return res
 
     @classmethod
@@ -120,6 +119,7 @@ class gfunc:
         return self.v(e)
 
     def v(self, e):
+        print('e:',e)
         if '(' not in e:
             ph = self.kdb.getph(e)
             if e == 'True':
@@ -133,11 +133,12 @@ class gfunc:
         else:
             li = gfunc.e2list(e)
             ee = '%s'%li[0]
-            ee += '(%s'%self.v(li[1])
+            ee += '(%s'%(self.v(li[1]) if '(' in li[1] else li[1])
             for s in li[2:]:
-                ee += ',%s'%self.v(s)
+                ee += ',%s'%(self.v(s) if '(' in s else s)
             ee += ')'
             fn = self.getfne(ee)
+            print('ee:',ee)
             return fn._v(ee)
 
 def main():
