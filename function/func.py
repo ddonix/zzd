@@ -7,8 +7,14 @@ class fn:
         self.gfunc = gfunc
         self.dset = d
         self.vset = v
-        self.f = f
-        self.c = c
+        self.f = f[f.find('=')+1:]
+        self.c = set()
+        if c:
+            c = c.split('~')
+            for rec in c:
+                rec = rec.split('->')
+                self.c.add((rec[0],rec[1]))
+            print(self.c)
     
     #函数返回值
     def _v(self, e):
@@ -75,6 +81,8 @@ class gfunc:
         if name == self.name:
             return self.fn
         else:
+            print(self)
+            print(self.kdb)
             gfn = self.kdb.getfn(name)
             return gfn.fn
 

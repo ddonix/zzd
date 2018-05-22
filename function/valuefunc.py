@@ -27,7 +27,15 @@ class fnvalue(func.fn):
             gfn = self.gfunc.kdb.getfn(name)
             return gfn.v(ee)
         else:
-            return '递归了'
+            if not self.c:
+                return '没有递归结束条件,请检查知识库'
+            for c in self.c:
+                if li[1] == c[0]:
+                    return c[1]
+            name = self.gfunc.name
+            gfn = self.gfunc.kdb.getfn(name)
+            print(name,gfn)
+            return gfn.v(ee)
     
     def creategset(self):
         if self.vset == 'bool':
