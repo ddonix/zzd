@@ -17,9 +17,9 @@ class gsetbool(sets.gset):
 
     def phin(self, ph):
         res = self.fn.value([ph])
-        if res == False:
+        if res == False or res == 'False':
             return (False, '%s不是%s'%(ph.s, self.name))
-        elif res == True:
+        elif res == True or res == 'True':
             return (True, {self.name:ph.s})
         else:
             return (False, res)

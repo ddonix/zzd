@@ -25,6 +25,8 @@ class fnvalue(func.fn):
         if 'f(' not in self.f:
             name = self.f[0:self.f.find('(')]
             gfn = self.gfunc.kdb.getfn(name)
+            print(name)
+            print(gfn)
             return gfn.v(ee)
         else:
             if not self.c:

@@ -363,6 +363,11 @@ class ZZDKDB():
         except:
             return NameError
         
+        gfn = function.func.gfunc(self, '如果否则')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[. . .]', '')
+        gfn.setfn(fn)
+        
         gfn = function.func.gfunc(self, '与')
         self.addfn(gfn)
         fn = function.basefunc.fnbase(gfn, '[bool bool]', 'bool')

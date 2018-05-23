@@ -303,10 +303,10 @@ class zzd():
             return
         adapter = res[1]
         if '函数断言语句' in adapter:
-            rg,nm=adapter['函数断言'].split('|')
-            self.say('如果%s,那么%s'%(rg,nm))
-            rg=self.KDB.getse(rg).be('函数断言')[1]
-            nm=self.KDB.getse(nm).be('函数断言')[1]
+            rg=self.KDB.getse(adapter['二元函数断言']).be('二元函数断言')[1]
+            nm=self.KDB.getse(adapter['一元函数断言']).be('一元函数断言')[1]
+            if '反向词' in rg:
+                pass
             print(rg)
             print(nm)
             return
