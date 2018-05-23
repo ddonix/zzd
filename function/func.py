@@ -36,11 +36,6 @@ class gfunc:
                 self.addbyname(name)
         self.fn = None
     
-    @classmethod
-    def init(cls):
-        cls.basefunc = {}
-        cls.basefunc['与']=('[bool bool]', 'bool')
-    
     def addbyname(self, name):
         assert name != self.name
         self.byname.add(name)

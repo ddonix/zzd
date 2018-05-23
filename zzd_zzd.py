@@ -305,8 +305,12 @@ class zzd():
         if '函数断言语句' in adapter:
             rg=self.KDB.getse(adapter['二元函数断言']).be('二元函数断言')[1]
             nm=self.KDB.getse(adapter['一元函数断言']).be('一元函数断言')[1]
+            r='%s('%adapter['函数']
             if '反向词' in rg:
-                pass
+                r += '%s,x)'%adapter['.']
+            else:
+                r += 'x,%s)'%adapter['.']
+            self.say(r)
             print(rg)
             print(nm)
             return

@@ -363,81 +363,31 @@ class ZZDKDB():
         except:
             return NameError
         
-        gfn = function.func.gfunc(self, '如果否则')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[. . .]', '')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '与')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[bool bool]', 'bool')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '或')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[bool bool]', 'bool')
-        gfn.setfn(fn)
+        basefn = {'如果否则':('[. . .]', '.')}
+        basefn['与'] = ('[bool bool]', 'bool')
+        basefn['或'] = ('[bool bool]', 'bool')
+        basefn['非'] = ('bool', 'bool')
+        basefn['大于'] = ('[数 数]', 'bool', '大')
+        basefn['大于等于'] = ('[数 数]', 'bool')
+        basefn['小于'] = ('[数 数]', 'bool', '小')
+        basefn['小于等于'] = ('[数 数]', 'bool')
+        basefn['不等于'] = ('[. .]', 'bool')
+        basefn['等于'] = ('[. .]', 'bool')
+        basefn['加'] = ('[数 数]', '数', '加上~和')
+        basefn['减'] = ('[数 数]', '数', '减去~差')
+        basefn['乘'] = ('[数 数]', '数', '乘以~乘积~积')
+        basefn['除'] = ('[数 数 w(商or余数)]', '数')
+        basefn['除以'] = ('[数 数 w(商or余数)]', '数')
 
-        gfn = function.func.gfunc(self, '非')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, 'bool', 'bool')
-        gfn.setfn(fn)
+        for name in basefn:
+            if len(basefn[name]) == 3:
+                gfn = function.func.gfunc(self, name, basefn[name][2])
+            else:
+                gfn = function.func.gfunc(self, name)
+            self.addfn(gfn)
+            fn = function.basefunc.fnbase(gfn, basefn[name][0], basefn[name][1])
+            gfn.setfn(fn)
         
-        gfn = function.func.gfunc(self, '大于', '大')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数]', 'bool')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '大于等于')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数]', 'bool')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '小于', '小')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数]', 'bool')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '小于等于')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数]', 'bool')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '不等于')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[. .]', 'bool')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '等于')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[. .]', 'bool')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '加', '加上~和')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数]', '数')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '减', '减去~差')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数]', '数')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '乘', '乘以~乘积~积')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数]', '数')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '除')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数 w(商or余数)]', '数')
-        gfn.setfn(fn)
-        
-        gfn = function.func.gfunc(self, '除以')
-        self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[数 数 w(商or余数)]', '数')
-        gfn.setfn(fn)
-
         for gfunc in grammar:
             gfn = function.func.gfunc(self, gfunc[0], gfunc[1])
             self.addfn(gfn)
