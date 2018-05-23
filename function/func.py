@@ -36,6 +36,11 @@ class gfunc:
                 self.addbyname(name)
         self.fn = None
     
+    @classmethod
+    def init(cls):
+        cls.basefunc = {}
+        cls.basefunc['与']=('[bool bool]', 'bool')
+    
     def addbyname(self, name):
         assert name != self.name
         self.byname.add(name)
@@ -145,7 +150,9 @@ class gfunc:
                 ee += ',%s'%(self.v(s) if '(' in s else s)
             ee += ')'
             fn = self.getfne(ee)
-            return fn._v(ee)
+            res = fn._v(ee)
+            print('e:%s, res:%s'%(e,res))
+            return res
 
 def main():
     print('func')

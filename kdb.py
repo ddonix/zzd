@@ -362,10 +362,20 @@ class ZZDKDB():
             conn.close()
         except:
             return NameError
-
-        gfn = function.func.gfunc(self, '如果否则')
+        
+        gfn = function.func.gfunc(self, '与')
         self.addfn(gfn)
-        fn = function.basefunc.fnbase(gfn, '[. . .]', '')
+        fn = function.basefunc.fnbase(gfn, '[bool bool]', 'bool')
+        gfn.setfn(fn)
+        
+        gfn = function.func.gfunc(self, '或')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, '[bool bool]', 'bool')
+        gfn.setfn(fn)
+
+        gfn = function.func.gfunc(self, '非')
+        self.addfn(gfn)
+        fn = function.basefunc.fnbase(gfn, 'bool', 'bool')
         gfn.setfn(fn)
         
         gfn = function.func.gfunc(self, '大于', '大')
