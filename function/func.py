@@ -78,7 +78,7 @@ class gfunc:
     
     def getfne(self, e):
         name = e[0:e.find('(')]
-        if name == self.name:
+        if name == self.name or name == 'f':
             return self.fn
         else:
             print(self)
