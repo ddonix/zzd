@@ -306,10 +306,14 @@ class zzd():
             rg=self.KDB.getse(adapter['二元函数断言']).be('二元函数断言')[1]
             nm=self.KDB.getse(adapter['一元函数断言']).be('一元函数断言')[1]
             r='%s('%adapter['函数']
-            if adapter['二元函数断言']
-                r += '%s,x)'%adapter['.']
+            if '反向词' in rg:
+                x2,x1=rg['.'].split('|')
             else:
-                r += 'x,%s)'%adapter['.']
+                x1,x2=rg['.'].split('|')
+            if self.KDB.getse(x1).be('汉语变量')[0] == True:
+                r += 'x,%s)'%x2
+            else: 
+                r += '%s,x)'%x1
             self.say(r)
             print(rg)
             print(nm)
