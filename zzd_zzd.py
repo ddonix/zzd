@@ -302,7 +302,11 @@ class zzd():
                 self.FSM['train'] = True
             return
         adapter = res[1]
-        if '属于断言语句' in adapter:
+        if '函数断言语句' in adapter:
+            self.say('函数断言语句，敬请期待')
+            print(adapter)
+            return
+        elif '属于断言语句' in adapter:
             assert '.' in adapter
             assert '集合' in adapter
             x = self.KDB.getph(adapter['.'])
