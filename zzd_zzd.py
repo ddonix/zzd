@@ -303,8 +303,12 @@ class zzd():
             return
         adapter = res[1]
         if '函数断言语句' in adapter:
-            self.say('函数断言语句，敬请期待')
-            print(adapter)
+            rg,nm=adapter['函数断言'].split('|')
+            self.say('如果%s,那么%s'%(rg,nm))
+            rg=self.KDB.getse(rg).be('函数断言')[1]
+            nm=self.KDB.getse(nm).be('函数断言')[1]
+            print(rg)
+            print(nm)
             return
         elif '属于断言语句' in adapter:
             assert '.' in adapter
