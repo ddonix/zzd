@@ -34,7 +34,6 @@ class fnvalue(func.fn):
                     return c[1]
             name = self.gfunc.name
             gfn = self.gfunc.kdb.getfn(name)
-            print(name,gfn)
             return gfn.v(ee)
     
     def creategset(self):

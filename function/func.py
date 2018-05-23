@@ -14,7 +14,6 @@ class fn:
             for rec in c:
                 rec = rec.split('->')
                 self.c.add((rec[0],rec[1]))
-            print(self.c)
     
     #函数返回值
     def _v(self, e):
@@ -127,7 +126,6 @@ class gfunc:
         return self.v(e)
 
     def v(self, e):
-        print('e:',e)
         if '(' not in e:
             ph = self.kdb.getph(e)
             if e == 'True':
@@ -147,7 +145,6 @@ class gfunc:
                 ee += ',%s'%(self.v(s) if '(' in s else s)
             ee += ')'
             fn = self.getfne(ee)
-            print('ee:',ee)
             return fn._v(ee)
 
 def main():
