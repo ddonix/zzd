@@ -215,8 +215,10 @@ class zzd():
     
     def _solve_query(self, se):
         res = se.be('询问语句')
+        print(res)
         if res[0] != True:
             res = se.be('未知询问语句')
+            print(res)
             if res[0] == True:
                 self._solve_query_unknow(res[1])
             else:
@@ -449,6 +451,7 @@ class zzd():
         return False
     
     def _solve_other(self, se):
+        print(se)
         if se.be('称呼')[0] == True:
             self.say('我在，有什么为你做的吗')
             return

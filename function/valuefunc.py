@@ -1,5 +1,6 @@
 #!/usr/bin/python3 -B
 from function import func
+import element
 from seting import categoryset
 from seting import boolset
 
@@ -38,6 +39,17 @@ class fnvalue(func.fn):
             gfn = self.gfunc.kdb.getfn(name)
             return gfn.v(ee)
     
+    def createph(self):
+        name = self.gfunc.name
+        kdb = self.gfunc.kdb
+        if not kdb.getph(name):
+            kdb.addph(element.phrases(name))
+        kdb.add_information_a_in_G(name, '集合')
+        for name in self.gfunc.byname:
+            if not kdb.getph(name):
+                kdb.addph(element.phrases(name))
+            self.add_information_a_in_G(name, '集合')
+    
     def creategset(self):
         if self.vset == 'bool':
             if self.dset[0] != '[':
@@ -58,7 +70,8 @@ class fnvalue(func.fn):
                     gs.addbyname('%s是%s的%s'%(self.gfunc.name, v,self.dset))
                 self.gfunc.kdb.addgs(gs)
                 self.gfunc.kdb.add_information_A_in_G(gs.name, self.dset)
- 
+
+
 def main():
     print('funcvalue')
  

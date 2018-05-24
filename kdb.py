@@ -404,6 +404,7 @@ class ZZDKDB():
                 if not self.getph(fn):
                     self.addph(element.phrases(fn))
                 self.add_information_a_in_G(fn, '函数')
+            fn.createph()
         
     def phinit(self):
         element.phrases.init(self)
