@@ -45,6 +45,13 @@ class ZZDKDB():
         self.fninit()
         self.phinit()
         self.coreinit()
+
+    def fix(self, r):
+        res = ''
+        for s in r:
+            if s in self.vocable:
+                res += s
+        return res
         
     def getinWaaClass(self, se):
         keyword = [x.s for x in se.ph if x.s in self.keyword]

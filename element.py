@@ -53,7 +53,7 @@ class sentence:
         self.s = s                #sting
         self.ph = []
         self.kdb = kdb
-        zpoint = '，。,.！!？?'
+        zpoint = '，。,.！!？?啊呐了'
         ss = self.s
         while ss:
             if ss[0] == ' ':

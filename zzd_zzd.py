@@ -220,15 +220,14 @@ class zzd():
             self._solve_other(se)
             return
         adapter = res[1]
-        print(adapter)
-        if '称呼' in adapter and len(adapter) == 1:
-            self.say('我在，有什么为你做的吗')
+        if '称呼' in adapter and adapter['称呼'] == adapter['聊天语句']:
+            self.say('我在')
             return
         if '问候' in adapter: 
             self.say(adapter['问候'])
             return
         if '称赞' in adapter:
-            self.say('谢谢夸奖')
+            self.say('谢谢啦')
             return
         self.say('你说啥？')
 
