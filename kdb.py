@@ -389,11 +389,22 @@ class ZZDKDB():
             gfn.setfn(fn)
         
         for gfunc in grammar:
-            gfn = function.func.gfunc(self, gfunc[0], gfunc[1])
-            self.addfn(gfn)
-            fn = function.valuefunc.fnvalue(gfn, gfunc[2], gfunc[3], gfunc[4], gfunc[5])
-            gfn.setfn(fn)
+            self.add_function(gfunc[0],gfunc[1], gfunc[2], gfunc[3], gfunc[4], gfunc[5], False)
 
+    def add_function(self, name, byname, dset, vset, define, condition, ph):
+        gfn = function.func.gfunc(self, name, byname)
+        self.addfn(gfn)
+        fn = function.valuefunc.fnvalue(gfn, dset, vset, define, condition)
+        gfn.setfn(fn)
+        if ph:
+            if not self.getph(name):
+                self.addph(element.phrases(name))
+            self.add_information_a_in_G(name, '函数')
+            for name in gfn.byname:
+                if not self.getph(fn):
+                    self.addph(element.phrases(fn))
+                self.add_information_a_in_G(fn, '函数')
+        
     def phinit(self):
         element.phrases.init(self)
         try:

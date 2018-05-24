@@ -326,27 +326,34 @@ class zzd():
             self.say('是否进入学习模式?')
             ok = self.ask(['选择回答语句'])
             if ok and '肯定回答语句' in ok:
-                self.say('好的，已进入学习模式')
+                self.say('已进入学习模式')
                 self.FSM['train'] = True
-            return
-        adapter = res[1]
+                adapter = se.be('断言语句')[1]
+            else:
+                return
+        else:
+            adapter = res[1]
         if '函数定义语句' in adapter:
             if '一元函数定义语句' in adapter:
                 rg=self.KDB.getse(adapter['二元函数断言']).be('二元函数断言')[1]
                 nm=self.KDB.getse(adapter['一元函数断言']).be('一元函数断言')[1]
-                r='%s('%adapter['函数']
+                define = 'f(x)=%s('%adapter['函数']
                 if '反向词' in rg:
                     x2,x1=rg['.'].split('|')
                 else:
                     x1,x2=rg['.'].split('|')
                 if self.KDB.getse(x1).be('汉语变量')[0] == True:
-                    r += 'x,%s)'%x2
+                    define += 'x,%s)'%x2
                 else: 
-                    r += '%s,x)'%x1
+                    define += '%s,x)'%x1
                 name = nm['...']
                 dset = '数'
                 vset = 'bool'
-                self.say('name:%s,dset:%s,vset:%s,define:%s'%(name, dset, vset, r))
+                if self.KDB.getph(name):
+                    self.say('我的知识库里已经有了%s的定义'%name)
+                else:
+                    self.KDB.add_function(name, '', dset, vset, define, '', True)
+                    self.say('我记住了')
             else:
                 self.say('敬请期待')
             return
