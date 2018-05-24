@@ -49,7 +49,7 @@ class ZZDKDB():
         keyword = [x.s for x in se.ph if x.s in self.keyword]
         if se.s in self.keyword:
             keyword.append(se.s)
-        bit = {'math':0, 'query':0, 'command':0, 'affirm':0}
+        bit = {'math':0, 'query':0, 'command':0, 'affirm':0, 'talk':0}
         for k in keyword:
             weight = self.keyword[k][0].split(' ')
             for i in range(0,len(weight),2):

@@ -51,6 +51,7 @@ class zzd():
         cls.inWaaClass['command'] = zzd._solve_command                      #command
         cls.inWaaClass['affirm'] = zzd._solve_affirm                        #affirm
         cls.inWaaClass['query'] = zzd._solve_query                          #query
+        cls.inWaaClass['talk'] = zzd._solve_talk                            #talk
  
     #运行在root进程
     def input(self, sour, waa):
@@ -212,6 +213,17 @@ class zzd():
             self.say('成功写入%d条信息'%res[1])
             if res[1] < infonum:
                 self.say('%d条信息写入失败'%res[2])
+    
+    def _solve_talk(self, se):
+        res = se.be('聊天语句')
+        print(res)
+        if res[0] != True:
+            self._solve_other(se)
+            return
+        adapter = res[1]
+        if '称呼' in adapter:
+            self.say('我在，有什么为你做的吗')
+
     
     def _solve_query(self, se):
         res = se.be('询问语句')
@@ -452,9 +464,6 @@ class zzd():
     
     def _solve_other(self, se):
         print(se)
-        if se.be('称呼')[0] == True:
-            self.say('我在，有什么为你做的吗')
-            return
         if se.be('询问语句')[0] == True:
             self._solve_query(se)
             return
