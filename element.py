@@ -80,7 +80,7 @@ class sentence:
     def be(self, gram):
         gs = self.kdb.getgs(gram)
         if not gs:
-            return [2,'%s:不是已知的集合或者函数'%gram]
+            return [2,'不知道%s的意思'%gram]
         res = self.kdb.getgs('集合').judge1(self)
         if res[0] == True:
             if gram == '集合':

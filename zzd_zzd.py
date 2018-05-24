@@ -47,12 +47,11 @@ class zzd():
         
     @classmethod
     def init(cls):
-        cls.inWaaClass['math'] =  zzd._solve_math                        #math
-        cls.inWaaClass['command'] = zzd._solve_command                    #command
-        cls.inWaaClass['judge'] = zzd._solve_judge                        #judge
-        cls.inWaaClass['affirm'] = zzd._solve_affirm                    #affirm
-        cls.inWaaClass['query'] = zzd._solve_query                        #query
-        
+        cls.inWaaClass['math'] =  zzd._solve_math                           #math
+        cls.inWaaClass['command'] = zzd._solve_command                      #command
+        cls.inWaaClass['affirm'] = zzd._solve_affirm                        #affirm
+        cls.inWaaClass['query'] = zzd._solve_query                          #query
+ 
     #运行在root进程
     def input(self, sour, waa):
         record = {'waa':waa, 'sour':sour, 'id':self.id_waain, 'time':time.time()}
@@ -217,76 +216,89 @@ class zzd():
     def _solve_query(self, se):
         res = se.be('询问语句')
         if res[0] != True:
-            self._solve_other(se)
-        else:
-            adapter = res[1]
-            print(adapter)
-            f = adapter['函数']
-            x = adapter['.']
-            if '一元函数询问语句' in adapter:
-                res = self.KDB.getfn(f).value([self.KDB.getph(x)])
+            res = se.be('未知询问语句')
+            if res[0] == True:
+                self._solve_query_unknow(res[1])
             else:
-                assert '二元函数询问语句' in adapter
-                assert '|' in x
-                x = x.split('|')
-                if '(的)' in adapter:
-                    ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1]), self.KDB.getph(x[2])]
-                elif '反向词' in adapter:
-                    ph = [self.KDB.getph(x[1]), self.KDB.getph(x[0])]
-                else:
-                    ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1])]
-                res = self.KDB.getfn(f).value(ph)
-            if type(res) == bool:
-                if res == True:
-                    self.say('对')
-                elif res == False:
-                    self.say('错')
-            else:
-                self.say(str(res))
-
-    def _solve_judge(self, se):
-        res = se.be('判断语句')
-        if res[0] != True:
-            self._solve_other(se)
+                self._solve_other(se)
+        elif '集合判断语句' in res[1]:
+            self._solve_query_set(res[1])
         else:
-            adapter = res[1]
-            if '集合判断语句' in adapter:
-                assert '集合' in adapter
-                if '.' in adapter:
-                    x1 = adapter['.']
-                    x2 = adapter['集合']
-                else:
-                    if '(包含)' in adapter:
-                        x2,x1 = adapter['集合'].split('|')
-                    else:
-                        x1,x2 = adapter['集合'].split('|')
+            assert '函数询问语句' in res[1]
+            self._solve_query_fn(res[1])
+ 
+    def _solve_query_fn(self, adapter):
+        print(adapter)
+        f = adapter['函数']
+        x = adapter['.']
+        if '一元函数询问语句' in adapter:
+            res = self.KDB.getfn(f).value([self.KDB.getph(x)])
+        else:
+            assert '二元函数询问语句' in adapter
+            assert '|' in x
+            x = x.split('|')
+            if '(的)' in adapter:
+                ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1]), self.KDB.getph(x[2])]
+            elif '反向词' in adapter:
+                ph = [self.KDB.getph(x[1]), self.KDB.getph(x[0])]
+            else:
+                ph = [self.KDB.getph(x[0]), self.KDB.getph(x[1])]
+            res = self.KDB.getfn(f).value(ph)
+        if type(res) == bool:
+            if res == True:
+                self.say('对')
+            elif res == False:
+                self.say('错')
+        else:
+            self.say(str(res))
+    
+    def _solve_query_set(self, adapter):
+        assert '集合' in adapter
+        if '.' in adapter:
+            x1 = adapter['.']
+            x2 = adapter['集合']
+        else:
+            if '(包含)' in adapter:
+                x2,x1 = adapter['集合'].split('|')
+            else:
+                x1,x2 = adapter['集合'].split('|')
                         
-                res = self.KDB.getse(x1).be(x2)
-                print(adapter)
-                print(res)
-                if res[0] == True:
-                    echo = adapter['集合断言语句']
-                    self.say(echo)
-                elif res[0] == False:
-                    if res[1]:
-                        echo = '不, %s'%res[1]
-                    elif '系动词' in adapter:
-                        echo = '%s不%s%s'%(x1,adapter['系动词'],x2)
-                    elif '(属于)' in adapter:
-                        echo = '%s不属于%s'%(x1,x2)
-                    elif '(包含)' in adapter:
-                        echo = '%s不包含%s'%(x2,x1)
-                    else:
-                        echo = '%s不%s'%(x1,x2)
-                    self.say(echo)
-                else:
-                    self.say(res[1])
-                    self.say('需要我上网问问吗？')
-                    ok = self.ask(['选择回答语句'])
-                    if ok and '肯定回答语句' in ok:
-                        self.say('我还不会上网，逗你玩呢.哈哈哈')
-                    elif ok and '否定回答语句' in ok:
-                        self.say('好的')
+        res = self.KDB.getse(x1).be(x2)
+        print(adapter)
+        print(res)
+        if res[0] == True:
+            echo = adapter['集合断言语句']
+            self.say(echo)
+        elif res[0] == False:
+            if res[1]:
+                echo = '不, %s'%res[1]
+            elif '系动词' in adapter:
+                echo = '%s不%s%s'%(x1,adapter['系动词'],x2)
+            elif '(属于)' in adapter:
+                echo = '%s不属于%s'%(x1,x2)
+            elif '(包含)' in adapter:
+                echo = '%s不包含%s'%(x2,x1)
+            else:
+                echo = '%s不%s'%(x1,x2)
+            self.say(echo)
+        else:
+            self.say(res[1])
+            if self.FSM['train'] == False:
+                self.say('要我上网查一下吗？')
+                ok = self.ask(['选择回答语句'])
+                if ok and '肯定回答语句' in ok:
+                    self.say('我还不会上网呢')
+                    self.say('敬请期待吧，少年')
+                elif ok and '否定回答语句' in ok:
+                    self.say('嗯')
+
+    def _solve_query_unknow(self, adapter):
+        if '.' in adapter:
+            x1 = adapter['.']
+            self.say(x1)
+        if '...' in adapter:
+            x2 = adapter['...']
+            self.say(x2)
 
     def _solve_affirm(self, se):
         res = se.be('断言语句')
@@ -302,23 +314,28 @@ class zzd():
                 self.FSM['train'] = True
             return
         adapter = res[1]
-        if '函数断言语句' in adapter:
-            rg=self.KDB.getse(adapter['二元函数断言']).be('二元函数断言')[1]
-            nm=self.KDB.getse(adapter['一元函数断言']).be('一元函数断言')[1]
-            r='%s('%adapter['函数']
-            if '反向词' in rg:
-                x2,x1=rg['.'].split('|')
+        if '函数定义语句' in adapter:
+            if '一元函数定义语句' in adapter:
+                rg=self.KDB.getse(adapter['二元函数断言']).be('二元函数断言')[1]
+                nm=self.KDB.getse(adapter['一元函数断言']).be('一元函数断言')[1]
+                r='%s('%adapter['函数']
+                if '反向词' in rg:
+                    x2,x1=rg['.'].split('|')
+                else:
+                    x1,x2=rg['.'].split('|')
+                if self.KDB.getse(x1).be('汉语变量')[0] == True:
+                    r += 'x,%s)'%x2
+                else: 
+                    r += '%s,x)'%x1
+                name = nm['...']
+                dset = '数'
+                vset = 'bool'
+                self.say('name:%s,dset:%s,vset:%s,define:%s'%(name, dset, vset, r))
             else:
-                x1,x2=rg['.'].split('|')
-            if self.KDB.getse(x1).be('汉语变量')[0] == True:
-                r += 'x,%s)'%x2
-            else: 
-                r += '%s,x)'%x1
-            self.say(r)
-            print(rg)
-            print(nm)
+                self.say('敬请期待')
             return
-        elif '属于断言语句' in adapter:
+        
+        if '属于断言语句' in adapter:
             assert '.' in adapter
             assert '集合' in adapter
             x = self.KDB.getph(adapter['.'])
@@ -415,11 +432,17 @@ class zzd():
         if se.be('询问语句')[0] == True:
             self._solve_query(se)
             return
-        if se.be('判断语句')[0] == True:
-            self._solve_query(se)
+        if se.be('未知询问语句')[0] == True:
+            self._solve_query_unknow(res[1])
             return
         if se.be('断言语句')[0] == True:
             self._solve_affirm(se)
+            return
+        if se.be('命令语句')[0] == True:
+            self._solve_command(se)
+            return
+        if se.be('数学语句')[0] == True:
+            self._solve_command(se)
             return
         self._phrase_se(se)
     
