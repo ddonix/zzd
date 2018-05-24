@@ -283,22 +283,38 @@ class zzd():
             self.say(echo)
         else:
             self.say(res[1])
-            if self.FSM['train'] == False:
-                self.say('要我上网查一下吗？')
-                ok = self.ask(['选择回答语句'])
-                if ok and '肯定回答语句' in ok:
-                    self.say('我还不会上网呢')
-                    self.say('敬请期待吧，少年')
-                elif ok and '否定回答语句' in ok:
-                    self.say('嗯')
+            self.echo_unknow()
+
+    def echo_unknow(self):
+        if self.FSM['train']:
+            return
+        self.say('要我上网查一下吗？')
+        ok = self.ask(['选择回答语句'])
+        if ok and '肯定回答语句' in ok:
+            self.say('我还不会上网呢')
+            self.say('敬请期待吧，少年')
+        elif ok and '否定回答语句' in ok:
+            self.say('嗯')
+        
 
     def _solve_query_unknow(self, adapter):
         if '.' in adapter:
-            x1 = adapter['.']
-            self.say(x1)
-        if '...' in adapter:
-            x2 = adapter['...']
-            self.say(x2)
+            if '...' in adapter:
+                if adapter['.'][0] == adapter['未知断言语句'][0]:
+                    x1 = adapter['.']
+                    x2 = adapter['...']
+                else:
+                    x1 = adapter['...']
+                    x2 = adapter['.']
+            else:
+                x1,x2 = adapter['.'].split('|')
+        else:
+            x1,x2 = adapter['...'].split('|')
+        if not self.KDB.getph(x1):
+            self.say('%s是未知的词'%x1)
+        if not self.KDB.getph(x2):
+            self.say('不知道%s是什么意思'%x2)
+        self.echo_unknow()
 
     def _solve_affirm(self, se):
         res = se.be('断言语句')
