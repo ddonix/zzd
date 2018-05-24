@@ -216,11 +216,11 @@ class zzd():
     
     def _solve_talk(self, se):
         res = se.be('聊天语句')
-        print(res)
         if res[0] != True:
             self._solve_other(se)
             return
         adapter = res[1]
+        print(adapter)
         if '称呼' in adapter and len(adapter) == 1:
             self.say('我在，有什么为你做的吗')
             return
@@ -230,6 +230,8 @@ class zzd():
         if '称赞' in adapter:
             self.say('谢谢夸奖')
             return
+        self.say('你说啥？')
+
     
     def _solve_query(self, se):
         res = se.be('询问语句')
@@ -423,7 +425,9 @@ class zzd():
         return False
     
     def _solve_other(self, se):
-        print(se)
+        if se.be('聊天语句')[0] == True:
+            self._solve_talk(se)
+            return
         if se.be('询问语句')[0] == True:
             self._solve_query(se)
             return
