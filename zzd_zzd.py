@@ -221,9 +221,15 @@ class zzd():
             self._solve_other(se)
             return
         adapter = res[1]
-        if '称呼' in adapter:
+        if '称呼' in adapter and len(adapter) == 1:
             self.say('我在，有什么为你做的吗')
-
+            return
+        if '问候' in adapter: 
+            self.say(adapter['问候'])
+            return
+        if '称赞' in adapter:
+            self.say('谢谢夸奖')
+            return
     
     def _solve_query(self, se):
         res = se.be('询问语句')
@@ -366,8 +372,11 @@ class zzd():
                 if self.KDB.getph(name):
                     self.say('我的知识库里已经有了%s的定义'%name)
                 else:
-                    self.KDB.add_function(name, '', dset, vset, define, '', True)
-                    self.say('我记住了')
+                    res = self.KDB.add_study_fn(name, '', dset, vset, define, '')
+                    if res == True:
+                        self.say('我记住了')
+                    else:
+                        self.say(res)
             else:
                 self.say('敬请期待')
             return
@@ -396,59 +405,10 @@ class zzd():
         else:
             res = x.affirm(gs)
             if res[0] == True:
-                self.say('好的，我记住了')
+                self.say('我记住了')
                 self.KDB.add_study_info(x, gs)
             else:
                 self.say(res[1])
-        '''
-        if '包含断言语句' in adapter:
-                assert '...' in adapter
-                assert '|' in adapter['...']
-                x,fn=adapter['...'].split('|')
-                if not self.KDB.spin(x):
-                    self.say('%s是未知词。请先定义.')
-                else:
-                    sp = self.KDB.getsp(x)
-                    res = sp.affirm(fn)
-                    if res[0] == True:
-                        self.say('好的，我记住了')
-                        self.infomation_a_fn.append(res[1])
-                    else:
-                        self.say(res[1])
-                return
-            assert '集合断言语句' in adapter
-            assert '集合' in adapter
-            if '|' not in adapter['集合']:
-                assert '...' in adapter
-                x = adapter['...']
-                gs = adapter['集合']
-            else:
-                if '(包含)' in adapter:
-                    gs,x = adapter['集合'].split('|')
-                else:
-                    x,gs = adapter['集合'].split('|')
-            assert self.KDB.gsin(gs)
-            if self.FSM['train'] == False:
-                self.say('对不起，您需进入学习模式才可以增加信息')
-                return
-            if '属于断言语句' in adapter:
-                self._solve_set_a(x, gs)
-            elif '包含断言语句' in adapter:
-                self._solve_set_A(x, gs)
-            else:
-                if self.KDB.spin(x):
-                    assert not self.KDB.getsp(x).be('集合')[0] == 0
-                    self._solve_set_a(x, gs)
-                else:    
-                    self.say('我不知道%s是否是集合。是吗'%x)
-                    ok = self.ask(['选择回答语句'])
-                    if ok and '肯定回答语句' in ok:
-                        self._solve_set_A(x, gs)
-                    elif ok and '否定回答语句' in ok:
-                        self._solve_set_a(x, gs)
-                    else:
-                        self.say('您没有给出肯定或否定，我将丢弃%s这条信息。'%sp[0])
-'''
 
     def _solve_answer(self, se):
         assert 'ask' in self.FSM and not self.FSM['ask'][1]

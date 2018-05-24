@@ -26,8 +26,9 @@ class ZZDKDB():
         self.mend_add = set()   #增加修复集合
         self.mend_replace = {}  #替换修复集合
     
-        self.infomation_a = {} # 'a':'G' a属于G
-        self.infomation_A = {} # 'X':'G' A包含G
+        self.infomation_a = {}  # 'a':'G' a属于G
+        self.infomation_A = {}  # 'X':'G' A包含G
+        self.infomation_fn = {} # 函数定义
         
         try:
             conn = sqlite3.connect('./data/grammar.db')
@@ -190,6 +191,27 @@ class ZZDKDB():
         print('check success')
     
     #a是A的元素
+    def add_local_database_fn(self, user, name, func):
+        try:
+            conn = sqlite3.connect('./data/grammar.db')
+            cursor = conn.cursor()
+            sql = '''select * from user_func where (user, name)=(?,?)'''
+            cursor.execute(sql,(user, name))
+            conn.commit()
+            info = cursor.fetchall()
+            print(info)
+        
+            sql = '''insert into user_func (user, name, byname, dset, vset, define, condition) values (?, ?, ?, ?, ?, ?, ?)'''
+            cursor.execute(sql, (user, name, func[0], func[1], func[2], func[3], func[4]))
+        except:
+            print('写入数据库失败')
+            return False
+        conn.commit()
+        conn.close
+        return True
+            
+    
+    #a是A的元素
     def add_local_database_a_in_G(self, user, a, G):
         try:
             conn = sqlite3.connect('./data/grammar.db')
@@ -214,7 +236,6 @@ class ZZDKDB():
         except:
             print('写入数据库失败')
             return False
-            
         conn.commit()
         conn.close
         return True
@@ -250,7 +271,7 @@ class ZZDKDB():
         return True
     
     def getinfonum(self):
-        return len(self.infomation_a)+len(self.infomation_A)
+        return len(self.infomation_a)+len(self.infomation_A)+len(self.infomation_fn)
         
     def save_infomation(self, user):
         fail = 0
@@ -275,6 +296,15 @@ class ZZDKDB():
                 break
             else:
                 success += 1
+        
+        while self.infomation_fn:
+            info = self.infomation_fn.popitem()
+            if not self.add_local_database_fn(user, info[0], info[1]):
+                fail += 1
+                self.infomation_fn[info[0]]=info[1]
+                break
+            else:
+                success += 1
         return (True, success, fail)
     
     def add_study_info(self, x, gs):
@@ -290,6 +320,12 @@ class ZZDKDB():
                 self.infomation_a[x] += '~%s'%gs
             else:
                 self.infomation_a[x] = gs
+    
+    def add_study_fn(self, name, byname, dset, vset, define, condition):
+        res = self.add_function(name, byname, dset, vset, define, condition, True)
+        if res == True:
+            self.infomation_fn[name] = (byname, dset, vset, define, condition)
+        return res
     
     #增加元素a属于集合G这条信息。
     #成功返回True，错误返回False，其他返回2.
@@ -405,6 +441,7 @@ class ZZDKDB():
                     self.addph(element.phrases(fn))
                 self.add_information_a_in_G(fn, '函数')
             fn.createph()
+        return True
         
     def phinit(self):
         element.phrases.init(self)
@@ -562,6 +599,8 @@ def main():
     kdb = ZZDKDB()
     for func in kdb.func:
         print(func)
+    res = kdb.add_local_database_fn('lidong','1234',('1','2','3','4','5'))
+    print(res)
         
 if __name__ == '__main__':
     main()
