@@ -40,7 +40,7 @@ class zzd():
         
         #大凡物不得其平则鸣
         self.desire = {}
-        self.desire['verify'] = [zzd.desire_verify, True, '']        #提醒认证身份,1分钟后没认证退出
+        self.desire['verify'] = [zzd.desire_verify, False, '']        
         self.desire['input'] = [zzd.desire_input, False, []]
         self.desire['time'] = [zzd.desire_time, False, []]
         self.desire['math'] = [zzd.desire_math, False, []]
@@ -52,6 +52,11 @@ class zzd():
         
         self.say_event = threading.Event()
         self.say_event.set()
+        
+        self.desire['verify'][1] = True
+        self.desire['verify'][2] = ''
+        self.say('您好，我是小白，请认证身份！')
+        self.add_desire('time', ('goodbye', True, time.time()+60))  #60秒后没有认证则退出
         
     @classmethod
     def init(cls):
@@ -459,34 +464,23 @@ class zzd():
         if l:
             r ='我猜测:%s是新词，您可以进入学习模式进行学习'%rr
             self.say(r)
-                
+ 
     def desire_verify(self, desire):
         if self.FSM['verify'] == True:
             desire[1] = False
             return
         desire[1] = False
         if not desire[2]:
-            if 'verify_waiting' in self.FSM:
-                self.say('您没有及时认证，我要休息了。')
-                self.add_desire('goodbye', '再见')
-            else:
-                self.FSM['verify_waiting'] = True
-                self.say('您好，我是小白，请认证身份！')
-                self.add_desire('time', (desire, True, time.time()+60))
-                arg = self.ask(['认证参数','认证参数句'])
-                if arg:
-                    self.desire['verify'][1] = True
-                    self.desire['verify'][2] = arg['认证参数']
+            self.say('您好，我是小白，请认证身份！')
+            arg = self.ask(['认证参数','认证参数句'])
+            if arg:
+                self.desire['verify'][1] = True
+                self.desire['verify'][2] = arg['认证参数']
         else:
             if desire[2] in self.KDB.identify:
                 self.friend.name = self.KDB.identify[desire[2]]
                 self.FSM['verify'] = True
                 self.say('%s您好，认证通过。%s很高兴为您服务。'%(self.friend.name, self.name))
-                if self.desire['time'][1] == True:
-                    if len(self.desire['time'][2]) == 1:
-                        if self.desire['time'][2][0][0] == self.desire['verify']:
-                            self.desire['time'][1] == False
-                            self.desire['time'][2] = []
             else:
                 self.say('认证失败。')
                 arg = self.ask(['认证参数','认证参数句'])
@@ -510,16 +504,20 @@ class zzd():
     
     def desire_goodbye(self, desire):
         assert desire[2]
+
         desire[1] = False
-        self.player.stop(False)
-        infonum = self.KDB.getinfonum()
-        if infonum > 0:
-            self.say('您还有%d条学习信息没有写入数据库,需要写入吗？'%infonum)
-            ok = self.ask(['选择回答语句'])
-            if ok and '肯定回答语句' in ok:
-                self._command_save()
-            else:
-                self.say('丢弃学习信息')
+        if not self.FSM['verify']:
+            self.say('您没有及时认证身份')
+        else:
+            self.player.stop(False)
+            infonum = self.KDB.getinfonum()
+            if infonum > 0:
+                self.say('您还有%d条学习信息没有写入数据库,需要写入吗？'%infonum)
+                ok = self.ask(['选择回答语句'])
+                if ok and '肯定回答语句' in ok:
+                    self._command_save()
+                else:
+                    self.say('丢弃学习信息')
         self.say(desire[2][0])
         self.desire['time'][1] == False
         self.FSM['work'] = False
