@@ -2,8 +2,9 @@
 from seting import sets
 from seting import stickset
 from seting import enumset
-import play 
-import hmnature
+from desire import play 
+from desire import hmnature
+from desire import command
 import zmath
 import threading
 import time
@@ -20,10 +21,15 @@ class zzd():
         
         #知识库Knowledge DataBase
         self.KDB = kdb.ZZDKDB()
-        self.player = play.player(self)
-        self.nature = hmnature.nature(self)
         #有限状态机Finite-state machine
-        self.FSM = {'verify':False, 'work':True, 'train':False, 'play':self.player, 'human':self.nature}
+        self.FSM = {'verify':False, 'work':True, 'train':False}
+        
+        self.player = play.player(self)
+        self.cmd = command.cmd(self)
+        self.nature = hmnature.nature(self)
+        self.FSM['play'] = self.player
+        self.FSM['cmd'] = self.cmd
+        self.FSM['human'] = self.nature
         
         self.root = True
         self.name = self.KDB.identify['299792458']
@@ -427,7 +433,7 @@ class zzd():
             self._solve_command(se)
             return
         if se.be('数学语句')[0] == True:
-            self._solve_command(se)
+            self._solve_math(se)
             return
         self._phrase_se(se)
     
