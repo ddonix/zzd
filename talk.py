@@ -1,13 +1,12 @@
 #!/usr/bin/python3 -B
+import threading
+import time
+import zmath
+import play 
+import sys
 from seting import sets
 from seting import stickset
 from seting import enumset
-import play 
-import hmnature
-import zmath
-import threading
-import time
-import sys
 import kdb
 
 #除input函数运行在root主进程，其他函数运行在zhd线程.
@@ -21,9 +20,8 @@ class zzd():
         #知识库Knowledge DataBase
         self.KDB = kdb.ZZDKDB()
         self.player = play.player(self)
-        self.nature = hmnature.nature(self)
         #有限状态机Finite-state machine
-        self.FSM = {'verify':False, 'work':True, 'train':False, 'play':self.player, 'human':self.nature}
+        self.FSM = {'verify':False, 'work':True, 'train':False, 'play':self.player}
         
         self.root = True
         self.name = self.KDB.identify['299792458']
@@ -173,6 +171,8 @@ class zzd():
             out = self.player.stop(True)
         elif 'zzd再见命令' in adapter:
             self.add_desire('goodbye', '%s！'%adapter['zzd再见命令'])
+        elif 'zzd问候命令' in adapter:
+            self.say(adapter['zzd问候命令'])
         elif 'zzd保存命令' in adapter:
             self._command_save()
         elif 'zzd学习命令' in adapter or 'zzd进入命令' in adapter:
@@ -180,7 +180,7 @@ class zzd():
                 self.say('好的，已进入学习模式！')
                 self.FSM['train'] = True
             else:
-                self.say('您已经是学习模式了')
+                self.say('您已经是已学习模式了')
         elif 'zzd退出命令' in adapter:
             mode = adapter['zzd学习命令'] if 'zzd学习命令' in adapter else adapter['zzd模式定语_学习']
             if self.FSM['train'] == True:
@@ -194,7 +194,7 @@ class zzd():
     def _command_save(self):
         infonum = self.KDB.getinfonum()
         if infonum == 0:
-            self.say('没有信息要写入数据库')
+            self.say('没有信息需要写入数据库')
             return
         self.say('请输入管理员口令')
         password = self.ask(['认证参数句','认证参数'])
@@ -219,7 +219,18 @@ class zzd():
         if res[0] != True:
             self._solve_other(se)
             return
-        self.nature.input(res[1])
+        adapter = res[1]
+        print(adapter)
+        if '称呼' in adapter and len(adapter) == 1:
+            self.say('我在，有什么为你做的吗')
+            return
+        if '问候' in adapter: 
+            self.say(adapter['问候'])
+            return
+        if '称赞' in adapter:
+            self.say('谢谢夸奖')
+            return
+        self.say('你说啥？')
 
     
     def _solve_query(self, se):
@@ -239,6 +250,7 @@ class zzd():
             self._solve_query_fn(res[1])
  
     def _solve_query_fn(self, adapter):
+        print(adapter)
         f = adapter['函数']
         x = adapter['.']
         if '一元函数询问语句' in adapter:
@@ -274,6 +286,7 @@ class zzd():
                 x1,x2 = adapter['集合'].split('|')
                         
         res = self.KDB.getse(x1).be(x2)
+        print(adapter)
         print(res)
         if res[0] == True:
             echo = adapter['集合断言语句']
@@ -402,6 +415,7 @@ class zzd():
     def _solve_answer(self, se):
         assert 'ask' in self.FSM and not self.FSM['ask'][1]
         for question in self.FSM['ask'][0]:
+            print('question:',question)
             res = se.be(question)
             if res[0] == True:
                 self.FSM['ask'][1] = res[1]
@@ -468,6 +482,7 @@ class zzd():
                 self.say('您好，我是小白，请认证身份！')
                 self.add_desire('time', (desire, True, time.time()+60))
                 arg = self.ask(['认证参数','认证参数句'])
+                print('arg',arg)
                 if arg:
                     self.desire['verify'][1] = True
                     self.desire['verify'][2] = arg['认证参数']
@@ -524,6 +539,7 @@ class zzd():
         if not desire[2]:
             desire[1] = False
         
+        print(eq)
         if eq.find('x') != -1:
             eq1 = eq.replace("=","-(")+")"
             try:
